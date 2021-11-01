@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
-import { test } from '../services/calendar-api-test';
+import { test } from '../services/calendar-api';
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 
