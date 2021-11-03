@@ -1,7 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { months } from '../services/data';
 
-import { test } from '../services/calendar-api';
+import "../components/date-cell";
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 
@@ -9,10 +10,22 @@ import '@pwabuilder/pwainstall';
 export class AppHome extends LitElement {
   // For more information on using properties and state in lit
   // check out this link https://lit.dev/docs/components/properties/
-  @property() message = 'Welcome!';
 
   static get styles() {
     return css`
+    #page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    #calGrid{
+      display: grid;
+      grid-template-columns: 1fr 1fr  1fr 1fr  1fr 1fr 1fr;
+      grid-template-rows:  1fr 1fr 1fr 1fr 1fr;
+    }
     `;
   }
 
@@ -25,10 +38,13 @@ export class AppHome extends LitElement {
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
   }
 
-
   render() {
     return html`
-    <button @click="${() => test()}"> test </button>
+    <div id="page">
+      <div id="calGrid">
+        ${months[0].days.map((d: any) => html`<app-cell .day=${d} .month=${"january"} .year=${2021}></app-cell>`)}
+      </div>
+    </div>
     `;
   }
 }
