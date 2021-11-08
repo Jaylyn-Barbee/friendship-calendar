@@ -5,10 +5,8 @@ import { months, days_of_week, current_date, daysInMonth } from '../services/dat
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
     @property() firstDay: any;
-    @property() numOfDays: any;
     @property() monthIndex: any;
     @property() year: any;
-
 
   static get styles() {
     return css`
@@ -98,8 +96,6 @@ export class AppCalendar extends LitElement {
 
       tr {
           border-bottom: 1px solid black;
-          display: flex;
-          align-items: center;
       }
 
       td {
@@ -116,13 +112,13 @@ export class AppCalendar extends LitElement {
 
   firstUpdated(){
         this.firstDay = (new Date(current_date.getFullYear(), current_date.getMonth())).getDay();
-        this.numOfDays = daysInMonth(current_date.getFullYear(), current_date.getMonth);
         this.monthIndex = current_date.getMonth();
-        this.year = current_date.getFullYear;
+        this.year = current_date.getFullYear();
   }
 
   setMonthIndex(monthIndex: any) {
     this.monthIndex = monthIndex;
+    this.requestUpdate();
   }
 
   generateCal(month: any, year: any) {
@@ -147,9 +143,6 @@ export class AppCalendar extends LitElement {
             // if we are in the first row and not yet at the first day of the month
             if (i === 0 && j < firstDay) {
                 cell = document.createElement("td");
-                let date_cell = document.createElement("app-cell");
-                // set an attribute for a special blank cell?
-                cell.appendChild(date_cell);
                 row.appendChild(cell);
             } else if (date > daysInMonth(month, year)) {
                 break;
@@ -186,14 +179,13 @@ export class AppCalendar extends LitElement {
             <ion-icon name="arrow-dropright"></ion-icon>
           </div>
           ${months.map((m: any) => html`<span class="month_name" @click=${() => this.setMonthIndex(m.i)}>${m.name}</span>`)}
-
         </div>
         <div id="calendar">
           <div id="days_headers">
             ${days_of_week.map((d: string) => html`<span class="day_header">${d}</span>`)}
           </div>
           <div id="calendarBody">
-              ${true ? this.generateCal(10, 2021) : html`ooof`}
+              ${this.generateCal(this.monthIndex, this.year)}
           </div>
         </div>
 

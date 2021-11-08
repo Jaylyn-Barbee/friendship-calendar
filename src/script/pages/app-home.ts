@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { property, customElement } from 'lit/decorators.js';
 
 import "../components/date-cell";
 
@@ -9,6 +9,8 @@ import '@pwabuilder/pwainstall';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
+
+  @property() groupName: any = "JETT";
   // For more information on using properties and state in lit
   // check out this link https://lit.dev/docs/components/properties/
 
@@ -53,7 +55,7 @@ export class AppHome extends LitElement {
     return html`
     <div id="page">
       <div id="calHeader">
-        <h1>[Insert Friend Group Name Here]'s Calendar</h1>
+        <h1>${this.groupName}'s Calendar</h1>
       </div>
       <app-calendar></app-calendar>
 

@@ -23,6 +23,5 @@ export var current_date = new Date();
 
 // takes year and index of month to return number of days in month.
 export function daysInMonth(iMonth: any, iYear: any){
-    return 32 - new Date(iYear, iMonth, 31).getDate();
+    return 32 - new Date(iYear, iMonth, 32).getDate();
 }
-
