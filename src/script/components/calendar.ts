@@ -96,10 +96,15 @@ export class AppCalendar extends LitElement {
         height: 10%;
       }
 
+      tr {
+          border-bottom: 1px solid black;
+          display: flex;
+          align-items: center;
+      }
+
       td {
           width: 100px;
-          height: 100px;
-          outline: 1px solid white;
+          height: 150px;
       }
         `;
 
@@ -136,25 +141,28 @@ export class AppCalendar extends LitElement {
         // creates a table row
         let row = document.createElement("tr");
         let cell;
-        let cellText;
+
         //creating individual cells, filing them up with data.
         for (let j = 0; j < 7; j++) {
             // if we are in the first row and not yet at the first day of the month
             if (i === 0 && j < firstDay) {
                 cell = document.createElement("td");
-                cellText = document.createTextNode("");
-                cell.appendChild(cellText);
+                let date_cell = document.createElement("app-cell");
+                // set an attribute for a special blank cell?
+                cell.appendChild(date_cell);
                 row.appendChild(cell);
             } else if (date > daysInMonth(month, year)) {
                 break;
             } else {
-                console.log("hitting this cond", date);
                 cell = document.createElement("td");
-                cellText = document.createTextNode(date.toString());
+
+                let date_cell = document.createElement("app-cell");
+                date_cell.setAttribute('day', date.toString())
+                cell.appendChild(date_cell);
+
                 if (date === current_date.getDate() && year === current_date.getFullYear() && month === current_date.getMonth()) {
                     cell.classList.add("bg-info");
                 } // color today's date
-                cell.appendChild(cellText);
                 row.appendChild(cell);
                 date += 1;
             }
@@ -185,7 +193,7 @@ export class AppCalendar extends LitElement {
             ${days_of_week.map((d: string) => html`<span class="day_header">${d}</span>`)}
           </div>
           <div id="calendarBody">
-              ${true ? this.generateCal(11, 2021) : html`ooof`}
+              ${true ? this.generateCal(10, 2021) : html`ooof`}
           </div>
         </div>
 
