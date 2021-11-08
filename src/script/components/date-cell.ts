@@ -1,7 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { event } from "../types/interfaces"
-import { current_date } from '../services/data';
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
