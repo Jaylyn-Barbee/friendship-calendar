@@ -1,9 +1,12 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import '@microsoft/mgt-components';
+import { provider } from '../services/provider';
 
 @customElement('app-header')
 export class AppHeader extends LitElement {
-  @property({ type: String }) title = 'PWA Starter';
+  @property({ type: String }) title = 'Friendship Calendar';
+  @property() provider: any;
 
   static get styles() {
     return css`
@@ -26,13 +29,14 @@ export class AppHeader extends LitElement {
       }
 
       nav {
-        width: 9em;
+        width: max-content;
         display: flex;
         justify-content: space-between;
       }
 
       nav fast-anchor {
         margin-left: 10px;
+        width: max-content;
       }
 
       @media(prefers-color-scheme: light) {
@@ -47,6 +51,10 @@ export class AppHeader extends LitElement {
     super();
   }
 
+  firstUpdated(){
+    this.provider = provider;
+  }
+
   render() {
     return html`
       <header>
@@ -55,6 +63,7 @@ export class AppHeader extends LitElement {
         <nav>
           <fast-anchor href="./" appearance="button">Home</fast-anchor>
           <fast-anchor href="./about" appearance="button">About</fast-anchor>
+          <mgt-login></mgt-login>
         </nav>
       </header>
     `;

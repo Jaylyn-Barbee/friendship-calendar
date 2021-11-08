@@ -1,6 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { months, days_of_week } from '../services/data';
 
+import "../components/date-cell";
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 
@@ -8,61 +10,109 @@ import '@pwabuilder/pwainstall';
 export class AppHome extends LitElement {
   // For more information on using properties and state in lit
   // check out this link https://lit.dev/docs/components/properties/
-  @property() message = 'Welcome!';
 
   static get styles() {
     return css`
-      #welcomeBar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
+    #page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 75%;
+      width: 75%;
+      margin: 0 auto;
+    }
 
-      #welcomeBar fast-card {
-        margin-bottom: 12px;
-      }
+    #calHeader {
+      background: green;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      #welcomeCard,
-      #infoCard {
-        padding: 18px;
-        padding-top: 0px;
-      }
+    #calendar {
+      display: flex;
+      flex-direction: column;
+    }
 
-      pwa-install {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-      }
+    #days_headers {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(100px, 300px));
+      grid-template-rows: repeat(1, minmax(25px, 50px));
+    }
 
-      button {
-        cursor: pointer;
-      }
+    .day_header {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      @media (min-width: 1200px) {
-        #welcomeCard,
-        #infoCard {
-          width: 40%;
-        }
-      }
+      font-size: 16px;
+      font-weight: bolder;
+      border: 1px solid black;
+    }
 
-      @media (screen-spanning: single-fold-vertical) {
-        #welcomeBar {
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: space-between;
-        }
+    #calHolder {
+      display: grid;
+      width: 100%;
+      grid-template-columns: 2fr 5fr 2fr;
+    }
 
-        #welcomeCard {
-          margin-right: 64px;
-        }
-      }
+    #months {
+      background: red;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-      @media(prefers-color-scheme: light) {
-        fast-card {
-          --background-color: white;
-        }
-      }
+    #months-header{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 10%;
+    }
+
+    #months-header h2{
+      font-size: 16px;
+      font-weight: bolder;
+      margin: 0;
+    }
+
+    .month_name {
+      height: 7.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bolder;
+    }
+
+
+
+    #calGrid{
+      display: grid;
+      grid-template-columns: repeat(7, minmax(100px, 300px));
+      grid-template-rows:  repeat(5, minmax(50px, 100px));;
+    }
+
+    #events {
+      background: red;
+      height: 100%;
+    }
+
+    #events h2{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bolder;
+      margin: 0;
+      height: 10%;
+
+    }
     `;
   }
 
@@ -73,96 +123,44 @@ export class AppHome extends LitElement {
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    console.log('This is your home page');
-  }
 
-  share() {
-    if ((navigator as any).share) {
-      (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
-      });
-    }
+    // get month, day, year from current_data
+    // set current_day flag on date-cell
+
   }
 
   render() {
     return html`
-      <div>
-        <div id="welcomeBar">
-          <fast-card id="welcomeCard">
-            <h2>${this.message}</h2>
+    <div id="page">
+      <div id="calHeader">
+        <h1>[Insert Friend Group Name Here]'s Calendar</h1>
+      </div>
+      <div id="calHolder">
+        <div id="months">
+          <div id="months-header">
+            <ion-icon name="arrow-dropleft"></ion-icon>
+            <h2>[Current Year]</h2>
+            <ion-icon name="arrow-dropright"></ion-icon>
+          </div>
+          ${months.map((m: any) => html`<span class="month_name">${m.name}</span>`)}
 
-            <p>
-              For more information on the PWABuilder pwa-starter, check out the
-              <fast-anchor
-                href="https://github.com/pwa-builder/pwa-starter/blob/master/README.md"
-                appearance="hypertext"
-                >README</fast-anchor
-              >.
-            </p>
-
-            <p>
-              Welcome to the
-              <fast-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fast-anchor
-              >
-              pwa-starter! Be sure to head back to
-              <fast-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fast-anchor
-              >
-              when you are ready to ship this PWA to the Microsoft, Google Play
-              and Samsung Galaxy stores!
-            </p>
-
-            ${'share' in navigator
-              ? html`<fast-button appearance="primary" @click="${this.share}"
-                  >Share this Starter!</fast-button
-                >`
-              : null}
-          </fast-card>
-
-          <fast-card id="infoCard">
-            <h2>Technology Used</h2>
-
-            <ul>
-              <li>
-                <fast-anchor
-                  href="https://www.typescriptlang.org/"
-                  appearance="hypertext"
-                  >TypeScript</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://lit.dev"
-                  appearance="hypertext"
-                  >lit</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://www.fast.design/docs/components/getting-started"
-                  appearance="hypertext"
-                  >FAST Components</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://vaadin.github.io/vaadin-router/vaadin-router/demo/#vaadin-router-getting-started-demos"
-                  appearance="hypertext"
-                  >Vaadin Router</fast-anchor
-                >
-              </li>
-            </ul>
-          </fast-card>
         </div>
 
-        <pwa-install>Install PWA Starter</pwa-install>
+        <div id="calendar">
+          <div id="days_headers">
+            ${days_of_week.map((d: string) => html`<span class="day_header">${d}</span>`)}
+          </div>
+          <div id="calGrid">
+            ${months[0].days.map((d: any) => html`<app-cell .day=${d} .month=${"january"} .year=${2021}></app-cell>`)}
+          </div>
+        </div>
+
+        <div id="events">
+          <h2>Today's Events</h2>
+        </div>
       </div>
+
+    </div>
     `;
   }
 }
