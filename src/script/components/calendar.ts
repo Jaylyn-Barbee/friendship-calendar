@@ -19,6 +19,7 @@ export class AppCalendar extends LitElement {
         display: grid;
         grid-template-columns: repeat(7, minmax(100px, 300px));
         grid-template-rows: repeat(1, minmax(25px, 50px));
+        border-bottom: 1px solid black;
       }
 
       .day_header {
@@ -26,10 +27,8 @@ export class AppCalendar extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-
         font-size: 16px;
         font-weight: bolder;
-        border: 1px solid black;
       }
 
       #calHolder {
@@ -39,7 +38,7 @@ export class AppCalendar extends LitElement {
       }
 
       #months {
-        background: red;
+        background: rgb(248, 248, 248);
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -80,7 +79,7 @@ export class AppCalendar extends LitElement {
       }
 
       #events {
-        background: red;
+        background: rgb(248, 248, 248);
         height: 100%;
       }
 
@@ -94,13 +93,10 @@ export class AppCalendar extends LitElement {
         height: 10%;
       }
 
-      tr {
-          border-bottom: 1px solid black;
-      }
-
       td {
           width: 100px;
-          height: 150px;
+          height: 120px;
+          border-bottom: 1px solid black;
       }
         `;
 
@@ -111,9 +107,9 @@ export class AppCalendar extends LitElement {
   }
 
   firstUpdated(){
-        this.firstDay = (new Date(current_date.getFullYear(), current_date.getMonth())).getDay();
-        this.monthIndex = current_date.getMonth();
-        this.year = current_date.getFullYear();
+    this.firstDay = (new Date(current_date.getFullYear(), current_date.getMonth())).getDay();
+    this.monthIndex = current_date.getMonth();
+    this.year = current_date.getFullYear();
   }
 
   setMonthIndex(monthIndex: any) {
@@ -150,11 +146,12 @@ export class AppCalendar extends LitElement {
                 cell = document.createElement("td");
 
                 let date_cell = document.createElement("app-cell");
-                date_cell.setAttribute('day', date.toString())
+                date_cell.setAttribute('day', date.toString());
                 cell.appendChild(date_cell);
 
-                if (date === current_date.getDate() && year === current_date.getFullYear() && month === current_date.getMonth()) {
-                    cell.classList.add("bg-info");
+                date_cell.setAttribute('active', "false");
+                if (date === current_date.getDate()) {
+                    date_cell.setAttribute('active', "true");
                 } // color today's date
                 row.appendChild(cell);
                 date += 1;
@@ -165,34 +162,36 @@ export class AppCalendar extends LitElement {
             tbl.appendChild(row); // appending each row into calendar body.
         }
     }
-
+    this.requestUpdate();
   }
 
 
   render() {
     return html`
         <div id="calHolder">
-        <div id="months">
-          <div id="months-header">
-            <ion-icon name="arrow-dropleft"></ion-icon>
-            <h2>[Current Year]</h2>
-            <ion-icon name="arrow-dropright"></ion-icon>
-          </div>
-          ${months.map((m: any) => html`<span class="month_name" @click=${() => this.setMonthIndex(m.i)}>${m.name}</span>`)}
-        </div>
-        <div id="calendar">
-          <div id="days_headers">
-            ${days_of_week.map((d: string) => html`<span class="day_header">${d}</span>`)}
-          </div>
-          <div id="calendarBody">
-              ${this.generateCal(this.monthIndex, this.year)}
-          </div>
-        </div>
 
-        <div id="events">
-          <h2>Today's Events</h2>
+          <div id="months">
+            <div id="months-header">
+              <ion-icon name="arrow-dropleft"></ion-icon>
+              <h2>[Current Year]</h2>
+              <ion-icon name="arrow-dropright"></ion-icon>
+            </div>
+            ${months.map((m: any) => html`<span class="month_name" @click=${() => this.setMonthIndex(m.i)}>${m.name}</span>`)}
+          </div>
+
+          <div id="calendar">
+            <div id="days_headers">
+              ${days_of_week.map((d: string) => html`<span class="day_header">${d}</span>`)}
+            </div>
+            <div id="calendarBody">
+                ${this.generateCal(this.monthIndex, this.year)}
+            </div>
+          </div>
+
+          <div id="events">
+            <h2>Today's Events</h2>
+          </div>
         </div>
-      </div>
 
     </div>
     `;

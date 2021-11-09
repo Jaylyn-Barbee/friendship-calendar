@@ -17,7 +17,6 @@ export class AppHeader extends LitElement {
         padding-left: 16px;
         padding-right: 16px;
         background: var(--app-color-primary);
-        color: white;
         height: 4em;
       }
 
@@ -37,12 +36,6 @@ export class AppHeader extends LitElement {
       nav fast-anchor {
         margin-left: 10px;
         width: max-content;
-      }
-
-      @media(prefers-color-scheme: light) {
-        header {
-          color: black;
-        }
       }
     `;
   }

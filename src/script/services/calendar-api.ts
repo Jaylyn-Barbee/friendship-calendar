@@ -13,6 +13,7 @@ export async function test(){
     }
 }
 
-export function got() {
-    console.log("hit got");
+export async function getEvents() {
+    let events = await graphClient.api('me/calendar/events').get();
+    console.log("events = ", events);
 }
