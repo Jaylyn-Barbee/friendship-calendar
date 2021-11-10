@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
-
+import { getEvents } from "../services/calendar-api"
 import "../components/date-cell";
 
 import "../components/calendar";
@@ -28,7 +28,7 @@ export class AppHome extends LitElement {
     #calHeader {
       background: green;
       width: 100%;
-      height: 100px;
+      height: 75px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -48,7 +48,7 @@ export class AppHome extends LitElement {
     // set current_day flag on date-cell
 
     // saves index of days of the week for which the first day of this month started.
-
+    // let myEvents = getEvents();
   }
 
   render() {

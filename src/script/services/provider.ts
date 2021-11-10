@@ -1,6 +1,6 @@
 import { Providers, Msal2Provider } from "@microsoft/mgt";
 
-const clientId = '7675d309-afb2-4679-b801-6f9dbf50c4fd';
+const clientId = 'a9d85621-5a2a-4211-9862-e0375021df83';
 
 const scopes = [
   'user.read',

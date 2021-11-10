@@ -15,5 +15,6 @@ export async function test(){
 
 export async function getEvents() {
     let events = await graphClient.api('me/calendar/events').get();
-    console.log("events = ", events);
+    console.log(events.value);
+    return events.value;
 }
