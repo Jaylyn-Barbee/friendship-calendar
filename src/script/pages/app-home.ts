@@ -26,7 +26,7 @@ export class AppHome extends LitElement {
       margin: 0 auto;
     }
     #calHeader {
-      background: green;
+      background: #DDBDD5;
       width: 100%;
       height: 75px;
       display: flex;

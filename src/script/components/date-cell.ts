@@ -1,7 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { event } from "../types/interfaces"
-import { events } from "../services/data"
+import { events, months } from "../services/data"
+
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
@@ -72,7 +73,15 @@ export class AppCell extends LitElement {
   }
 
   handleClick() {
-      console.log(this.year + "-" + (this.month + 1) + "-" + this.day);
+      let stringDate = months[this.month].name + " " + this.day + ", " + this.year;
+
+      let event = new CustomEvent('day-clicked', {
+        detail: {
+          selected_day: stringDate
+        }
+      });
+      this.dispatchEvent(event);
+      // fire a custom event with data, in calendar have a listener, calendar will then pass it ot the agenda
   }
 
   render() {

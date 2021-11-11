@@ -6,7 +6,8 @@ import { months, days_of_week, current_date, daysInMonth } from '../services/dat
 export class AppCalendar extends LitElement {
     @property() monthIndex: any;
     @state() year: any;
-    @state() day_selected: any;
+    @state() day: any;
+    @state() date_string: any;
     @property() _calendarTemplate: any = [];
     @property() _daysTemplate: any = [];
     //@property() stringDate: string = "";
@@ -126,37 +127,25 @@ export class AppCalendar extends LitElement {
 
   firstUpdated(){
     this.monthIndex = current_date.getMonth();
-    this.day_selected = current_date.getDate();
     this.year = current_date.getFullYear();
+    this.day = current_date.getDate();
+    this.date_string = this.stringTheDate();
     this.generateCal(this.monthIndex, this.year);
-    //this.stringTheDate();
     this.requestUpdate();
   }
 
-  /*
   stringTheDate() {
     let month = months[this.monthIndex].name;
-    let day = this.day_selected;
+    let day = this.day;
     let year = this.year;
-    console.log(month + " " + day + ", " + year);
-    this.stringDate =  month + " " + day + ", " + year;
-    this.requestUpdate();
+    return month + " " + day + ", " + year;
   }
-  */
 
   setMonthIndex(monthIndex: any) {
     this.monthIndex = monthIndex;
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
-
-  /*
-  updateDay(date: any){
-    console.log("date", date)
-    this.day_selected = date
-    this.stringTheDate();
-  }
-  */
 
   generateCal(month: any, year: any) {
     this._calendarTemplate = [];
@@ -176,9 +165,9 @@ export class AppCalendar extends LitElement {
           break;
         } else {
           if (date === current_date.getDate() && month === current_date.getMonth() && year === current_date.getFullYear()) {
-            this._calendarTemplate.push(html`<app-cell .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
           } else {
-            this._calendarTemplate.push(html`<app-cell .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
           }
           date += 1;
         }
@@ -193,6 +182,12 @@ export class AppCalendar extends LitElement {
       this.year--;
     }
     this.generateCal(this.monthIndex, this.year);
+    this.requestUpdate();
+  }
+
+  updateSelectedDay(day: string){
+    this.date_string = day;
+    console.log(this.date_string);
     this.requestUpdate();
   }
 
@@ -221,7 +216,7 @@ export class AppCalendar extends LitElement {
 
           <div id="events">
             <h2>Today's Events</h2>
-            <mgt-agenda></mgt-agenda>
+            <mgt-agenda date=${this.date_string}></mgt-agenda>
           </div>
 
         </div>
