@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { event } from "../types/interfaces"
-import { events, months } from "../services/data"
+import { months } from "../services/data"
 
 
 @customElement('app-cell')
@@ -23,13 +23,20 @@ export class AppCell extends LitElement {
             width: 100%;
             background: white;
         }
+        #hat {
+            height: 5%;
+            width: 100%;
+        }
+        .color {
+            background: #6C375F;
+        }
         #day {
             display: flex;
             justify-content: flex-start;
             align-items: baseline;
             grid-column: 2;
             width: 100%;
-            height: 50%;
+            height: 45%;
             font-size: 24px;
             font-weight: bolder;
         }
@@ -43,7 +50,7 @@ export class AppCell extends LitElement {
         #today-cell {
             height: 100%;
             width: 100%;
-            background: lightblue;
+            background: #F1E4EE
         }
         `;
 
@@ -54,21 +61,6 @@ export class AppCell extends LitElement {
   }
 
   firstUpdated(){
-
-      for(const i of events){
-        var year = i.date.getFullYear();
-        var month = i.date.getMonth()+1;
-        var day = i.date.getDate();
-
-        let event_date = year + "-" + month + "-" + day;
-
-        if(this.year + "-" + (this.month + 1) + "-" + this.day  === event_date){
-            this.event_today = true;
-        }
-      }
-
-      //getEvents() //next steps
-
       this.requestUpdate;
   }
 
@@ -91,17 +83,19 @@ export class AppCell extends LitElement {
 
         html`
         <div id="cell" @click=${() => this.handleClick()}>
+            <div id="hat"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
-            ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
             </span>
         </div>`
         :
         html`
         <div id="today-cell" @click=${() => this.handleClick()}>
+            <div id="hat" class="color"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
-            ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
             </span>
         </div>`
     }

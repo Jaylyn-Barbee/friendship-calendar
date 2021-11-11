@@ -10,7 +10,6 @@ export class AppCalendar extends LitElement {
     @state() date_string: any;
     @property() _calendarTemplate: any = [];
     @property() _daysTemplate: any = [];
-    //@property() stringDate: string = "";
 
   static get styles() {
     return css`
@@ -56,10 +55,6 @@ export class AppCalendar extends LitElement {
 
       .month_name:hover {
         cursor: pointer;
-      }
-
-      .month_name:active {
-        border: 1px solid black;
       }
 
       ion-icon:hover {
@@ -117,6 +112,59 @@ export class AppCalendar extends LitElement {
         margin: 0;
         height: 10%;
       }
+
+      .loader {
+        width: 60px;
+        height: 60px;
+        display: block;
+        margin: 20px auto;
+        position: relative;
+        background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+        background-size: 20px 20px , 20px auto;
+        background-repeat: repeat-x;
+        background-position: center bottom, center -5px;
+        box-sizing: border-box;
+      }
+      .loader::before,
+      .loader::after {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        left: -20px;
+        top: 0;
+        width: 20px;
+        height: 60px;
+        background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+        background-size: 20px 20px , 20px auto;
+        background-repeat: no-repeat;
+        background-position: center bottom, center -5px;
+        transform: rotate(0deg);
+        transform-origin: 50% 0%;
+        animation: animPend 1s linear infinite alternate;
+      }
+      .loader::after {
+        animation: animPend2 1s linear infinite alternate;
+        left: 100%;
+      }
+
+      @keyframes animPend {
+        0% {
+          transform: rotate(22deg);
+        }
+        50% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes animPend2 {
+        0%, 55% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(-22deg);
+        }
+      }
+
         `;
 
   }
@@ -216,7 +264,10 @@ export class AppCalendar extends LitElement {
 
           <div id="events">
             <h2>Today's Events</h2>
-            <mgt-agenda date=${this.date_string}></mgt-agenda>
+            <mgt-agenda days=1 date=${this.date_string}>
+              <template data-type="loading"><span class="loader"></span></template>
+              <template data-type="no-data">No events found for this day!</template>
+            </mgt-agenda>
           </div>
 
         </div>

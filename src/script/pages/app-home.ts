@@ -1,6 +1,5 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
-import { getEvents } from "../services/calendar-api"
 import "../components/date-cell";
 
 import "../components/calendar";
