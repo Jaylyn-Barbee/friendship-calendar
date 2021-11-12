@@ -10,6 +10,7 @@ export class AppCalendar extends LitElement {
     @state() date_string: any;
     @property() _calendarTemplate: any = [];
     @property() _daysTemplate: any = [];
+    @property() last_selected: any;
 
   static get styles() {
     return css`
@@ -95,6 +96,10 @@ export class AppCalendar extends LitElement {
 
       app-cell:hover {
         cursor: pointer;
+      }
+
+      .selected {
+        background: #F1E4EE;
       }
 
       #events {
@@ -213,9 +218,9 @@ export class AppCalendar extends LitElement {
           break;
         } else {
           if (date === current_date.getDate() && month === current_date.getMonth() && year === current_date.getFullYear()) {
-            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell class="selected" id="today" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
           } else {
-            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
           }
           date += 1;
         }
@@ -233,9 +238,26 @@ export class AppCalendar extends LitElement {
     this.requestUpdate();
   }
 
-  updateSelectedDay(day: string){
+  updateSelectedDay(day: string, cell: HTMLElement){
+
+    // updating day for the purpose of showing events
     this.date_string = day;
-    console.log(this.date_string);
+
+    /*
+    // updating style on highlighted day
+    let allCells: any = []
+    allCells = this.shadowRoot?.querySelectorAll("app-cell");
+
+    if(!this.last_selected){
+      this.last_selected = this.shadowRoot?.getElementById("today");
+    }
+    this.last_selected.classList.remove("selected");
+
+    cell.classList.add("selected");
+
+    this.last_selected = cell;
+    */
+
     this.requestUpdate();
   }
 

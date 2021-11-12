@@ -21,7 +21,6 @@ export class AppCell extends LitElement {
         #cell {
             height: 100%;
             width: 100%;
-            background: white;
         }
         #hat {
             height: 5%;
@@ -50,8 +49,11 @@ export class AppCell extends LitElement {
         #today-cell {
             height: 100%;
             width: 100%;
-            background: #F1E4EE
         }
+        .selected {
+            background: #F1E4EE;
+        }
+
         `;
 
   }
@@ -64,12 +66,14 @@ export class AppCell extends LitElement {
       this.requestUpdate;
   }
 
-  handleClick() {
+  handleClick(e: any) {
+
       let stringDate = months[this.month].name + " " + this.day + ", " + this.year;
 
       let event = new CustomEvent('day-clicked', {
         detail: {
-          selected_day: stringDate
+            selected_day: stringDate,
+            selected_cell: (e.path[1] as HTMLBodyElement)
         }
       });
       this.dispatchEvent(event);
@@ -82,7 +86,7 @@ export class AppCell extends LitElement {
         ${ this.active == "false" ?
 
         html`
-        <div id="cell" @click=${() => this.handleClick()}>
+        <div id="cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
