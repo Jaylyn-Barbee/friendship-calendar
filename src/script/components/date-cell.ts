@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { event } from "../types/interfaces"
 import { months } from "../services/data"
-
+import { areThereEventsToday } from "../services/calendar-api"
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
@@ -14,6 +14,7 @@ export class AppCell extends LitElement {
   @property() year: any;
   @property() active: any;
   @property() event_today: any = false;
+
 
   static get styles() {
     return css`
@@ -53,6 +54,9 @@ export class AppCell extends LitElement {
         .selected {
             background: #F1E4EE;
         }
+        .inactive {
+            background: white;
+        }
 
         `;
 
@@ -62,7 +66,10 @@ export class AppCell extends LitElement {
     super();
   }
 
-  firstUpdated(){
+  async firstUpdated(){
+
+    //this.event_today = await areThereEventsToday(this.day, this.month, this.year);
+
       this.requestUpdate;
   }
 
@@ -77,7 +84,6 @@ export class AppCell extends LitElement {
         }
       });
       this.dispatchEvent(event);
-      // fire a custom event with data, in calendar have a listener, calendar will then pass it ot the agenda
   }
 
   render() {
@@ -95,7 +101,7 @@ export class AppCell extends LitElement {
         </div>`
         :
         html`
-        <div id="today-cell" @click=${() => this.handleClick()}>
+        <div id="today-cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat" class="color"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
@@ -103,8 +109,6 @@ export class AppCell extends LitElement {
             </span>
         </div>`
     }
-
-
     `;
   }
 }

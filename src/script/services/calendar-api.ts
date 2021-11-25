@@ -13,8 +13,25 @@ export async function test(){
     }
 }
 
-export async function getEvents() {
+export async function areThereEventsToday(day: any, month: any, year: any) {
     let events = await graphClient.api('me/calendar/events').get();
-    console.log(events.value);
-    return events.value;
+
+    let eventList = events.value;
+
+    if(day < 10) {
+        day = "0" + day;
+    }
+
+   for(let i = 0; i < eventList.length; i++){
+       let eventTime = eventList[i].start.dateTime;
+       eventTime = eventTime.split("T")[0];
+
+       let match = year + "-" + (month + 1) + "-" + day;
+       console.log(match);
+       if(eventTime === match){
+           return true;
+       }
+   }
+
+    return false;
 }

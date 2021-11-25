@@ -218,7 +218,7 @@ export class AppCalendar extends LitElement {
           break;
         } else {
           if (date === current_date.getDate() && month === current_date.getMonth() && year === current_date.getFullYear()) {
-            this._calendarTemplate.push(html`<app-cell class="selected" id="today" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell id="today" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
           } else {
             this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
           }
