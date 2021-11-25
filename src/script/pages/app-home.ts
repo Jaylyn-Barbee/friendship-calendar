@@ -1,6 +1,5 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
-import { months, current_date } from '../services/data';
 import "../components/date-cell";
 
 import "../components/calendar";
@@ -21,18 +20,10 @@ export class AppHome extends LitElement {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 75%;
-      width: 75%;
+      width: 100%;
       margin: 0 auto;
     }
-    #calHeader {
-      background: #DDBDD5;
-      width: 100%;
-      height: 75px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+
     `;
   }
 
@@ -54,11 +45,7 @@ export class AppHome extends LitElement {
   render() {
     return html`
     <div id="page">
-      <div id="calHeader">
-        <h1>${this.groupName}'s Calendar</h1>
-      </div>
       <app-calendar></app-calendar>
-
     </div>
     `;
   }

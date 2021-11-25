@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { event } from "../types/interfaces"
 import { months } from "../services/data"
-import { areThereEventsToday } from "../services/calendar-api"
+// import { areThereEventsToday } from "../services/calendar-api"
 
 @customElement('app-cell')
 export class AppCell extends LitElement {

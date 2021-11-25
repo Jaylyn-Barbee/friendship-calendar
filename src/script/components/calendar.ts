@@ -1,10 +1,14 @@
 import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth } from '../services/data';
+import { provider } from '../services/provider';
+import '@microsoft/mgt-components';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
+    @property() provider: any;
     @property() monthIndex: any;
+    @property() monthName: any;
     @state() year: any;
     @state() day: any;
     @state() date_string: any;
@@ -12,15 +16,47 @@ export class AppCalendar extends LitElement {
     @property() _daysTemplate: any = [];
     @property() last_selected: any;
 
+
   static get styles() {
     return css`
-
+      #wholeWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
 
       #calHolder {
         display: grid;
         width: 100%;
         grid-template-columns: 2fr 5fr 2fr;
         height: 650px;
+      }
+
+      #calHeader {
+        background: #DDBDD5;
+        display: grid;
+        width: 100%;
+        grid-template-columns: 2fr 5fr 2fr;
+        height: 75px;
+      }
+
+      #calHeader * {
+        display: flex;
+        align-items: center;
+      }
+
+      #selectedHeader {
+        width: 100%;
+        justify-content: center;
+        margin: 0;
+      }
+
+      ion-datetime {
+        --placeholder-color: black;
+      }
+
+      #login {
+        justify-content: right;
       }
 
       #months {
@@ -179,7 +215,9 @@ export class AppCalendar extends LitElement {
   }
 
   firstUpdated(){
+    this.provider = provider;
     this.monthIndex = current_date.getMonth();
+    this.monthName = months[this.monthIndex].name;
     this.year = current_date.getFullYear();
     this.day = current_date.getDate();
     this.date_string = this.stringTheDate();
@@ -242,6 +280,7 @@ export class AppCalendar extends LitElement {
 
     // updating day for the purpose of showing events
     this.date_string = day;
+    console.log(cell);
 
     /*
     // updating style on highlighted day
@@ -261,40 +300,63 @@ export class AppCalendar extends LitElement {
     this.requestUpdate();
   }
 
+  changeDate(event: any){
+    let date = new Date(event.detail.value)
+    let monthIndex = date.getMonth();
+    let year = date.getFullYear();
+
+    this.monthIndex = monthIndex;
+    this.monthName = months[this.monthIndex].name;
+    this.year = year;
+
+    this.generateCal(this.monthIndex, this.year);
+  }
+
 
   render() {
     return html`
-        <div id="calHolder">
-
-          <div id="months">
-            <div id="months-header">
-              <ion-icon name="arrow-dropleft" @click=${() => this.changeYear("down")}></ion-icon>
-              <h2>${this.year}</h2>
-              <ion-icon name="arrow-dropright" @click=${() => this.changeYear("up")}></ion-icon>
-            </div>
-            ${months.map((m: any) => html`<span class="month_name" @click=${() => this.setMonthIndex(m.i)}>${m.name}</span>`)}
+        <div id="wholeWrapper">
+          <div id="calHeader">
+            <span>Place Holder Dropdown</span>
+            <h1 id="selectedHeader">
+              <ion-datetime
+                display-format="MMMM YYYY"
+                min="0001-01-01"
+                max="3000-12-31"
+                placeholder=${this.monthName + " " + this.year}
+                @ionChange=${(e: any) => this.changeDate(e)}>
+              </ion-datetime>
+            </h1>
+            <div id="login"><mgt-login></mgt-login></div>
           </div>
 
-          <div id="calendar">
-            <div id="days_headers">
-                ${this._daysTemplate}
+          <div id="calHolder">
+            <div id="months">
+              <div id="months-header">
+                <h2>Users</h2>
+              </div>
+              Replace this with list of active members of group.
             </div>
-            <div id="calGrid">
-              ${this._calendarTemplate.map((cell: any) => html`${cell}`)}
+
+            <div id="calendar">
+              <div id="days_headers">
+                  ${this._daysTemplate}
+              </div>
+              <div id="calGrid">
+                ${this._calendarTemplate.map((cell: any) => html`${cell}`)}
+              </div>
             </div>
-          </div>
 
-          <div id="events">
-            <h2>Today's Events</h2>
-            <mgt-agenda days=1 date=${this.date_string}>
-              <template data-type="loading"><span class="loader"></span></template>
-              <template data-type="no-data">No events found for this day!</template>
-            </mgt-agenda>
-          </div>
+            <div id="events">
+              <h2>Today's Events</h2>
+              <mgt-agenda days=1 date=${this.date_string}>
+                <template data-type="loading"><span class="loader"></span></template>
+                <template data-type="no-data">No events found for this day!</template>
+              </mgt-agenda>
+            </div>
 
+          </div>
         </div>
-
-    </div>
     `;
   }
 }
