@@ -45,6 +45,10 @@ export class AppCalendar extends LitElement {
         align-items: center;
       }
 
+      #dropdown {
+        padding: 12px 20px;
+      }
+
       #selectedHeader {
         width: 100%;
         justify-content: center;
@@ -317,7 +321,7 @@ export class AppCalendar extends LitElement {
     return html`
         <div id="wholeWrapper">
           <div id="calHeader">
-            <span>Place Holder Dropdown</span>
+            <div id="dropdown">Place Holder Dropdown</div>
             <h1 id="selectedHeader">
               <ion-datetime
                 display-format="MMMM YYYY"
