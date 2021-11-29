@@ -15,6 +15,7 @@ export class AppCalendar extends LitElement {
     @property() _calendarTemplate: any = [];
     @property() _daysTemplate: any = [];
     @property() last_selected: any;
+    @property() today_cell: any;
 
 
   static get styles() {
@@ -243,6 +244,7 @@ export class AppCalendar extends LitElement {
   }
 
   generateCal(month: any, year: any) {
+
     this._calendarTemplate = [];
     this._daysTemplate = []
     let firstDay = (new Date(year, month)).getDay();
@@ -260,7 +262,7 @@ export class AppCalendar extends LitElement {
           break;
         } else {
           if (date === current_date.getDate() && month === current_date.getMonth() && year === current_date.getFullYear()) {
-            this._calendarTemplate.push(html`<app-cell id="today" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell id="today" class="selected" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
           } else {
             this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
           }
@@ -268,6 +270,7 @@ export class AppCalendar extends LitElement {
         }
       }
     }
+
   }
 
   changeYear(direction: any){
@@ -284,24 +287,24 @@ export class AppCalendar extends LitElement {
 
     // updating day for the purpose of showing events
     this.date_string = day;
-    console.log(cell);
 
-    /*
     // updating style on highlighted day
-    let allCells: any = []
-    allCells = this.shadowRoot?.querySelectorAll("app-cell");
+    this.handleHighlightedDay(cell, false)
 
+    this.requestUpdate();
+  }
+
+  handleHighlightedDay(cell: any, clear: Boolean){
     if(!this.last_selected){
       this.last_selected = this.shadowRoot?.getElementById("today");
     }
+
     this.last_selected.classList.remove("selected");
 
-    cell.classList.add("selected");
+    if(!clear){
+      this.last_selected = cell;
+    }
 
-    this.last_selected = cell;
-    */
-
-    this.requestUpdate();
   }
 
   changeDate(event: any){
@@ -313,7 +316,14 @@ export class AppCalendar extends LitElement {
     this.monthName = months[this.monthIndex].name;
     this.year = year;
 
+    this.handleHighlightedDay(null, true);
+
     this.generateCal(this.monthIndex, this.year);
+    if(this.monthIndex == current_date.getMonth()){
+      this.today_cell = this.shadowRoot!.getElementById("today");
+      this.last_selected = this.today_cell;
+    }
+
   }
 
 
@@ -323,13 +333,24 @@ export class AppCalendar extends LitElement {
           <div id="calHeader">
             <div id="dropdown">Place Holder Dropdown</div>
             <h1 id="selectedHeader">
-              <ion-datetime
+            <ion-datetime
                 display-format="MMMM YYYY"
                 min="0001-01-01"
                 max="3000-12-31"
                 placeholder=${this.monthName + " " + this.year}
                 @ionChange=${(e: any) => this.changeDate(e)}>
               </ion-datetime>
+              <!--
+                 Placeholder for Date
+
+
+              <ion-button id="open-modal">Open Datetime Modal</ion-button>
+                <ion-modal trigger="open-modal">
+                  <ion-content>
+                    <ion-datetime></ion-datetime>
+                  </ion-content>
+                </ion-modal>
+               -->
             </h1>
             <div id="login"><mgt-login></mgt-login></div>
           </div>
