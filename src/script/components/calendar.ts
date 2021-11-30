@@ -146,7 +146,6 @@ export class AppCalendar extends LitElement {
       #events {
         background: rgb(248, 248, 248);
         height: 100%;
-        overflow-y: scroll;
       }
 
       #events h2{
@@ -157,6 +156,40 @@ export class AppCalendar extends LitElement {
         font-weight: bolder;
         margin: 0;
         height: 10%;
+      }
+
+      #agendaHolder {
+        height: 80%;
+        overflow-y: scroll;
+      }
+
+      #addEvent {
+        height: 10%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 1px solid black;
+
+      }
+
+      #addButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 16px;
+        font-weight: bolder;
+        padding: 10px;
+
+        border-radius: 5px;
+        background-color: #F1E4EE;
+        border: none;
+      }
+
+      #addButton:hover {
+          cursor: pointer;
+          background-color: #ddbdd5
       }
 
       .loader {
@@ -210,6 +243,8 @@ export class AppCalendar extends LitElement {
           transform: rotate(-22deg);
         }
       }
+
+
 
         `;
 
@@ -303,6 +338,7 @@ export class AppCalendar extends LitElement {
 
     if(!clear){
       this.last_selected = cell;
+      cell.classList.add("selected");
     }
 
   }
@@ -374,10 +410,15 @@ export class AppCalendar extends LitElement {
 
             <div id="events">
               <h2>Today's Events</h2>
-              <mgt-agenda days=1 date=${this.date_string}>
-                <template data-type="loading"><span class="loader"></span></template>
-                <template data-type="no-data">No events found for this day!</template>
-              </mgt-agenda>
+              <div id="agendaHolder">
+                <mgt-agenda days=1 date=${this.date_string}>
+                  <template data-type="loading"><span class="loader"></span></template>
+                  <template data-type="no-data">No events found for this day!</template>
+                </mgt-agenda>
+              </div>
+              <div id="addEvent">
+                <button id="addButton">Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
+              </div>
             </div>
 
           </div>
