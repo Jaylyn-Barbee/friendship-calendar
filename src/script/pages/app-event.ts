@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { createAndSubmitEvent } from '../services/calendar-api';
 import '@microsoft/mgt-components';
 
 @customElement('app-event')
@@ -54,7 +55,7 @@ export class AppEvent extends LitElement {
         transform: translate(-4%, 40%);
     }
 
-    form {
+    #create_event_form {
         display: flex;
         flex-direction: column;
 
@@ -73,7 +74,7 @@ export class AppEvent extends LitElement {
         transform: translate(-50%, -50%);
     }
 
-    form input {
+    #create_event_form input {
         margin-bottom: 10px;
     }
 
@@ -108,8 +109,17 @@ export class AppEvent extends LitElement {
 
   }
 
-  handleSubmit(event: any){
-    console.log(event);
+  handleSubmit(){
+    /* Build event structure and post to client */
+    let event_name = this.shadowRoot!.getElementById("event_name")?.value;
+    let event_body = this.shadowRoot!.getElementById("event_body")?.value;
+    let start_time = this.shadowRoot!.getElementById("event_start")?.value;
+    let end_time = this.shadowRoot!.getElementById("event_end")?.value;
+    let event_location = this.shadowRoot!.getElementById("event_location")?.value;
+    let attendees = this.shadowRoot!.querySelector('mgt-people-picker')?.selectedPeople;
+
+    createAndSubmitEvent(event_name, event_body, start_time, end_time,  event_location, attendees);
+
   }
 
   render() {
@@ -118,7 +128,7 @@ export class AppEvent extends LitElement {
             <section>
                 <div class="curve"></div>
             </section>
-            <form id="create_event_form" action="/me/calendar/events" method="POST">
+            <div id="create_event_form" >
                 <label for="event_name">Event Name:</label>
                 <input type="text" id="event_name" name="event_name">
 
@@ -135,10 +145,10 @@ export class AppEvent extends LitElement {
                 <input type="text" id="event_location" name="event_location">
 
                 <label for="event_attendees">Attendees:</label>
-                <mgt-people-picker></mgt-people-picker>
+                <mgt-people-picker id="attendees"></mgt-people-picker>
 
-                <input id="submit" type="button" value="Add New Event"  @click=${(event: any) => this.handleSubmit(event)}/>
-            </form>
+                <button id="submit" @click=${() => this.handleSubmit()}>Add New Event</button>
+            </div>
         </div>
     `;
   }

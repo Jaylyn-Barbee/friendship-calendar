@@ -5,8 +5,8 @@ const graphClient = provider.graph.client;
 export async function test(){
     if (provider) {
 
-        let userDetails = await graphClient.api('me').get();
-        console.log("userDetails = ", userDetails);
+        //let userDetails = await graphClient.api('me').get();
+        //console.log("userDetails = ", userDetails);
 
         let calDetails = await graphClient.api('me/calendars').get();
         console.log("calDetails = ", calDetails);
@@ -34,4 +34,43 @@ export async function areThereEventsToday(day: any, month: any, year: any) {
    }
 
     return false;
+}
+
+export async function createAndSubmitEvent(event_name: string, event_body: string, start_time: string, end_time: string,  event_location: string, attendees: any[]){
+    console.log("name", event_name);
+    console.log("body", event_body);
+    console.log("start", start_time);
+    console.log("end", end_time);
+    console.log("location", event_location);
+    console.log("attendees", attendees);
+
+    let attendeeList: any[] = []
+    attendees.forEach(person => {
+        console.log(person)
+
+        attendeeList.push({emailAddress: { address: person.scoredEmailAddresses[0].address, name: person.displayName}})
+    });
+
+    const event = {
+        subject: event_name,
+        body: {
+          contentType: 'HTML',
+          content: event_body
+        },
+        start: {
+            dateTime: start_time,
+            timeZone: 'Eastern Standard Time'
+        },
+        end: {
+            dateTime: end_time,
+            timeZone: 'Eastern Standard Time'
+        },
+        location: {
+            displayName: event_location
+        },
+        attendees: attendeeList
+      };
+
+      console.log(event);
+      await graphClient.api('/me/calendar/events').post(event);
 }

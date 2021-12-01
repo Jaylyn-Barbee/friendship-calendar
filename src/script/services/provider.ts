@@ -9,7 +9,9 @@ const scopes = [
   'contacts.read',
   'calendars.read',
   'Presence.Read.All',
-  'Presence.Read'
+  'Presence.Read',
+  'Calendars.ReadWrite',
+  'Group.ReadWrite.All'
 ]
 
 Providers.globalProvider = new Msal2Provider({
