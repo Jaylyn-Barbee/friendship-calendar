@@ -118,7 +118,7 @@ export class AppEvent extends LitElement {
             <section>
                 <div class="curve"></div>
             </section>
-            <form id="create_event_form">
+            <form id="create_event_form" action="/me/calendar/events" method="POST">
                 <label for="event_name">Event Name:</label>
                 <input type="text" id="event_name" name="event_name">
 
