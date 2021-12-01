@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth } from '../services/data';
 import { provider } from '../services/provider';
+import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
 
 @customElement('app-calendar')
@@ -24,13 +25,14 @@ export class AppCalendar extends LitElement {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        height: 100vh;
       }
 
       #calHolder {
         display: grid;
         width: 100%;
         grid-template-columns: 2fr 5fr 2fr;
-        height: 650px;
+        height: 100%;
       }
 
       #calHeader {
@@ -417,7 +419,7 @@ export class AppCalendar extends LitElement {
                 </mgt-agenda>
               </div>
               <div id="addEvent">
-                <button id="addButton">Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
+                <button id="addButton" @click=${() => Router.go("/new_event")}>Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
               </div>
             </div>
 

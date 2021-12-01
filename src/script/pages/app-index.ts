@@ -11,9 +11,6 @@ import '../components/header';
 export class AppIndex extends LitElement {
   static get styles() {
     return css`
-      main {
-        padding: 16px;
-      }
 
       #routerOutlet > * {
         width: 100% !important;
@@ -67,10 +64,10 @@ export class AppIndex extends LitElement {
         children: [
           { path: '/', component: 'app-home' },
           {
-            path: '/about',
-            component: 'app-about',
+            path: '/new_event',
+            component: 'app-event',
             action: async () => {
-              await import('./app-about.js');
+              await import('./app-event.js');
             },
           },
         ],
