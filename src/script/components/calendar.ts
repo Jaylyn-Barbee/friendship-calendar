@@ -413,7 +413,7 @@ export class AppCalendar extends LitElement {
             <div id="events">
               <h2>Today's Events</h2>
               <div id="agendaHolder">
-                <mgt-agenda days=1 date=${this.date_string}>
+                <mgt-agenda days=1 date=${this.date_string} preferred-timezone="Eastern Standard Time">
                   <template data-type="loading"><span class="loader"></span></template>
                   <template data-type="no-data">No events found for this day!</template>
                 </mgt-agenda>

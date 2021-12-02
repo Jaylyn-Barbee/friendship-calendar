@@ -1,4 +1,4 @@
-import {provider} from "./provider"
+import { provider } from "./provider"
 
 const graphClient = provider.graph.client;
 
@@ -37,17 +37,17 @@ export async function areThereEventsToday(day: any, month: any, year: any) {
 }
 
 export async function createAndSubmitEvent(event_name: string, event_body: string, start_time: string, end_time: string,  event_location: string, attendees: any[]){
+    /*
     console.log("name", event_name);
     console.log("body", event_body);
     console.log("start", start_time);
     console.log("end", end_time);
     console.log("location", event_location);
     console.log("attendees", attendees);
+    */
 
     let attendeeList: any[] = []
     attendees.forEach(person => {
-        console.log(person)
-
         attendeeList.push({emailAddress: { address: person.scoredEmailAddresses[0].address, name: person.displayName}})
     });
 
@@ -59,18 +59,20 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
         },
         start: {
             dateTime: start_time,
-            timeZone: 'Eastern Standard Time'
+            timeZone: 'Eastern Standard Time' // will be replaced with groups perferred TZ
         },
         end: {
             dateTime: end_time,
-            timeZone: 'Eastern Standard Time'
+            timeZone: 'Eastern Standard Time' // will be replaced with groups perferred TZ
         },
         location: {
             displayName: event_location
         },
         attendees: attendeeList
-      };
+    };
 
-      console.log(event);
-      await graphClient.api('/me/calendar/events').post(event);
+    console.log(event);
+    await graphClient.api('/me/calendar/events').post(event);
+    // Add loader for await and on success put a toast saying success and bounce back to calendar
+    // Also, in the future this will be added to the master calendar not the individual personal calendar
 }

@@ -1,11 +1,14 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { createAndSubmitEvent } from '../services/calendar-api';
+import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
+import '../components/toast';
 
 @customElement('app-event')
 export class AppEvent extends LitElement {
   @property() provider: any;
+  @property({type: Boolean}) showErrorToast: any | null = false;
 
   static get styles() {
     return css`
@@ -22,6 +25,42 @@ export class AppEvent extends LitElement {
         min-height: 400px;
         padding-top: 100px;
         background: #DDBDD5;
+    }
+
+    #back {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 14px;
+        margin-bottom: 20px;
+        width: fit-content;
+        border-bottom: 1px solid transparent
+    }
+
+    #back:hover{
+        cursor: pointer;
+        border-bottom: 1px solid black;
+        animation: bounce 1s;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateX(8px);
+        }
+        60% {
+            transform: translateX(-8px);
+        }
+    }
+
+    #inner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      margin: 20px 0;
+      grid-gap: 20px;
     }
 
     .curve {
@@ -60,11 +99,10 @@ export class AppEvent extends LitElement {
         flex-direction: column;
 
         height: fit-content;
-        width: 35vw;
+        width: 50vw;
         background-color: white;
 
-        border-radius: 10px;
-        padding: 20px;
+        padding: 55px;
 
         position: absolute;
         z-index: 100;
@@ -75,7 +113,52 @@ export class AppEvent extends LitElement {
     }
 
     #create_event_form input {
-        margin-bottom: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        border: 1px solid #A8A8A8;
+        height: 38px;
+        width: 100%;
+        font-size: 14px;
+        text-indent: 10px;
+    }
+
+    #inner-grid input {
+        margin-top: 6px;
+        margin-bottom: 0;
+        text-indent: 10px;
+    }
+
+    #create_event_form input:hover {
+        border-color: black;
+    }
+
+    #create_event_form label {
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+
+    .inner-label {
+        margin-bottom: 60px;
+        font-size: 12px;
+    }
+
+    mgt-people-picker {
+      --input-border: 1px solid #A8A8A8;
+      --input-border-color--focus: black;
+    }
+
+    textarea {
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #A8A8A8;
+      width: 100%;
+      font-size: 14px;
+      text-indent: 10px;
+    }
+
+    textarea:hover {
+        border-color: black;
     }
 
     #submit {
@@ -85,17 +168,30 @@ export class AppEvent extends LitElement {
 
         font-size: 16px;
         font-weight: bolder;
-        padding: 10px;
+        padding: 20px 55px;
         margin-top: 10px;
 
-        border-radius: 5px;
+        border-radius: 30px;
         background-color: #F1E4EE;
         border: none;
+
+        width: 33%;
       }
 
       #submit:hover {
-          cursor: pointer;
-          background-color: #ddbdd5
+        cursor: pointer;
+        background-color: #ddbdd5
+      }
+
+      @media(max-width: 870px){
+        #inner-grid {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #submit {
+            width: 100%;
+        }
       }
 
     `;
@@ -109,17 +205,27 @@ export class AppEvent extends LitElement {
 
   }
 
-  handleSubmit(){
+  async handleSubmit(){
     /* Build event structure and post to client */
-    let event_name = this.shadowRoot!.getElementById("event_name")?.value;
-    let event_body = this.shadowRoot!.getElementById("event_body")?.value;
-    let start_time = this.shadowRoot!.getElementById("event_start")?.value;
-    let end_time = this.shadowRoot!.getElementById("event_end")?.value;
-    let event_location = this.shadowRoot!.getElementById("event_location")?.value;
-    let attendees = this.shadowRoot!.querySelector('mgt-people-picker')?.selectedPeople;
+    let event_name = this.shadowRoot!.getElementById("event_name") as any;
+    let event_body = this.shadowRoot!.getElementById("event_body") as any;
+    let start_time = this.shadowRoot!.getElementById("event_start") as any;
+    let end_time = this.shadowRoot!.getElementById("event_end") as any;
+    let event_location = this.shadowRoot!.getElementById("event_location") as any;
+    let attendees = this.shadowRoot!.querySelector('mgt-people-picker') as any;
 
-    createAndSubmitEvent(event_name, event_body, start_time, end_time,  event_location, attendees);
-
+    if(event_name.value.length == 0|| event_body.value.length == 0 || start_time.value.length == 0 || end_time.value.length == 0 || event_location.value.length == 0){
+        this.showErrorToast = true;
+            setTimeout(() => {
+                this.showErrorToast = false;
+            }, 3000)
+    } else {
+        // set loader flag to true
+        await createAndSubmitEvent(event_name.value, event_body.value, start_time.value, end_time.value,  event_location.value, attendees.selectedPeople);
+        // when this returns set loader flag to false
+        // if success then route to calendar
+        // else do an error on this page.
+    }
   }
 
   render() {
@@ -129,64 +235,39 @@ export class AppEvent extends LitElement {
                 <div class="curve"></div>
             </section>
             <div id="create_event_form" >
+                <span id="back" @click=${() => Router.go("/")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="event_name">Event Name:</label>
-                <input type="text" id="event_name" name="event_name">
-
-                <label for="event_body">Body:</label>
-                <input type="text" id="event_body" name="event_body">
-
-                <label for="event_start">Start Time:</label>
-                <input type="datetime-local" id="event_start" name="event_start">
-
-                <label for="event_end">End Time:</label>
-                <input type="datetime-local" id="event_end" name="event_end">
-
-                <label for="event_location">Event Location:</label>
-                <input type="text" id="event_location" name="event_location">
+                <input type="text" id="event_name" name="event_name" placeholder="Enter your event name..."/>
 
                 <label for="event_attendees">Attendees:</label>
-                <mgt-people-picker id="attendees"></mgt-people-picker>
+                <mgt-people-picker id="attendees" style="border-radius: 4px;" placeholder="Enter names to invite to your event..."></mgt-people-picker>
 
-                <button id="submit" @click=${() => this.handleSubmit()}>Add New Event</button>
+                <div id="inner-grid">
+                  <span>
+                    <label class="inner-label" for="event_start">Start Time:</label>
+                    <input type="datetime-local" id="event_start" name="event_start"/>
+                  </span>
+
+                  <span>
+                    <label class="inner-label" for="event_end">End Time:</label>
+                    <input type="datetime-local" id="event_end" name="event_end"/>
+                  </span>
+
+                  <span>
+                    <label class="inner-label" for="event_location">Event Location:</label>
+                    <input type="text" id="event_location" name="event_location" placeholder="Enter your event location..."/>
+                  </span>
+
+                </div>
+
+                <label for="event_body">Invite Message:</label>
+                <textarea id="event_body" name="event_body" rows="5" cols="60" placeholder="Enter your event invite message..."></textarea>
+
+                <button id="submit" @click=${() => this.handleSubmit()}>Add Event</button>
             </div>
         </div>
+        ${this.showErrorToast ? html`<app-toast>Please make sure that all fields are populated before submitting.</app-toast>` : html``}
+
     `;
   }
 }
-
-/*
-{
-  "subject": "Christmas dinner",
-  "body": {
-    "contentType": "HTML",
-    "content": "Happy holidays!"
-  },
-  "start": {
-      "dateTime": "2019-12-25T18:00:00",
-      "timeZone": "Pacific Standard Time"
-  },
-  "end": {
-      "dateTime": "2019-12-25T22:00:00",
-      "timeZone": "Pacific Standard Time"
-  },
-  "location":{
-      "displayName":"Alex' home"
-  },
-  "attendees": [
-    {
-      "emailAddress": {
-        "address":"meganb@contoso.onmicrosoft.com",
-        "name": "Megan Bowen"
-      },
-      "type": "required"
-    },
-    {
-      "emailAddress": {
-        "address":"ChristieC@contoso.onmicrosoft.com",
-        "name": "Christie Cline"
-      },
-      "type": "required"
-    }
-  ]
-}
-*/
