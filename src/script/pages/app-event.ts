@@ -216,9 +216,9 @@ export class AppEvent extends LitElement {
 
     if(event_name.value.length == 0|| event_body.value.length == 0 || start_time.value.length == 0 || end_time.value.length == 0 || event_location.value.length == 0){
         this.showErrorToast = true;
-            setTimeout(() => {
-                this.showErrorToast = false;
-            }, 3000)
+        setTimeout(() => {
+            this.showErrorToast = false;
+        }, 3000)
     } else {
         // set loader flag to true
         await createAndSubmitEvent(event_name.value, event_body.value, start_time.value, end_time.value,  event_location.value, attendees.selectedPeople);

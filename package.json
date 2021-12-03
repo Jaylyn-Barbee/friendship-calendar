@@ -17,6 +17,7 @@
     "@microsoft/microsoft-graph-client": "^3.0.0",
     "@pwabuilder/pwainstall": "^1.6.7",
     "@vaadin/router": "^1.7.4",
+    "firebase": "^9.5.0",
     "isomorphic-fetch": "^3.0.0",
     "lit": "^2.0.2",
     "workbox-build": "^6.3.0",

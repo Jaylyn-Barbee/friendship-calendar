@@ -1,9 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { Router } from '@vaadin/router';
 import "../components/date-cell";
 import "../components/calendar";
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
+import { provider } from '../services/provider';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -31,14 +33,9 @@ export class AppHome extends LitElement {
   }
 
   async firstUpdated() {
-    // this method is a lifecycle even in lit
-    // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-
-    // get month, day, year from current_data
-    // set current_day flag on date-cell
-
-    // saves index of days of the week for which the first day of this month started.
-    // let myEvents = getEvents();
+    if(provider !== undefined && provider.getAllAccounts().length == 0){
+      Router.go("/login")
+    }
   }
 
   render() {

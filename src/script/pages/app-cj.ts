@@ -1,17 +1,12 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
-import '@microsoft/mgt-components';
-import { provider } from '../services/provider';
+import { customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 
-
-@customElement('app-login')
-export class AppLogin extends LitElement {
-  @property() provider: any;
-
+@customElement('app-cj')
+export class AppCj extends LitElement {
   static get styles() {
     return css`
-        #page{
+        #page {
             height: 100vh;
             background-color: #F1E4EE;
         }
@@ -58,7 +53,7 @@ export class AppLogin extends LitElement {
             transform: translate(-4%, 40%);
         }
 
-        #login-box {
+        #cj-box {
             position: absolute;
             height: fit-content;
             width: 30vw;
@@ -80,12 +75,29 @@ export class AppLogin extends LitElement {
             text-align: center;
         }
 
-        mgt-login {
-            --margin: 0;
-            --padding: 10px;
-            background-color: #F1E4EE;
-            --button-background-color--hover: #DDBDD5;
-            --button-color--hover: black;
+        button {
+            background: #F1E4EE;
+            border-radius: 10px;
+            width: 80%;
+            padding: 20px 50px;
+            box-shadow: 0;
+            border: none;
+        }
+
+        button:hover {
+            background: #DDBDD5;
+            cursor: pointer;
+        }
+
+        #join {
+            margin-top: 20px;
+        }
+
+        p {
+            margin: 0;
+            margin-top: 5px;
+            font-size: 12px;
+            text-align: center;
         }
     `;
   }
@@ -94,29 +106,20 @@ export class AppLogin extends LitElement {
     super();
   }
 
-  firstUpdated(){
-    this.provider = provider;
-    if(this.provider !== undefined && this.provider.getAllAccounts().length > 0){
-        if(1 == 1) { // if not in database go to create
-            Router.go("/create-or-join")
-        } else {
-            Router.go("/")
-        }
-      }
-  }
-
   render() {
     return html`
       <div id="page">
         <section>
           <div class="curve"></div>
         </section>
-        <div id="login-box">
-          <h1>Welcome to Friendship Calendar!</h1>
-          <p>An easy to use event calendar for busy groups to plan time with one another!</p>
-          <mgt-login></mgt-login>
+        <div id="cj-box">
+          <button id="create" @click=${ () => Router.go("/create-group")}>Create</button>
+          <p>Create a new group from scratch</p>
+          <button id="join" @click=${ () => Router.go("/join-group")}>Join a Group</button>
+          <p>Join an existing group</p>
         </div>
       </div>
     `;
   }
 }
+

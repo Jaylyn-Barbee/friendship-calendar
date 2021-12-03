@@ -36,6 +36,23 @@ export async function areThereEventsToday(day: any, month: any, year: any) {
     return false;
 }
 
+export async function getCurrentUserId(){
+    let userDetails = await graphClient.api('me').get();
+    return userDetails.id;
+}
+
+export async function createMainCalendar(group_name: string) {
+    const calendar = {
+        name: group_name + "'s Calendar"
+      };
+
+    let resp = await graphClient.api('/me/calendars').post(calendar);
+
+    console.log(resp);
+
+    return resp.id;
+}
+
 export async function createAndSubmitEvent(event_name: string, event_body: string, start_time: string, end_time: string,  event_location: string, attendees: any[]){
     /*
     console.log("name", event_name);
