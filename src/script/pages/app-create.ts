@@ -4,13 +4,14 @@ import { Router } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
 import { createMainCalendar, getCurrentUserId } from '../services/calendar-api';
-import { createNewGroup } from '../services/database';
+import { checkForCode, createNewGroup } from '../services/database';
 
 @customElement('app-create')
 export class AppCreate extends LitElement {
     @property() code: any;
     @property({type: Boolean}) showCopyToast: any | null = false;
     @property({type: Boolean}) showErrorToast: any | null = false;
+    @property({type: Boolean}) showLoader: any | null = false;
 
     static get styles() {
         return css`
@@ -185,6 +186,58 @@ export class AppCreate extends LitElement {
                 background-color: #ddbdd5
             }
 
+            .loader {
+              width: 60px;
+              height: 60px;
+              display: block;
+              margin: 20px auto;
+              position: relative;
+              background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+              background-size: 20px 20px , 20px auto;
+              background-repeat: repeat-x;
+              background-position: center bottom, center -5px;
+              box-sizing: border-box;
+            }
+            .loader::before,
+            .loader::after {
+              content: '';
+              box-sizing: border-box;
+              position: absolute;
+              left: -20px;
+              top: 0;
+              width: 20px;
+              height: 60px;
+              background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+              background-size: 20px 20px , 20px auto;
+              background-repeat: no-repeat;
+              background-position: center bottom, center -5px;
+              transform: rotate(0deg);
+              transform-origin: 50% 0%;
+              animation: animPend 1s linear infinite alternate;
+            }
+            .loader::after {
+              animation: animPend2 1s linear infinite alternate;
+              left: 100%;
+            }
+
+            @keyframes animPend {
+              0% {
+                transform: rotate(22deg);
+              }
+              50% {
+                transform: rotate(0deg);
+              }
+            }
+
+            @keyframes animPend2 {
+              0%, 55% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(-22deg);
+              }
+            }
+
         `;
     }
 
@@ -192,22 +245,27 @@ export class AppCreate extends LitElement {
         super();
     }
 
-    firstUpdated(){
-        this.code = this.generateCode();
+    async firstUpdated(){
+        this.code = await this.generateCode();
     }
 
-    generateCode(){
+    async generateCode(){
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         var result = ""
         var charactersLength = characters.length;
 
-        /*
-        for ( var i = 0; i < 6 ; i++ ) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        */
+        while(true){
+            for ( var i = 0; i < 6 ; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
 
-        result = "5NCPT9"
+            let validCode = await checkForCode(result)
+            if(!validCode){
+                break;
+            } else {
+                result = "";
+            }
+        }
 
         return result;
     }
@@ -241,6 +299,7 @@ export class AppCreate extends LitElement {
             return;
         }
 
+        this.showLoader = true;
         // Get the code
         let code = this.code;
 
@@ -251,7 +310,12 @@ export class AppCreate extends LitElement {
         let userId = await getCurrentUserId();
 
         // push info to db
-        await createNewGroup(group_name, timezone, code, cal_id, userId);
+        try {
+            await createNewGroup(group_name, timezone, code, cal_id, userId);
+            Router.go("/pick-calendar");
+        } catch(error: any){
+            console.error(error);
+        }
     }
 
     render() {
@@ -261,6 +325,8 @@ export class AppCreate extends LitElement {
             <div class="curve"></div>
             </section>
             <div id="c-box">
+            ${this.showLoader ? html`<span class="loader"></span>` :
+            html`
                 <span id="back" @click=${() => Router.go("/create-or-join")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="group_name">Group Name:</label>
                 <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..."/>
@@ -272,15 +338,16 @@ export class AppCreate extends LitElement {
 
                 <div id="bottom">
                     <p id="group-code" @click=${() => this.copyCode()}>Your Group Join Code is: ${this.code}
-                        <ion-icon name="copy" style="margin-left: 5px;"></ion-icon>
+                        <ion-icon name="copy" style="margin-left: 5px; font-size: 50px;"></ion-icon>
                     </p>
                     <button id="create-button" @click=${() => this.createGroup()}>Create Group</button>
-                </div>
+                </div>`}
             </div>
         </div>
         ${this.showCopyToast ? html`<app-toast>Group Code copied to clip board!</app-toast>` : html``}
         ${this.showErrorToast ? html`<app-toast>Please enter a group name!</app-toast>` : html``}
-
         `;
     }
 }
+
+// Join my group on Friendship calendar! The join code is: Q6Q3H4

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, query, where } from "firebase/firestore";
+import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
 /*
 Your web app's Firebase configuration
 For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -54,9 +54,39 @@ export async function createNewGroup(group_name: string, group_tz: string, group
     }
 }
 
+// Tester Code = R41TGH
+// True if code exists, false if code does not exist.
 export async function checkForCode(code: string){
     const groupsRef = collection(db, "groups");
     const q = query(groupsRef, where("join_code", "==", code));
 
-    console.log(q);
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.length != 0;
+}
+
+export async function addUserToDb(code: string, uid: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+    let updated_mems = item.data().members;
+    updated_mems.push(uid);
+    console.log(updated_mems);
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: updated_mems,
+        main_cal_id: item.data().main_cal_id,
+        admins: item.data().admins,
+        default_tz: item.data().default_tz
+    });
 }
