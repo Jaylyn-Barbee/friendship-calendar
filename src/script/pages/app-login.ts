@@ -97,6 +97,7 @@ export class AppLogin extends LitElement {
   firstUpdated(){
     this.provider = provider;
     if(this.provider !== undefined && this.provider.getAllAccounts().length > 0){
+        console.log("here")
         if(1 == 1) { // if not in database go to create
             Router.go("/create-or-join")
         } else {

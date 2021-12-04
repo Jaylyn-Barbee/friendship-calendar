@@ -90,3 +90,7 @@ export async function addUserToDb(code: string, uid: string){
         default_tz: item.data().default_tz
     });
 }
+
+export async function checkForUserInDb(uid: string){
+
+}

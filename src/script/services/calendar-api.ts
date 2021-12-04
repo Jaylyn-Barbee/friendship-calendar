@@ -93,3 +93,8 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
     // Add loader for await and on success put a toast saying success and bounce back to calendar
     // Also, in the future this will be added to the master calendar not the individual personal calendar
 }
+
+export async function getCurrentUsersCalendars(){
+    let calDetails = await graphClient.api('me/calendars').get();
+    return calDetails.value;
+}

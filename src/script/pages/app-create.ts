@@ -283,6 +283,7 @@ export class AppCreate extends LitElement {
 
     }
 
+    // need to make sure that a user who is already in a group can't create another.
     async createGroup(){
         // Get the group name
         let group_name = (this.shadowRoot!.getElementById("group_name") as any).value;
