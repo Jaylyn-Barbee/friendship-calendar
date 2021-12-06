@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import '@microsoft/mgt-components';
 import { provider } from '../services/provider';
-import { Router } from '@vaadin/router';
+import { PreventAndRedirectCommands, Router, RouterLocation, } from '@vaadin/router';
 import { checkForUserInDb } from '../services/database';
 import { getCurrentUserId } from '../services/calendar-api';
 

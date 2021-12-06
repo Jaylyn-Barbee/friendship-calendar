@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth } from '../services/data';
+import { getGroupName } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
@@ -17,6 +18,7 @@ export class AppCalendar extends LitElement {
     @property() _daysTemplate: any = [];
     @property() last_selected: any;
     @property() today_cell: any;
+    @property() group_name: any = "";
 
 
   static get styles() {
@@ -49,7 +51,44 @@ export class AppCalendar extends LitElement {
       }
 
       #dropdown {
-        padding: 12px 20px;
+        position: relative;
+        display: inline-block;
+
+        width: 100%;
+        height: 100%;
+      }
+
+      #settings_header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 16px;
+        height: 100%;
+      }
+
+      #settings_header p {
+        height: 100%;
+        font-size: 24px;
+        font-weight: bolder;
+        padding-left: 16px;
+      }
+
+      #settings_header:hover {
+        cursor: pointer
+      }
+
+      #dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+      }
+
+      #dropdown:hover #dropdown-content {
+        display: block;
       }
 
       #selectedHeader {
@@ -246,6 +285,35 @@ export class AppCalendar extends LitElement {
         }
       }
 
+      .loader_top {
+        width: 100%;
+        height: 4.8px;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+      .loader_top::after {
+        content: '';
+        width: 96px;
+        height: 4.8px;
+        background: #000;
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: border-box;
+        animation: hitZak 0.6s ease-in-out infinite alternate;
+      }
+
+      @keyframes hitZak {
+        0% {
+          left: 0;
+          transform: translateX(-1%);
+        }
+        100% {
+          left: 100%;
+          transform: translateX(-99%);
+        }
+      }
 
 
         `;
@@ -256,13 +324,14 @@ export class AppCalendar extends LitElement {
     super();
   }
 
-  firstUpdated(){
+  async firstUpdated(){
     this.provider = provider;
     this.monthIndex = current_date.getMonth();
     this.monthName = months[this.monthIndex].name;
     this.year = current_date.getFullYear();
     this.day = current_date.getDate();
     this.date_string = this.stringTheDate();
+    this.group_name = await getGroupName();
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
@@ -369,7 +438,13 @@ export class AppCalendar extends LitElement {
     return html`
         <div id="wholeWrapper">
           <div id="calHeader">
-            <div id="dropdown">Place Holder Dropdown</div>
+            <div id="dropdown">
+              <span id="settings_header"> ${this.group_name.length > 0? html`<p>${this.group_name}</p>` : html`<span class="loader_top"></span>`} <ion-icon name="settings" style="font-size: 24px; margin-left: 10px"></ion-icon></span>
+              <div id="dropdown-content">
+                <p>Group Settings</p>
+                <p>Leave Group</p>
+              </div>
+            </div>
             <h1 id="selectedHeader">
             <ion-datetime
                 display-format="MMMM YYYY"

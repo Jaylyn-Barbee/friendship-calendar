@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+import { getCurrentUserId } from "./calendar-api";
 /*
 Your web app's Firebase configuration
 For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -102,4 +103,20 @@ export async function checkForUserInDb(uid: string){
 
 export async function getMainCalendarId(){
 
+}
+
+export async function getGroupName(){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().group_name;
+    });
+
+    return ret;
 }
