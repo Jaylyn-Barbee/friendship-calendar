@@ -26,11 +26,11 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore();
 
-export async function addUser() {
+export async function addUser(uid_in: string, pc_id_in: string) {
     try {
         const docRef = await addDoc(collection(db, "users"), {
-            pc_id: "test",
-            user_object_id: "test"
+            uid: uid_in,
+            pc_id: pc_id_in
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -80,7 +80,7 @@ export async function addUserToDb(code: string, uid: string){
     let ref = doc(db, 'groups', item.id);
     let updated_mems = item.data().members;
     updated_mems.push(uid);
-    console.log(updated_mems);
+
     await setDoc(ref, {
         group_name: item.data().group_name,
         join_code: item.data().join_code,
@@ -92,5 +92,14 @@ export async function addUserToDb(code: string, uid: string){
 }
 
 export async function checkForUserInDb(uid: string){
+    const groupsRef = collection(db, "users");
+    const q = query(groupsRef, where("uid", "==", uid));
+
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.length != 0;
+}
+
+export async function getMainCalendarId(){
 
 }

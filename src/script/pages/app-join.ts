@@ -1,7 +1,7 @@
 import { LitElement, css, html  } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { getCurrentUserId } from '../services/calendar-api';
-import { checkForCode, addUserToDb } from '../services/database';
+import { checkForCode, addUserToDb, checkForUserInDb } from '../services/database';
 import { Router } from '@vaadin/router';
 
 @customElement('app-join')
@@ -205,11 +205,19 @@ export class AppJoin extends LitElement {
     super();
   }
 
-  firstUpdated() {
-
+  async firstUpdated() {
+    try{
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      }
+    } catch(error: any) {
+        console.error(error);
+        Router.go("/login");
+    }
   }
 
-  // Need to add logic for if you already in the group then you shouldn't be able to join again.
   async joinGroup(){
     // Get Code
     let group_code = (this.shadowRoot!.getElementById("code_field") as any).value.toUpperCase();

@@ -1,6 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
+import { getCurrentUserId } from '../services/calendar-api';
+import { checkForUserInDb } from '../services/database';
 
 @customElement('app-cj')
 export class AppCj extends LitElement {
@@ -104,6 +106,19 @@ export class AppCj extends LitElement {
 
   constructor() {
     super();
+  }
+
+  async firstUpdated(){
+    try{
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      }
+    } catch(error: any) {
+        console.error(error);
+        Router.go("/login");
+    }
   }
 
   render() {

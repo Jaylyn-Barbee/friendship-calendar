@@ -1,11 +1,14 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { getCurrentUsersCalendars } from '../services/calendar-api';
+import { getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
 import { Router } from '@vaadin/router';
+import { addUser } from '../services/database';
 
 @customElement('app-selection')
 export class AppSelection extends LitElement {
   @property() calendars: any;
+  @property({type: Boolean}) showLoader: any | null = false;
+
   static get styles() {
     return css`
       #page {
@@ -164,10 +167,9 @@ export class AppSelection extends LitElement {
 
   async firstUpdated() {
    this.calendars = await getCurrentUsersCalendars();
-   console.log(this.calendars);
   }
 
-  submitUser(){
+  async submitUser(){
     let radios = this.shadowRoot!.querySelectorAll("input");
     let selectedCal_id = "";
     radios.forEach((radio: any) => {
@@ -175,7 +177,17 @@ export class AppSelection extends LitElement {
         selectedCal_id = radio.value;
       }
     });
-    console.log(selectedCal_id);
+
+    this.showLoader = true;
+    let userId = await getCurrentUserId();
+    try{
+      await addUser(userId, selectedCal_id)
+      Router.go("/");
+    } catch(error: any){
+      console.error(error);
+    }
+
+
   }
 
   render() {
@@ -185,10 +197,11 @@ export class AppSelection extends LitElement {
             <div class="curve"></div>
             </section>
             <div id="s-box">
-                <p>Select a Calendar from the list below that will be used to reference your availibilty when planning events for the group calendar.</p>
+            ${this.showLoader ? html`<span class="loader"></span>` :
+                html`<p>Select a Calendar from the list below that will be used to reference your availibilty when planning events for the group calendar.</p>
                 ${this.calendars && this.calendars.length > 0 ? this.calendars.map((cal: any) => html`<slot class="radio-input"><input type="radio" name="calendar" value=${cal.id}> ${cal.name}</slot>`) : html`<span class="loader"></span>`}
-                <button id="submit-button" @click=${() => this.submitUser()}>Submit Calendar</button>
-              </div>
+                <button id="submit-button" @click=${() => this.submitUser()}>Submit Calendar</button>`}
+            </div>
         </div>
     `;
   }

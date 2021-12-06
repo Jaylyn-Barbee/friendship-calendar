@@ -4,13 +4,13 @@ import { Router } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
 import { createMainCalendar, getCurrentUserId } from '../services/calendar-api';
-import { checkForCode, createNewGroup } from '../services/database';
+import { checkForCode, checkForUserInDb, createNewGroup } from '../services/database';
 
 @customElement('app-create')
 export class AppCreate extends LitElement {
     @property() code: any;
     @property({type: Boolean}) showCopyToast: any | null = false;
-    @property({type: Boolean}) showErrorToast: any | null = false;
+    @property({type: Boolean}) showErrorToastName: any | null = false;
     @property({type: Boolean}) showLoader: any | null = false;
 
     static get styles() {
@@ -246,7 +246,20 @@ export class AppCreate extends LitElement {
     }
 
     async firstUpdated(){
-        this.code = await this.generateCode();
+        this.showLoader = true;
+        try{
+            let userId = await getCurrentUserId();
+            let in_db = await checkForUserInDb(userId);
+            if(in_db){
+                Router.go("/");
+            }
+        } catch(error: any) {
+            console.error(error);
+            Router.go("/login");
+        } finally {
+            this.showLoader = false;
+            this.code = await this.generateCode();
+        }
     }
 
     async generateCode(){
@@ -283,6 +296,13 @@ export class AppCreate extends LitElement {
 
     }
 
+    errorToast(){
+        this.showErrorToastName = true;
+        setTimeout(() => {
+            this.showErrorToastName = false;
+        }, 3000)
+    }
+
     // need to make sure that a user who is already in a group can't create another.
     async createGroup(){
         // Get the group name
@@ -293,10 +313,7 @@ export class AppCreate extends LitElement {
         let timezone = timezone_sel.options[timezone_sel.selectedIndex].text
 
         if(group_name.length < 1){
-            this.showErrorToast = true;
-            setTimeout(() => {
-                this.showCopyToast = false;
-            }, 3000)
+            this.errorToast();
             return;
         }
 
@@ -346,7 +363,7 @@ export class AppCreate extends LitElement {
             </div>
         </div>
         ${this.showCopyToast ? html`<app-toast>Group Code copied to clip board!</app-toast>` : html``}
-        ${this.showErrorToast ? html`<app-toast>Please enter a group name!</app-toast>` : html``}
+        ${this.showErrorToastName ? html`<app-toast>Please enter a group name!</app-toast>` : html``}
         `;
     }
 }

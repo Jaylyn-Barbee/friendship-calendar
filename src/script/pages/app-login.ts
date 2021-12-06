@@ -3,6 +3,8 @@ import { property, customElement } from 'lit/decorators.js';
 import '@microsoft/mgt-components';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
+import { checkForUserInDb } from '../services/database';
+import { getCurrentUserId } from '../services/calendar-api';
 
 
 @customElement('app-login')
@@ -94,16 +96,18 @@ export class AppLogin extends LitElement {
     super();
   }
 
-  firstUpdated(){
+  async firstUpdated(){
     this.provider = provider;
     if(this.provider !== undefined && this.provider.getAllAccounts().length > 0){
-        console.log("here")
-        if(1 == 1) { // if not in database go to create
-            Router.go("/create-or-join")
+        let userId = await getCurrentUserId();
+        let in_db = await checkForUserInDb(userId);
+        if(in_db) { // if not in database go to create
+            Router.go("/");
         } else {
-            Router.go("/")
+            Router.go("/create-or-join");
         }
       }
+      // when the login returns to this page... why does it not run firstUpdated again?
   }
 
   render() {
