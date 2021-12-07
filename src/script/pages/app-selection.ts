@@ -1,11 +1,30 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
-import { Router } from '@vaadin/router';
-import { addUser } from '../services/database';
+import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
+import { addUser, checkForUserInDb } from '../services/database';
+import { provider } from '../services/provider';
 
 @customElement('app-selection')
-export class AppSelection extends LitElement {
+export class AppSelection extends LitElement implements BeforeEnterObserver {
+
+  // i do getCurrentUserId a lot.. maybe i should store the current userId in
+  // session storage or save it somewhere else so i dont have to keep making that request?
+  async onBeforeEnter(
+    location: RouterLocation,
+    commands: PreventAndRedirectCommands,
+    router: Router) {
+      if(provider !== undefined && provider.getAllAccounts().length == 0){
+        Router.go("/login")
+      }
+
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      }
+  }
+
   @property() calendars: any;
   @property({type: Boolean}) showLoader: any | null = false;
 

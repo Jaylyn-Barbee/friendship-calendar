@@ -2,13 +2,33 @@ import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import '@microsoft/mgt-components';
 import { provider } from '../services/provider';
-import { PreventAndRedirectCommands, Router, RouterLocation, } from '@vaadin/router';
+import {  Router } from '@vaadin/router'; //RouterLocation, BeforeEnterObserver, PreventAndRedirectCommands } from '@vaadin/router';
 import { checkForUserInDb } from '../services/database';
 import { getCurrentUserId } from '../services/calendar-api';
 
 
 @customElement('app-login')
-export class AppLogin extends LitElement {
+export class AppLogin extends LitElement { //implements BeforeEnterObserver {
+
+  /*
+  async onBeforeEnter(
+    location: RouterLocation,
+    commands: PreventAndRedirectCommands,
+    router: Router) {
+      if(provider !== undefined && provider.getAllAccounts().length == 0){
+        Router.go("/login")
+      }
+
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      } else {
+        Router.go("/create-or-join")
+      }
+  }
+  */
+
   @property() provider: any;
 
   static get styles() {

@@ -1,13 +1,30 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
+import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
 import { createMainCalendar, getCurrentUserId } from '../services/calendar-api';
 import { checkForCode, checkForUserInDb, createNewGroup } from '../services/database';
+import { provider } from '../services/provider';
 
 @customElement('app-create')
-export class AppCreate extends LitElement {
+export class AppCreate extends LitElement implements BeforeEnterObserver {
+
+    async onBeforeEnter(
+      location: RouterLocation,
+      commands: PreventAndRedirectCommands,
+      router: Router) {
+        if(provider !== undefined && provider.getAllAccounts().length == 0){
+          Router.go("/login")
+        }
+
+        let userId = await getCurrentUserId();
+        let in_db = await checkForUserInDb(userId);
+        if(in_db){
+            Router.go("/");
+        }
+    }
+
     @property() code: any;
     @property({type: Boolean}) showCopyToast: any | null = false;
     @property({type: Boolean}) showErrorToastName: any | null = false;
@@ -246,20 +263,7 @@ export class AppCreate extends LitElement {
     }
 
     async firstUpdated(){
-        this.showLoader = true;
-        try{
-            let userId = await getCurrentUserId();
-            let in_db = await checkForUserInDb(userId);
-            if(in_db){
-                Router.go("/");
-            }
-        } catch(error: any) {
-            console.error(error);
-            Router.go("/login");
-        } finally {
-            this.showLoader = false;
-            this.code = await this.generateCode();
-        }
+        this.code = await this.generateCode();
     }
 
     async generateCode(){

@@ -1,4 +1,4 @@
-=export const months: any = [
+export const months: any = [
     {name: "January"  ,  i: 0},
     {name: "Febuary"  ,  i: 1},
     {name: "March"    ,  i: 2},

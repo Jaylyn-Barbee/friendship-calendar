@@ -2,10 +2,27 @@ import { LitElement, css, html  } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { getCurrentUserId } from '../services/calendar-api';
 import { checkForCode, addUserToDb, checkForUserInDb } from '../services/database';
-import { Router } from '@vaadin/router';
+import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
+import { provider } from '../services/provider';
 
 @customElement('app-join')
-export class AppJoin extends LitElement {
+export class AppJoin extends LitElement implements BeforeEnterObserver {
+
+  async onBeforeEnter(
+    location: RouterLocation,
+    commands: PreventAndRedirectCommands,
+    router: Router) {
+      if(provider !== undefined && provider.getAllAccounts().length == 0){
+        Router.go("/login")
+      }
+
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      }
+  }
+
   @property({type: Boolean}) showLoader: any | null = false;
 
   static get styles() {
@@ -206,16 +223,6 @@ export class AppJoin extends LitElement {
   }
 
   async firstUpdated() {
-    try{
-      let userId = await getCurrentUserId();
-      let in_db = await checkForUserInDb(userId);
-      if(in_db){
-          Router.go("/");
-      }
-    } catch(error: any) {
-        console.error(error);
-        Router.go("/login");
-    }
   }
 
   async joinGroup(){

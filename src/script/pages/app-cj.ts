@@ -1,11 +1,28 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
+import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { getCurrentUserId } from '../services/calendar-api';
 import { checkForUserInDb } from '../services/database';
+import { provider } from '../services/provider';
 
 @customElement('app-cj')
-export class AppCj extends LitElement {
+export class AppCj extends LitElement implements BeforeEnterObserver {
+
+  async onBeforeEnter(
+    location: RouterLocation,
+    commands: PreventAndRedirectCommands,
+    router: Router) {
+      if(provider !== undefined && provider.getAllAccounts().length == 0){
+        Router.go("/login")
+      }
+
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(in_db){
+          Router.go("/");
+      }
+  }
+
   static get styles() {
     return css`
         #page {
@@ -109,16 +126,6 @@ export class AppCj extends LitElement {
   }
 
   async firstUpdated(){
-    try{
-      let userId = await getCurrentUserId();
-      let in_db = await checkForUserInDb(userId);
-      if(in_db){
-          Router.go("/");
-      }
-    } catch(error: any) {
-        console.error(error);
-        Router.go("/login");
-    }
   }
 
   render() {
