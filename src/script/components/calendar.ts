@@ -73,8 +73,19 @@ export class AppCalendar extends LitElement {
         padding-left: 16px;
       }
 
+      .dropdown-option {
+        margin: 0;
+        padding: 10px 0;
+        width: 100%;
+      }
+
+      #dropdown-content p:hover {
+        cursor: pointer;
+        background-color: #F1E4EE;
+      }
+
       #settings_header:hover {
-        cursor: pointer
+        cursor: pointer;
       }
 
       #dropdown-content {
@@ -84,6 +95,7 @@ export class AppCalendar extends LitElement {
         min-width: 160px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         padding: 12px 16px;
+        margin-left: 16px;
         z-index: 1;
       }
 
@@ -433,6 +445,11 @@ export class AppCalendar extends LitElement {
 
   }
 
+  handleLeaveGroup(){
+    // leave group.
+    alert("are you sure you wanna leave the group?");
+  }
+
 
   render() {
     return html`
@@ -441,8 +458,8 @@ export class AppCalendar extends LitElement {
             <div id="dropdown">
               <span id="settings_header"> ${this.group_name.length > 0? html`<p>${this.group_name}</p>` : html`<span class="loader_top"></span>`} <ion-icon name="settings" style="font-size: 24px; margin-left: 10px"></ion-icon></span>
               <div id="dropdown-content">
-                <p>Group Settings</p>
-                <p>Leave Group</p>
+                <p class="dropdown-option" @click=${() => Router.go("/settings")}>Group Settings</p>
+                <p class="dropdown-option" @click=${() => this.handleLeaveGroup()}>Leave Group</p>
               </div>
             </div>
             <h1 id="selectedHeader">
