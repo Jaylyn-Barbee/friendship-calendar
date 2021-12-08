@@ -5,8 +5,8 @@ import { checkForCode, addUserToDb, checkForUserInDb } from '../services/databas
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 
-@customElement('app-join')
-export class AppJoin extends LitElement implements BeforeEnterObserver {
+@customElement('app-joinerror')
+export class AppJoinerror extends LitElement implements BeforeEnterObserver {
 
   async onBeforeEnter(
     location: RouterLocation,
@@ -141,6 +141,14 @@ export class AppJoin extends LitElement implements BeforeEnterObserver {
                 font-size: 16px;
             }
 
+            #error-message {
+              color: red;
+              font-weight: bolder;
+              margin: 0;
+              margin-top: 5px;
+              width: 100%;
+            }
+
             #join-button {
                 display: flex;
                 align-items: center;
@@ -244,7 +252,7 @@ export class AppJoin extends LitElement implements BeforeEnterObserver {
 
       }
     } else {
-      Router.go("/join-group/error");
+
     }
 
     // Route to selection
@@ -262,6 +270,7 @@ export class AppJoin extends LitElement implements BeforeEnterObserver {
               <span id="back" @click=${() => Router.go("/create-or-join")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="code_field">Enter code below to join your group! (code is not case-sensitive)</label>
                 <input type="text" id="code_field" name="code_field" placeholder="Enter code..."/>
+                <p id="error-message">The code you have entered does not exist. Please try again.</p>
                 <button id="join-button" @click=${() => this.joinGroup()}>Join Group</button>
                 `}
             </div>

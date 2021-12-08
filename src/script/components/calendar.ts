@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth } from '../services/data';
-import { getGroupName } from '../services/database';
+import { getGroupMembers, getGroupName } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
@@ -16,6 +16,7 @@ export class AppCalendar extends LitElement {
     @state() date_string: any;
     @property() _calendarTemplate: any = [];
     @property() _daysTemplate: any = [];
+    @property() members: any = [];
     @property() last_selected: any;
     @property() today_cell: any;
     @property() group_name: any = "";
@@ -50,14 +51,6 @@ export class AppCalendar extends LitElement {
         align-items: center;
       }
 
-      #dropdown {
-        position: relative;
-        display: inline-block;
-
-        width: 100%;
-        height: 100%;
-      }
-
       #settings_header {
         display: flex;
         align-items: center;
@@ -70,37 +63,14 @@ export class AppCalendar extends LitElement {
         height: 100%;
         font-size: 24px;
         font-weight: bolder;
-        padding-left: 16px;
       }
 
-      .dropdown-option {
-        margin: 0;
-        padding: 10px 0;
-        width: 100%;
+      #settings_header p:hover {
+        cursor: default;
       }
 
-      #dropdown-content p:hover {
+      #settings_header ion-icon:hover {
         cursor: pointer;
-        background-color: #F1E4EE;
-      }
-
-      #settings_header:hover {
-        cursor: pointer;
-      }
-
-      #dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        padding: 12px 16px;
-        margin-left: 16px;
-        z-index: 1;
-      }
-
-      #dropdown:hover #dropdown-content {
-        display: block;
       }
 
       #selectedHeader {
@@ -138,18 +108,23 @@ export class AppCalendar extends LitElement {
         margin: 0;
       }
 
-      .month_name {
-        height: 7.5%;
+      #user-list {
+        list-style: none;
+        padding: 0;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
-        font-weight: bolder;
         width: 100%;
       }
 
-      .month_name:hover {
-        cursor: pointer;
+      .user-list-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        width: 100%;
       }
 
       ion-icon:hover {
@@ -344,6 +319,8 @@ export class AppCalendar extends LitElement {
     this.day = current_date.getDate();
     this.date_string = this.stringTheDate();
     this.group_name = await getGroupName();
+    this.members = await getGroupMembers();
+    console.log("members", this.members);
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
@@ -455,13 +432,12 @@ export class AppCalendar extends LitElement {
     return html`
         <div id="wholeWrapper">
           <div id="calHeader">
-            <div id="dropdown">
-              <span id="settings_header"> ${this.group_name.length > 0? html`<p>${this.group_name}</p>` : html`<span class="loader_top"></span>`} <ion-icon name="settings" style="font-size: 24px; margin-left: 10px"></ion-icon></span>
-              <div id="dropdown-content">
-                <p class="dropdown-option" @click=${() => Router.go("/settings")}>Group Settings</p>
-                <p class="dropdown-option" @click=${() => this.handleLeaveGroup()}>Leave Group</p>
-              </div>
-            </div>
+            <div id="settings_header">
+              <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+              <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
+              ${this.group_name.length > 0? html`<p>${this.group_name}</p>` : html`<span class="loader_top"></span>`}
+          </div>
+
             <h1 id="selectedHeader">
             <ion-datetime
                 display-format="MMMM YYYY"
@@ -490,7 +466,9 @@ export class AppCalendar extends LitElement {
               <div id="months-header">
                 <h2>Users</h2>
               </div>
-              Replace this with list of active members of group.
+              <ul id="user-list">
+                ${this.members.map((member: any) => html`<li class="user-list-item"><mgt-person user-id=${member} view="twoLines" person-card="hover"></mgt-person></li>`)}
+              </ul>
             </div>
 
             <div id="calendar">

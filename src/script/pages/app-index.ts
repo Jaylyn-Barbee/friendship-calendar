@@ -99,6 +99,13 @@ export class AppIndex extends LitElement {
             },
           },
           {
+            path: '/join-group/error',
+            component: 'app-joinerror',
+            action: async () => {
+              await import('./app-joinerror.js');
+            },
+          },
+          {
             path: '/pick-calendar',
             component: 'app-selection',
             action: async () => {

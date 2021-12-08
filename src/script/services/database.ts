@@ -73,7 +73,7 @@ export async function addUserToDb(code: string, uid: string){
     const querySnapshot = await getDocs(q);
 
     let item: any;
-    querySnapshot.forEach((docu) => {
+    querySnapshot.forEach((docu: any) => {
         // doc.data() is never undefined for query doc snapshots
         item = docu;
     });
@@ -113,9 +113,25 @@ export async function getGroupName(){
     const querySnapshot = await getDocs(q);
 
     let ret = "";
-    querySnapshot.forEach((docu) => {
+    querySnapshot.forEach((docu: any) => {
         // doc.data() is never undefined for query doc snapshots
         ret = docu.data().group_name;
+    });
+
+    return ret;
+}
+
+export async function getGroupMembers(){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().members;
     });
 
     return ret;
