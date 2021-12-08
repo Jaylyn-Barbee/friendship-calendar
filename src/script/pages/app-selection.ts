@@ -212,16 +212,16 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
   render() {
     return html`
      <div id="page">
-            <section>
-            <div class="curve"></div>
-            </section>
-            <div id="s-box">
-            ${this.showLoader ? html`<span class="loader"></span>` :
-                html`<p>Select a Calendar from the list below that will be used to reference your availibilty when planning events for the group calendar.</p>
-                ${this.calendars && this.calendars.length > 0 ? this.calendars.map((cal: any) => html`<slot class="radio-input"><input type="radio" name="calendar" value=${cal.id}> ${cal.name}</slot>`) : html`<span class="loader"></span>`}
-                <button id="submit-button" @click=${() => this.submitUser()}>Submit Calendar</button>`}
-            </div>
+        <section>
+        <div class="curve"></div>
+        </section>
+        <div id="s-box">
+        ${this.showLoader ? html`<span class="loader"></span>` :
+            html`<p>Select a Calendar from the list below that will be used to reference your availibilty when planning events for the group calendar.</p>
+            ${this.calendars && this.calendars.length > 0 ? this.calendars.map((cal: any) => html`<slot class="radio-input"><input type="radio" name="calendar" value=${cal.id}> ${cal.name}</slot>`) : html`<span class="loader"></span>`}
+            <button id="submit-button" @click=${() => this.submitUser()}>Submit Calendar</button>`}
         </div>
+      </div>
     `;
   }
 }
