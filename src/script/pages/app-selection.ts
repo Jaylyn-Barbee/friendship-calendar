@@ -1,16 +1,16 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
+import { getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars, getPhoto } from '../services/calendar-api';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { addUser, checkForUserInDb } from '../services/database';
 import { provider } from '../services/provider';
 
 @customElement('app-selection')
-export class AppSelection extends LitElement  implements BeforeEnterObserver {
+export class AppSelection extends LitElement {//} implements BeforeEnterObserver {
 
   // i do getCurrentUserId a lot.. maybe i should store the current userId in
   // session storage or save it somewhere else so i dont have to keep making that request?
-   async onBeforeEnter(
+   /* async onBeforeEnter(
     location: RouterLocation,
     commands: PreventAndRedirectCommands,
     router: Router) {
@@ -23,7 +23,7 @@ export class AppSelection extends LitElement  implements BeforeEnterObserver {
       if(in_db){
           Router.go("/");
       }
-  }
+  } */
 
   @property() calendars: any;
   @property({type: Boolean}) showLoader: any | null = false;
@@ -185,8 +185,7 @@ export class AppSelection extends LitElement  implements BeforeEnterObserver {
   }
 
   async firstUpdated() {
-   this.calendars = await getCurrentUsersCalendars();
-   let userId = await getCurrentUserId();
+    this.calendars = await getCurrentUsersCalendars();
   }
 
   async submitUser(){
@@ -199,9 +198,16 @@ export class AppSelection extends LitElement  implements BeforeEnterObserver {
     });
 
     this.showLoader = true;
+
+
+
+    let userDetails: any = await getCurrentUserDetails();
+    let userName = userDetails.displayName
+    let email = userDetails.userPrincipalName
+    let photo = await getPhoto();
     let userId = await getCurrentUserId();
     try{
-      await addUser(userId, selectedCal_id)
+      await addUser(userName, email, userId, photo, selectedCal_id)
       Router.go("/");
     } catch(error: any){
       console.error(error);

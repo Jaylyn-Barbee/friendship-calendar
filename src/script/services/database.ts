@@ -27,10 +27,15 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore();
 
-export async function addUser(uid_in: string, pc_id_in: string) {
+export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, pc_id_in: string) {
     try {
         const docRef = await addDoc(collection(db, "users"), {
             uid: uid_in,
+            details: {
+                displayName: userName_in,
+                mail: email_in,
+                personImage: photo_in
+            },
             pc_id: pc_id_in
         });
         console.log("Document written with ID: ", docRef.id);

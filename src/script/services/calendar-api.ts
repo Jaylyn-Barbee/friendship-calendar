@@ -31,6 +31,23 @@ export async function getCurrentUserId(){
     return userDetails.id;
 }
 
+export async function getCurrentUserDetails(){
+    let userDetails = await graphClient.api('me').get();
+    console.log("userDetails = ", userDetails);
+    return userDetails;
+}
+
+export async function getPhoto(){
+    try{
+        let photo = await graphClient.api('me/photo/').get();
+        return photo;
+    } catch(error: any) {
+        console.error("No Photo Available");
+        // try to get the initials. figure this out later..
+        return {};
+    }
+}
+
 export async function createMainCalendar(group_name: string) {
     const calendar = {
         name: group_name + "'s Calendar"

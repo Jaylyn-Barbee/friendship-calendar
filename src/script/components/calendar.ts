@@ -6,6 +6,7 @@ import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import "../components/date-switcher";
 import '@microsoft/mgt-components';
+import { getCurrentUserId } from '../services/calendar-api';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -420,6 +421,9 @@ export class AppCalendar extends LitElement {
     this.members = await getGroupMembers();
     console.log("members", this.members);
     this.generateCal(this.monthIndex, this.year);
+
+
+    let userId = await getCurrentUserId();
     this.requestUpdate();
   }
 

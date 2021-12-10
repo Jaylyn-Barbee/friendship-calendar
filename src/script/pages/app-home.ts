@@ -20,10 +20,10 @@ export class AppHome extends LitElement implements BeforeEnterObserver{
         Router.go("/login")
       }
       let userId = await getCurrentUserId();
-        let in_db = await checkForUserInDb(userId);
-        if(!in_db){
-            Router.go("/create-or-join");
-        }
+      let in_db = await checkForUserInDb(userId);
+      if(!in_db){
+          Router.go("/create-or-join");
+      }
   }
 
   static get styles() {

@@ -20,6 +20,4 @@ Providers.globalProvider = new Msal2Provider({
     redirectUri: window.location.origin
 });
 
-console.log("provider = ", Providers.globalProvider);
-
 export var provider = Providers.globalProvider;
