@@ -8,7 +8,7 @@ export const months: any = [
     {name: "July"     ,  i: 6},
     {name: "August"   ,  i: 7},
     {name: "September",  i: 8},
-    {name: "Ocotber"  ,  i: 9},
+    {name: "October"  ,  i: 9},
     {name: "November" ,  i: 10},
     {name: "December" ,  i: 11},
 ]

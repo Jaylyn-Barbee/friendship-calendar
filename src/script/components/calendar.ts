@@ -4,7 +4,9 @@ import { months, days_of_week, current_date, daysInMonth } from '../services/dat
 import { getGroupMembers, getGroupName } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
+import "../components/date-switcher";
 import '@microsoft/mgt-components';
+import { FillStateStyles } from '@fluentui/web-components';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -46,11 +48,6 @@ export class AppCalendar extends LitElement {
         height: 75px;
       }
 
-      #calHeader * {
-        display: flex;
-        align-items: center;
-      }
-
       #settings_header {
         display: flex;
         align-items: center;
@@ -73,17 +70,97 @@ export class AppCalendar extends LitElement {
         cursor: pointer;
       }
 
-      #selectedHeader {
+      #current-date-box {
         width: 100%;
+        display: flex;
+        align-items: center;
         justify-content: center;
         margin: 0;
       }
 
-      ion-datetime {
-        --placeholder-color: black;
+      #current-date {
+        font-size: 36px;
+        font-weight: bolder;
+        margin: 0;
+        margin-right: 10px;
+      }
+
+      #switcher-icon {
+        position: relative;
+      }
+
+      #switcher-box {
+        display: none;
+        width: 180px;
+        height: 180px;
+        background-color: #F1E4EE;
+        padding: 10px;
+        position: absolute;
+        top: 25px;
+        left: 105%;
+
+        box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+      }
+
+      #switcher-icon:hover #switcher-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+
+      #year-sec {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
+      }
+
+      #year {
+        padding:10px;
+        width: 100%;
+      }
+
+      #year:hover {
+        background-color: #ddbdd5;
+        cursor: pointer;
+      }
+
+      #arrows {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #months-sec {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        place-items: center;
+        height: 100%;
+        width: 100%;
+        margin-top: 5px;
+      }
+
+      .short-month {
+        margin: 0;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .short-month:hover {
+        background-color: #ddbdd5;
+        cursor: pointer;
       }
 
       #login {
+        display: flex;
+        align-items: center;
         justify-content: right;
       }
 
@@ -448,7 +525,6 @@ export class AppCalendar extends LitElement {
     alert("are you sure you wanna leave the group?");
   }
 
-
   render() {
     return html`
         <div id="wholeWrapper">
@@ -456,29 +532,30 @@ export class AppCalendar extends LitElement {
             <div id="settings_header">
               <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
               <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
-              ${this.group_name.length > 0? html`<p>${this.group_name}</p>` : html`<span class="loader_top"></span>`}
+              ${this.group_name.length > 0? html`<p style="display: flex; align-items: center; justify-content: center;">${this.group_name}</p>` : html`<span class="loader_top"></span>`}
           </div>
 
-            <h1 id="selectedHeader">
-            <ion-datetime
-                display-format="MMMM YYYY"
-                min="0001-01-01"
-                max="3000-12-31"
-                placeholder=${this.monthName + " " + this.year}
-                @ionChange=${(e: any) => this.changeDate(e)}>
-              </ion-datetime>
-              <!--
-                 Placeholder for Date
-
-
-              <ion-button id="open-modal">Open Datetime Modal</ion-button>
-                <ion-modal trigger="open-modal">
-                  <ion-content>
-                    <ion-datetime></ion-datetime>
-                  </ion-content>
-                </ion-modal>
-               -->
-            </h1>
+            <div id="current-date-box">
+              <h1 id="current-date">${this.monthName} ${this.year}</h1>
+              <div id="switcher-icon">
+                <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
+                <div id="switcher-box">
+                  <div id="year-sec">
+                    <span id="year">${this.year}</span>
+                    <span id="arrows">
+                      <ion-icon name="arrow-up-outline"></ion-icon>
+                      <ion-icon name="arrow-down-outline"></ion-icon>
+                    </span>
+                  </div>
+                  <div id="months-sec">
+                    ${months.map(
+                      (month: any) =>
+                        html`<p class="short-month">${(month.name as string).substring(0, 3)}</p>`
+                      )}
+                  </div>
+                </div>
+              </div>
+            </div>
             <div id="login"><mgt-login></mgt-login></div>
           </div>
 
