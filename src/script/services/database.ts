@@ -66,7 +66,7 @@ export async function checkForCode(code: string){
     return querySnapshot.docs.length != 0;
 }
 
-export async function addUserToDb(code: string, uid: string){
+export async function addUserToGroup(code: string, uid: string){
     const groupsRef = collection(db, "groups");
     const q = query(groupsRef, where("join_code", "==", code));
 

@@ -1,7 +1,7 @@
 import { LitElement, css, html  } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { getCurrentUserId } from '../services/calendar-api';
-import { checkForCode, addUserToDb, checkForUserInDb } from '../services/database';
+import { checkForCode, addUserToGroup, checkForUserInDb } from '../services/database';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 
@@ -245,7 +245,7 @@ export class AppJoinerror extends LitElement implements BeforeEnterObserver {
       this.showLoader = true;
       let userId = await getCurrentUserId();
       try{
-        await addUserToDb(group_code, userId);
+        await addUserToGroup(group_code, userId);
         Router.go("/pick-calendar");
       } catch(error: any){
         console.error(error);

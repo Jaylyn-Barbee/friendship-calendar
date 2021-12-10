@@ -6,17 +6,24 @@ import "../components/calendar";
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 import { provider } from '../services/provider';
+import { getCurrentUserId } from '../services/calendar-api';
+import { checkForUserInDb } from '../services/database';
 
 @customElement('app-home')
 export class AppHome extends LitElement implements BeforeEnterObserver{
 
-  onBeforeEnter(
+  async onBeforeEnter(
     location: RouterLocation,
     commands: PreventAndRedirectCommands,
     router: Router) {
       if(provider !== undefined && provider.getAllAccounts().length == 0){
         Router.go("/login")
       }
+      let userId = await getCurrentUserId();
+        let in_db = await checkForUserInDb(userId);
+        if(!in_db){
+            Router.go("/create-or-join");
+        }
   }
 
   static get styles() {
