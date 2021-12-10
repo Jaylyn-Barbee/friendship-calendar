@@ -6,7 +6,6 @@ import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import "../components/date-switcher";
 import '@microsoft/mgt-components';
-import { FillStateStyles } from '@fluentui/web-components';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -131,6 +130,7 @@ export class AppCalendar extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
       }
 
       #months-sec {
@@ -501,12 +501,12 @@ export class AppCalendar extends LitElement {
 
   }
 
-  changeDate(event: any){
-    let date = new Date(event.detail.value)
-    let monthIndex = date.getMonth();
-    let year = date.getFullYear();
+  changeDate(monthIndex: any, year: any){
+    let date = new Date(year, monthIndex);
 
-    this.monthIndex = monthIndex;
+    console.log("Date:", date);
+
+    this.monthIndex = date.getMonth();
     this.monthName = months[this.monthIndex].name;
     this.year = year;
 
@@ -543,14 +543,14 @@ export class AppCalendar extends LitElement {
                   <div id="year-sec">
                     <span id="year">${this.year}</span>
                     <span id="arrows">
-                      <ion-icon name="arrow-up-outline"></ion-icon>
-                      <ion-icon name="arrow-down-outline"></ion-icon>
+                      <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
+                      <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
                     </span>
                   </div>
                   <div id="months-sec">
                     ${months.map(
-                      (month: any) =>
-                        html`<p class="short-month">${(month.name as string).substring(0, 3)}</p>`
+                      (month: any, index: any) =>
+                        html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
                       )}
                   </div>
                 </div>

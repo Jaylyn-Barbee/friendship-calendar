@@ -5,7 +5,7 @@ const clientId = 'a9d85621-5a2a-4211-9862-e0375021df83';
 const scopes = [
   'user.read',
   'people.read',
-  'user.readbasic.all',
+  'User.ReadBasic.All',
   'contacts.read',
   'calendars.read',
   'Presence.Read.All',
@@ -19,5 +19,7 @@ Providers.globalProvider = new Msal2Provider({
     scopes,
     redirectUri: window.location.origin
 });
+
+console.log("provider = ", Providers.globalProvider);
 
 export var provider = Providers.globalProvider;
