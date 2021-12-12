@@ -76,11 +76,12 @@ export class AppCell extends LitElement {
   handleClick(e: any) {
 
       let stringDate = months[this.month].name + " " + this.day + ", " + this.year;
-
+      let numDate_in = this.year + "-" + (this.month + 1) + "-" + ("00" + (this.day as number)).slice(-2);
       let event = new CustomEvent('day-clicked', {
         detail: {
             selected_day: stringDate,
-            selected_cell: (e.path[1] as HTMLBodyElement)
+            selected_cell: (e.path[1] as HTMLBodyElement),
+            numDate: numDate_in
         }
       });
       this.dispatchEvent(event);

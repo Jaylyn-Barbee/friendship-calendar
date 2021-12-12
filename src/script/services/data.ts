@@ -21,6 +21,13 @@ export function isLeapYear(year: any) {
 
 export var current_date = new Date();
 
+export let highlighted_day = current_date.getFullYear() + "-" + (current_date.getMonth() + 1) + "-" + ("00" + (current_date.getDay() as number)).slice(-2) + "T12:00";
+
+export function setHighlightedDay(date: any) {
+    highlighted_day = date;
+    console.log("high", highlighted_day);
+}
+
 // takes year and index of month to return number of days in month.
 export function daysInMonth(iMonth: any, iYear: any){
     return 32 - new Date(iYear, iMonth, 32).getDate();

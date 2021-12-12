@@ -4,6 +4,7 @@ import { createAndSubmitEvent } from '../services/calendar-api';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
 import '../components/toast';
+import { highlighted_day } from '../services/data';
 
 @customElement('app-event')
 export class AppEvent extends LitElement {
@@ -244,13 +245,13 @@ export class AppEvent extends LitElement {
 
                 <div id="inner-grid">
                   <span>
-                    <label class="inner-label" for="event_start">Start Time:</label>
-                    <input type="datetime-local" id="event_start" name="event_start"/>
+                    <label class="inner-label" for="event_start">Start Time (24hr clock):</label>
+                    <input type="datetime-local" id="event_start" name="event_start" value = ${highlighted_day}/>
                   </span>
 
                   <span>
-                    <label class="inner-label" for="event_end">End Time:</label>
-                    <input type="datetime-local" id="event_end" name="event_end"/>
+                    <label class="inner-label" for="event_end">End Time (24hr clock):</label>
+                    <input type="datetime-local" id="event_end" name="event_end" value = ${(highlighted_day as string).replace("12:00", "13:00")}/>
                   </span>
 
                   <span>

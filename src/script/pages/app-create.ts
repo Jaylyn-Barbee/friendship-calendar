@@ -164,14 +164,25 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
 
             #bottom {
                 display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #code-box {
+                display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: center;
+                width: 100%;
+                border-top: 1px solid #A8A8A8;
+                margin-top: 20px;
             }
 
             #group-code {
                 display: flex;
                 align-items: center;
-                width: 45%;
+                width: 100%;
+                font-size: 24px;
+                margin-top: 20px;
             }
 
             #group-code p {
@@ -196,7 +207,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
                 background-color: #F1E4EE;
                 border: none;
 
-                width: 45%;
+                width: 50%;
             }
 
             #create-button:hover {
@@ -288,16 +299,23 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         return result;
     }
 
-    copyCode() {
+    shareCode() {
 
-        let copyText: string = "Join my group on Friendship calendar! The join code is: " + this.code;
+        let copyText: string = "Join my group on Sync'd! The join code is: " + this.code;
 
-        /* Copy the text inside the text field */
-        navigator.clipboard.writeText(copyText);
-        this.showCopyToast = true;
-        setTimeout(() => {
-            this.showCopyToast = false;
-        }, 3000)
+        if ((navigator as any).share) {
+            (navigator as any).share({
+              title: 'Share group code from Sync\'d',
+              text: copyText
+            });
+        } else {
+            /* Copy the text inside the text field */
+            navigator.clipboard.writeText(copyText);
+            this.showCopyToast = true;
+            setTimeout(() => {
+                this.showCopyToast = false;
+            }, 3000)
+        }
 
     }
 
@@ -360,17 +378,17 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
                 </select>
 
                 <div id="bottom">
-                    <p id="group-code" @click=${() => this.copyCode()}>Your Group Join Code is: ${this.code}
-                        <ion-icon name="copy" style="margin-left: 5px; font-size: 50px;"></ion-icon>
-                    </p>
                     <button id="create-button" @click=${() => this.createGroup()}>Create Group</button>
-                </div>`}
+                    <div id="code-box">
+                        <p id="group-code" >Your Group Join Code is: ${this.code}</p>
+                        <ion-icon @click=${() => this.shareCode()} name="share-social-outline" style="margin-left: 5px; font-size: 32px;"></ion-icon>
+                    </div>
+                </div>`
+            }
             </div>
         </div>
-        ${this.showCopyToast ? html`<app-toast>Group Code copied to clip board!</app-toast>` : html``}
+        ${this.showCopyToast ? html`<app-toast>Invite Message copied to clip board!</app-toast>` : html``}
         ${this.showErrorToastName ? html`<app-toast>Please enter a group name!</app-toast>` : html``}
         `;
     }
 }
-
-// Join my group on Friendship calendar! The join code is: Q6Q3H4
