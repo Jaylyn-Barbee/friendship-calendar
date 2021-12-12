@@ -8,7 +8,7 @@ import { checkForCode, checkForUserInDb, createNewGroup } from '../services/data
 import { provider } from '../services/provider';
 
 @customElement('app-create')
-export class AppCreate extends LitElement implements BeforeEnterObserver {
+export class AppCreate extends LitElement {/* implements BeforeEnterObserver {
 
 
     async onBeforeEnter(
@@ -24,7 +24,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         if(in_db){
             Router.go("/");
         }
-    }
+    } */
 
     @property() code: any;
     @property({type: Boolean}) showCopyToast: any | null = false;
