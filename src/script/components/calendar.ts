@@ -6,7 +6,7 @@ import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import "../components/date-switcher";
 import '@microsoft/mgt-components';
-import { getCurrentUserId } from '../services/calendar-api';
+import { getCurrentUserId, getPhoto } from '../services/calendar-api';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -102,8 +102,7 @@ export class AppCalendar extends LitElement {
         box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
       }
 
-      #switcher-icon:hover #switcher-box {
-        display: flex;
+      #switcher-box {
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
@@ -419,11 +418,8 @@ export class AppCalendar extends LitElement {
     this.date_string = this.stringTheDate();
     this.group_name = await getGroupName();
     this.members = await getGroupMembers();
-    console.log("members", this.members);
     this.generateCal(this.monthIndex, this.year);
-
-
-    let userId = await getCurrentUserId();
+    await getPhoto();
     this.requestUpdate();
   }
 
@@ -524,6 +520,16 @@ export class AppCalendar extends LitElement {
 
   }
 
+  toggleSwitcher() {
+    let switcher = this.shadowRoot!.getElementById("switcher-box");
+
+    if(switcher!.style.display === ""){
+      switcher!.style.display = "flex";
+    } else if(switcher!.style.display === "flex"){
+      switcher!.style.display = "";
+    }
+  }
+
   handleLeaveGroup(){
     // leave group.
     alert("are you sure you wanna leave the group?");
@@ -541,7 +547,7 @@ export class AppCalendar extends LitElement {
 
             <div id="current-date-box">
               <h1 id="current-date">${this.monthName} ${this.year}</h1>
-              <div id="switcher-icon">
+              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
                 <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
                 <div id="switcher-box">
                   <div id="year-sec">
