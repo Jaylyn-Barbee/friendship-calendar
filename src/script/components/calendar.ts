@@ -80,8 +80,7 @@ export class AppCalendar extends LitElement {
       #current-date {
         font-size: 36px;
         font-weight: bolder;
-        margin: 0;
-        margin-right: 10px;
+        margin: 0 10px;
       }
 
       #switcher-icon {
@@ -516,6 +515,13 @@ export class AppCalendar extends LitElement {
     }
   }
 
+  jumpToToday(){
+    this.monthIndex = current_date.getMonth();
+    this.monthName = months[this.monthIndex].name;
+    this.year = current_date.getFullYear();
+    this.generateCal(this.monthIndex, this.year);
+  }
+
   handleLeaveGroup(){
     // leave group.
     alert("are you sure you wanna leave the group?");
@@ -532,6 +538,7 @@ export class AppCalendar extends LitElement {
           </div>
 
             <div id="current-date-box">
+              <ion-icon @click=${() => this.jumpToToday()} name="today-outline" style="font-size: 24px;"></ion-icon>
               <h1 id="current-date">${this.monthName} ${this.year}</h1>
               <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
                 <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
