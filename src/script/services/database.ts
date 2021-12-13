@@ -141,3 +141,52 @@ export async function getGroupMembers(){
 
     return ret;
 }
+
+export async function isUserAdmin(uid: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", uid));
+
+    const querySnapshot = await getDocs(q);
+
+    let admin_list: any = [];
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        admin_list = docu.data().admins;
+    });
+
+    return admin_list.includes(uid);
+}
+
+export async function getTimezone(){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().default_tz;
+    });
+
+    return ret;
+
+}
+
+export async function getGroupCode(){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().join_code;
+    });
+
+    return ret;
+
+}

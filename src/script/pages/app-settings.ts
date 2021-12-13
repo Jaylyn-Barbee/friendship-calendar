@@ -2,6 +2,9 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
+import { getCurrentUserId } from '../services/calendar-api';
+import { getGroupCode, getGroupName, getTimezone, isUserAdmin } from '../services/database';
+import { zoneMappings } from '../services/data';
 
 
 @customElement('app-settings')
@@ -16,6 +19,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   @property({type: Boolean}) showLoader: any | null = false;
+  @property({type: Boolean}) userIsAdmin: any | null = false;
+  @property({type: Boolean}) inputState: any | null = false; // if false, the inputs are disabled. if true, inputs are not disabled
+  @property({type: Boolean}) groupName: any | null = "";
+  @property({type: Boolean}) timezone: any | null = "";
+  @property({type: Boolean}) groupCode: any | null = "";
 
   static get styles() {
     return css`
@@ -33,6 +41,46 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
       padding-top: 100px;
       background: #DDBDD5;
       width: 100%;
+  }
+
+  #top-slot {
+    display: flex;
+    align-item: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  #back, #edit {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: fit-content;
+      border-bottom: 1px solid transparent
+    }
+
+  #back:hover{
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    animation: bounce 1s;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateX(8px);
+    }
+    60% {
+        transform: translateX(-8px);
+    }
+  }
+
+  #edit:hover{
+    cursor: pointer;
+    border-bottom: 1px solid black;
   }
 
   .curve {
@@ -85,15 +133,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
       flex-direction: column;
   }
 
-  #s-box input {
-    margin-rigt: 5px;
-  }
-
-  .radio-input {
-    display: flex;
-    margin-bottom: 10px;
-  }
-
   .loader {
     width: 60px;
     height: 60px;
@@ -128,6 +167,54 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     left: 100%;
   }
 
+  #s-box input {
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #A8A8A8;
+    height: 38px;
+    width: 100%;
+    font-size: 14px;
+    text-indent: 10px;
+  }
+
+  #s-box input:hover {
+    border-color: black;
+  }
+
+  #s-box label {
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  #edit-message {
+    font-size: 12px;
+    margin: 0;
+  }
+
+  #s-box select {
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #A8A8A8;
+    height: 38px;
+    width: 100%;
+    font-size: 14px;
+    text-indent: 10px;
+  }
+
+  #s-box select:hover {
+    border-color: black;
+  }
+
+  #s-box input:disabled:hover{
+    cursor: not-allowed;
+  }
+
+  #s-box select:disabled:hover{
+    cursor: not-allowed;
+  }
+
   @keyframes animPend {
     0% {
       transform: rotate(22deg);
@@ -144,7 +231,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     100% {
       transform: rotate(-22deg);
     }
-    }
+  }
 
     `;
   }
@@ -153,16 +240,64 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     super();
   }
 
+  async firstUpdated() {
+    let userId = await getCurrentUserId();
+    this.userIsAdmin = await isUserAdmin(userId);
+
+    this.groupName = await getGroupName();
+    this.timezone = await getTimezone();
+    this.groupCode = await getGroupCode();
+  }
+
+  toggleEdit(){
+    if(this.inputState){
+      // Get the group name
+      let group_name = (this.shadowRoot!.getElementById("group_name") as any).value;
+
+      // Get the timezone
+      let timezone_sel = this.shadowRoot!.getElementById("timezones") as any;
+      let timezone = timezone_sel.options[timezone_sel.selectedIndex].text
+
+      if(group_name !== this.groupName || timezone !== this.timezone){
+        console.log("write new settings");
+      }
+    }
+    let inputs = this.shadowRoot!.querySelectorAll(".disable-toggle");
+    inputs.forEach((input: any) => input.disabled = this.inputState);
+    this.inputState = !this.inputState;
+  }
+
   render() {
     return html`
       <div id="page">
         <section>
-        <div class="curve"></div>
+          <div class="curve"></div>
         </section>
         <div id="s-box">
         ${this.showLoader ? html`<span class="loader"></span>` :
             html`
+              <div id="top-slot">
+                <span id="back" @click=${() => Router.go("/")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
+                ${this.userIsAdmin ?
+                  html`<span id="edit" @click=${() => this.toggleEdit()}>
+                    ${this.inputState ?
+                      html `<ion-icon name="save" style="font-size: 14px; margin-right: 5px;"></ion-icon>Save Settings` :
+                      html`<ion-icon name="pencil" style="font-size: 14px; margin-right: 5px;" ></ion-icon>Edit Settings`
+                    }
+                    </span>` :
+                  html`<p id="edit-message">Contact your group admin to edit settings.</p>`
+                }
+              </div>
+                <label for="group_name">Group Name:</label>
+                <input class="disable-toggle" type="text" id="group_name" name="group_name" value=${this.groupName} disabled />
 
+                <label for="group_code">Group Code:</label>
+                <input type="text" id="group_code" name="group_code" value=${this.groupCode} disabled />
+
+                <label for="timezones">Default Timezone:</label>
+                <select class="disable-toggle" name="timezones" id="timezones" disabled>
+                    ${zoneMappings.map((zone: any) => this.timezone === zone ? html`<option value="${zone}" selected>${zone}</option>` : html`<option value="${zone}">${zone}</option>`)}
+                </select>
             `}
         </div>
       </div>

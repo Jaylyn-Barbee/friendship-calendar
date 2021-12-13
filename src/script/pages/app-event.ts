@@ -10,6 +10,7 @@ import { highlighted_day } from '../services/data';
 export class AppEvent extends LitElement {
   @property() provider: any;
   @property({type: Boolean}) showErrorToast: any | null = false;
+  @property({type: Boolean}) showErrorSubmittingToast: any | null = false;
   @property({type: Boolean}) showLoader: any | null = false;
   @property({type: Boolean}) showSuccessToast: any | null = false;
   static get styles() {
@@ -46,15 +47,15 @@ export class AppEvent extends LitElement {
     }
 
     @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateX(8px);
-        }
-        60% {
-            transform: translateX(-8px);
-        }
+      0%, 20%, 50%, 80%, 100% {
+          transform: translateY(0);
+      }
+      40% {
+          transform: translateX(8px);
+      }
+      60% {
+          transform: translateX(-8px);
+      }
     }
 
     #inner-grid {
@@ -280,10 +281,14 @@ export class AppEvent extends LitElement {
           this.showSuccessToast = true;
           setTimeout(() => {
               this.showSuccessToast = false;
-          }, 5000)
+          }, 3000)
           Router.go("/");
-        } catch {
-          console.error("Something went wrong.");
+        } catch(error: any) {
+          console.error("Something went wrong.", error);
+          this.showErrorSubmittingToast = true;
+          setTimeout(() => {
+              this.showErrorSubmittingToast = false;
+          }, 3000)
         }
 
     }
@@ -331,6 +336,7 @@ export class AppEvent extends LitElement {
         </div>
         ${this.showErrorToast ? html`<app-toast>Please make sure that all fields are populated before submitting.</app-toast>` : html``}
         ${this.showSuccessToast ? html`<app-toast>Your event has successfully been added to the calendar!</app-toast>` : html``}
+        ${this.showErrorSubmittingToast ? html`<app-toast>There was an error submitting your event. Please try again later.</app-toast>` : html``}
 
     `;
   }

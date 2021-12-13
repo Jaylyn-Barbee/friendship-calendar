@@ -8,7 +8,7 @@ import { checkForCode, checkForUserInDb, createNewGroup } from '../services/data
 import { provider } from '../services/provider';
 
 @customElement('app-create')
-export class AppCreate extends LitElement {/* implements BeforeEnterObserver {
+export class AppCreate extends LitElement implements BeforeEnterObserver {
 
 
     async onBeforeEnter(
@@ -24,7 +24,7 @@ export class AppCreate extends LitElement {/* implements BeforeEnterObserver {
         if(in_db){
             Router.go("/");
         }
-    } */
+    }
 
     @property() code: any;
     @property({type: Boolean}) showCopyToast: any | null = false;
@@ -372,7 +372,7 @@ export class AppCreate extends LitElement {/* implements BeforeEnterObserver {
                 <label for="group_name">Group Name:</label>
                 <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..."/>
 
-                <label for="group_name">Default Timezone:</label>
+                <label for="timezones">Default Timezone:</label>
                 <select name="timezones" id="timezones">
                     ${zoneMappings.map((zone: any) => html`<option value="${zone}">${zone}</option>`)}
                 </select>
