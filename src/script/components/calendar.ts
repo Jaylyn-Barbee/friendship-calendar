@@ -72,6 +72,7 @@ export class AppCalendar extends LitElement {
       #current-date-box {
         width: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         margin: 0;
@@ -85,6 +86,7 @@ export class AppCalendar extends LitElement {
 
       #switcher-icon {
         position: relative;
+        width: fit-content;
       }
 
       #switcher-box {
@@ -154,6 +156,24 @@ export class AppCalendar extends LitElement {
       .short-month:hover {
         background-color: #ddbdd5;
         cursor: pointer;
+      }
+
+      #calIcons {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      #jump {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #jump p {
+        margin: 0;
+        margin-left: 5px;
       }
 
       #login {
@@ -538,26 +558,35 @@ export class AppCalendar extends LitElement {
           </div>
 
             <div id="current-date-box">
-              <ion-icon @click=${() => this.jumpToToday()} name="today-outline" style="font-size: 24px;"></ion-icon>
+
               <h1 id="current-date">${this.monthName} ${this.year}</h1>
-              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
-                <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
-                <div id="switcher-box">
-                  <div id="year-sec">
-                    <span id="year">${this.year}</span>
-                    <span id="arrows">
-                      <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
-                      <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
-                    </span>
-                  </div>
-                  <div id="months-sec">
-                    ${months.map(
-                      (month: any, index: any) =>
-                        html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
-                      )}
+
+              <div id="calIcons">
+                <span id="jump">
+                  <ion-icon @click=${() => this.jumpToToday()} name="today-outline" style="font-size: 24px;"></ion-icon>
+                  <p>Jump to Today</p>
+                </span>
+
+                <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
+                  <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
+                  <div id="switcher-box">
+                    <div id="year-sec">
+                      <span id="year">${this.year}</span>
+                      <span id="arrows">
+                        <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
+                        <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
+                      </span>
+                    </div>
+                    <div id="months-sec">
+                      ${months.map(
+                        (month: any, index: any) =>
+                          html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
+                        )}
+                    </div>
                   </div>
                 </div>
               </div>
+
             </div>
             <div id="login"><mgt-login></mgt-login></div>
           </div>

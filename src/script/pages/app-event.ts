@@ -10,7 +10,8 @@ import { highlighted_day } from '../services/data';
 export class AppEvent extends LitElement {
   @property() provider: any;
   @property({type: Boolean}) showErrorToast: any | null = false;
-
+  @property({type: Boolean}) showLoader: any | null = false;
+  @property({type: Boolean}) showSuccessToast: any | null = false;
   static get styles() {
     return css`
     #page {
@@ -184,6 +185,58 @@ export class AppEvent extends LitElement {
         background-color: #ddbdd5
       }
 
+      .loader {
+        width: 60px;
+        height: 60px;
+        display: block;
+        margin: 20px auto;
+        position: relative;
+        background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+        background-size: 20px 20px , 20px auto;
+        background-repeat: repeat-x;
+        background-position: center bottom, center -5px;
+        box-sizing: border-box;
+      }
+      .loader::before,
+      .loader::after {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        left: -20px;
+        top: 0;
+        width: 20px;
+        height: 60px;
+        background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+        background-size: 20px 20px , 20px auto;
+        background-repeat: no-repeat;
+        background-position: center bottom, center -5px;
+        transform: rotate(0deg);
+        transform-origin: 50% 0%;
+        animation: animPend 1s linear infinite alternate;
+      }
+      .loader::after {
+        animation: animPend2 1s linear infinite alternate;
+        left: 100%;
+      }
+
+      @keyframes animPend {
+        0% {
+          transform: rotate(22deg);
+        }
+        50% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes animPend2 {
+        0%, 55% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(-22deg);
+        }
+      }
+
       @media(max-width: 870px){
         #inner-grid {
             display: flex;
@@ -221,11 +274,18 @@ export class AppEvent extends LitElement {
             this.showErrorToast = false;
         }, 3000)
     } else {
-        // set loader flag to true
-        await createAndSubmitEvent(event_name.value, event_body.value, start_time.value, end_time.value,  event_location.value, attendees.selectedPeople);
-        // when this returns set loader flag to false
-        // if success then route to calendar
-        // else do an error on this page.
+        this.showLoader = true;
+        try {
+          await createAndSubmitEvent(event_name.value, event_body.value, start_time.value, end_time.value,  event_location.value, attendees.selectedPeople);
+          this.showSuccessToast = true;
+          setTimeout(() => {
+              this.showSuccessToast = false;
+          }, 5000)
+          Router.go("/");
+        } catch {
+          console.error("Something went wrong.");
+        }
+
     }
   }
 
@@ -236,7 +296,8 @@ export class AppEvent extends LitElement {
                 <div class="curve"></div>
             </section>
             <div id="create_event_form" >
-                <span id="back" @click=${() => Router.go("/")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
+            ${this.showLoader ? html`<span class="loader"></span>` :
+                html`<span id="back" @click=${() => Router.go("/")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="event_name">Event Name:</label>
                 <input type="text" id="event_name" name="event_name" placeholder="Enter your event name..."/>
 
@@ -264,10 +325,12 @@ export class AppEvent extends LitElement {
                 <label for="event_body">Invite Message:</label>
                 <textarea id="event_body" name="event_body" rows="5" cols="60" placeholder="Enter your event invite message..."></textarea>
 
-                <button id="submit" @click=${() => this.handleSubmit()}>Add Event</button>
+                <button id="submit" @click=${() => this.handleSubmit()}>Add Event</button>`
+              }
             </div>
         </div>
         ${this.showErrorToast ? html`<app-toast>Please make sure that all fields are populated before submitting.</app-toast>` : html``}
+        ${this.showSuccessToast ? html`<app-toast>Your event has successfully been added to the calendar!</app-toast>` : html``}
 
     `;
   }
