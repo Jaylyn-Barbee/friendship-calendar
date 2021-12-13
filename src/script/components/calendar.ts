@@ -32,61 +32,64 @@ export class AppCalendar extends LitElement {
         height: 100vh;
       }
 
-      #calHolder {
-        display: grid;
-        width: 100%;
-        grid-template-columns: 2fr 5fr 2fr;
-        height: 100%;
-      }
-
       #calHeader {
         background: #DDBDD5;
         display: grid;
         width: 100%;
         grid-template-columns: 2fr 5fr 2fr;
         height: 75px;
+        padding: 10px 0;
       }
 
-      #settings_header {
+
+      #left-sec {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        padding-left: 16px;
-        height: 100%;
+        justify-content: center;
+        width: 100%;
       }
 
-      #settings_header p {
-        height: 100%;
-        font-size: 24px;
-        font-weight: bolder;
-      }
-
-      #settings_header p:hover {
-        cursor: default;
-      }
-
-      #settings_header ion-icon:hover {
-        cursor: pointer;
-      }
-
-      #current-date-box {
+      #middle-sec {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 0;
       }
 
-      #current-date {
-        font-size: 36px;
-        font-weight: bolder;
-        margin: 0 10px;
+      #calIcons {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #jump {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+      }
+
+      #jump:hover {
+        cursor: pointer;
       }
 
       #switcher-icon {
         position: relative;
         width: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #switcher-icon:hover {
+        cursor: pointer;
+      }
+
+      .icon-label {
+        margin: 0;
+        margin-left: 5px;
       }
 
       #switcher-box {
@@ -97,7 +100,7 @@ export class AppCalendar extends LitElement {
         padding: 10px;
         position: absolute;
         top: 25px;
-        left: 105%;
+        left: 0%;
 
         box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
       }
@@ -158,31 +161,41 @@ export class AppCalendar extends LitElement {
         cursor: pointer;
       }
 
-      #calIcons {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      #jump {
+      #current-date {
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 36px;
+        font-weight: bolder;
+        margin: 0;
+        width: 100%;
       }
 
-      #jump p {
+      #groupName {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bolder;
         margin: 0;
-        margin-left: 5px;
+        width: 100%;
       }
 
       #login {
         display: flex;
         align-items: center;
         justify-content: right;
+        margin-right: 10px;
       }
 
-      #months {
+      #calHolder {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 2fr 5fr 2fr;
+        height: 100%;
+      }
+
+      #users {
         background: rgb(248, 248, 248);
         height: 100%;
         display: flex;
@@ -190,14 +203,14 @@ export class AppCalendar extends LitElement {
         align-items: center;
       }
 
-      #months-header{
+      #users-header{
         display: flex;
         align-items: center;
         justify-content: center;
         height: 10%;
       }
 
-      #months-header h2{
+      #users-header h2{
         font-size: 16px;
         font-weight: bolder;
         margin: 0;
@@ -226,6 +239,11 @@ export class AppCalendar extends LitElement {
         cursor: pointer;
       }
 
+      #calendar {
+        display: flex;
+        flex-direction: column;
+      }
+
       #days_headers {
         display: grid;
         grid-template-columns: repeat(7, minmax(100px, 300px));
@@ -240,11 +258,6 @@ export class AppCalendar extends LitElement {
         justify-content: center;
         font-size: 16px;
         font-weight: bolder;
-      }
-
-      #calendar {
-        display: flex;
-        flex-direction: column;
       }
 
       #calGrid {
@@ -551,24 +564,20 @@ export class AppCalendar extends LitElement {
     return html`
         <div id="wholeWrapper">
           <div id="calHeader">
-            <div id="settings_header">
-              <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
-              <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
-              ${this.group_name.length > 0? html`<p style="display: flex; align-items: center; justify-content: center;">${this.group_name}</p>` : html`<span class="loader_top"></span>`}
-          </div>
-
-            <div id="current-date-box">
-
+            <div id="left-sec">
+              ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
+            </div>
+            <div id="middle-sec">
               <h1 id="current-date">${this.monthName} ${this.year}</h1>
-
               <div id="calIcons">
-                <span id="jump">
-                  <ion-icon @click=${() => this.jumpToToday()} name="today-outline" style="font-size: 24px;"></ion-icon>
-                  <p>Jump to Today</p>
+                <span id="jump" @click=${() => this.jumpToToday()}>
+                  <ion-icon name="today-outline" style="font-size: 24px;"></ion-icon>
+                  <p class="icon-label">Jump to Today</p>
                 </span>
 
                 <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
                   <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
+                  <p class="icon-label">Change Date</p>
                   <div id="switcher-box">
                     <div id="year-sec">
                       <span id="year">${this.year}</span>
@@ -586,14 +595,17 @@ export class AppCalendar extends LitElement {
                   </div>
                 </div>
               </div>
-
             </div>
-            <div id="login"><mgt-login></mgt-login></div>
+            <div id="login">
+              <mgt-login></mgt-login>
+              <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
+              <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+            </div>
           </div>
 
           <div id="calHolder">
-            <div id="months">
-              <div id="months-header">
+            <div id="users">
+              <div id="users-header">
                 <h2>Users</h2>
               </div>
               <ul id="user-list">
