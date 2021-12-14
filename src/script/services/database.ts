@@ -190,3 +190,25 @@ export async function getGroupCode(){
     return ret;
 
 }
+
+export async function getGroupMembersInformation(){
+    let memberIds = await getGroupMembers();
+
+    console.log(memberIds);
+    let ret: any[] = [];
+    (memberIds as any).forEach(async (memberId: any) => {
+        const groupsRef = collection(db, "users");
+        const q = query(groupsRef, where("uid", "==", memberId));
+
+        const querySnapshot = await getDocs(q);
+
+
+        querySnapshot.forEach((docu: any) => {
+            // doc.data() is never undefined for query doc snapshots
+            ret.push(docu.data().details);
+        });
+    });
+
+    console.log(ret);
+    return ret;
+}

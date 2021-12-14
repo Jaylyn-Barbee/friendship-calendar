@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
-import { getGroupCode, getGroupName, getTimezone, isUserAdmin } from '../services/database';
+import { getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin } from '../services/database';
 import { zoneMappings } from '../services/data';
 
 
@@ -24,6 +24,8 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @property({type: Boolean}) groupName: any | null = "";
   @property({type: Boolean}) timezone: any | null = "";
   @property({type: Boolean}) groupCode: any | null = "";
+  @property({type: Boolean}) memberDetails: any | null = [];
+
 
   static get styles() {
     return css`
@@ -117,7 +119,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   #s-box {
       position: absolute;
       height: fit-content;
-      width: 30vw;
+      width: 50vw;
       background-color: white;
 
       padding: 55px;
@@ -133,41 +135,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
       flex-direction: column;
   }
 
-  .loader {
-    width: 60px;
-    height: 60px;
-    display: block;
-    margin: 20px auto;
-    position: relative;
-    background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
-    background-size: 20px 20px , 20px auto;
-    background-repeat: repeat-x;
-    background-position: center bottom, center -5px;
-    box-sizing: border-box;
-  }
-  .loader::before,
-  .loader::after {
-    content: '';
-    box-sizing: border-box;
-    position: absolute;
-    left: -20px;
-    top: 0;
-    width: 20px;
-    height: 60px;
-    background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
-    background-size: 20px 20px , 20px auto;
-    background-repeat: no-repeat;
-    background-position: center bottom, center -5px;
-    transform: rotate(0deg);
-    transform-origin: 50% 0%;
-    animation: animPend 1s linear infinite alternate;
-  }
-  .loader::after {
-    animation: animPend2 1s linear infinite alternate;
-    left: 100%;
-  }
-
-  #s-box input {
+  .top-input {
     margin-bottom: 20px;
     border-radius: 4px;
     box-sizing: border-box;
@@ -178,7 +146,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     text-indent: 10px;
   }
 
-  #s-box input:hover {
+  .top-input:hover {
     border-color: black;
   }
 
@@ -215,6 +183,49 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     cursor: not-allowed;
   }
 
+  th {
+    text-align: center;
+  }
+
+  td {
+    text-align: center;
+    width: fit-content;
+  }
+
+  .loader {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: 20px auto;
+    position: relative;
+    background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+    background-size: 20px 20px , 20px auto;
+    background-repeat: repeat-x;
+    background-position: center bottom, center -5px;
+    box-sizing: border-box;
+  }
+  .loader::before,
+  .loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: -20px;
+    top: 0;
+    width: 20px;
+    height: 60px;
+    background: radial-gradient(ellipse at center, #ddbdd5 69%, rgba(0, 0, 0, 0) 70%), linear-gradient(to right, rgba(0, 0, 0, 0) 47%, #ddbdd5 48%, #ddbdd5 52%, rgba(0, 0, 0, 0) 53%);
+    background-size: 20px 20px , 20px auto;
+    background-repeat: no-repeat;
+    background-position: center bottom, center -5px;
+    transform: rotate(0deg);
+    transform-origin: 50% 0%;
+    animation: animPend 1s linear infinite alternate;
+  }
+  .loader::after {
+    animation: animPend2 1s linear infinite alternate;
+    left: 100%;
+  }
+
   @keyframes animPend {
     0% {
       transform: rotate(22deg);
@@ -233,6 +244,66 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 43px;
+    height: 17px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    left: 1px;
+    bottom: 1px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #DDBDD5
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #DDBDD5
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
     `;
   }
 
@@ -241,12 +312,15 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   async firstUpdated() {
+    this.showLoader = true;
     let userId = await getCurrentUserId();
     this.userIsAdmin = await isUserAdmin(userId);
-
     this.groupName = await getGroupName();
     this.timezone = await getTimezone();
     this.groupCode = await getGroupCode();
+    this.memberDetails = await getGroupMembersInformation();
+    console.log(this.memberDetails);
+    this.showLoader = false;
   }
 
   toggleEdit(){
@@ -288,16 +362,40 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                   html`<p id="edit-message">Contact your group admin to edit settings.</p>`
                 }
               </div>
-                <label for="group_name">Group Name:</label>
-                <input class="disable-toggle" type="text" id="group_name" name="group_name" value=${this.groupName} disabled />
+              <label for="group_name">Group Name:</label>
+              <input class="disable-toggle top-input" type="text" id="group_name" name="group_name" value=${this.groupName} disabled />
 
-                <label for="group_code">Group Code:</label>
-                <input type="text" id="group_code" name="group_code" value=${this.groupCode} disabled />
+              <label for="group_code">Group Code:</label>
+              <input class="top-input" type="text" id="group_code" name="group_code" value=${this.groupCode} disabled />
 
-                <label for="timezones">Default Timezone:</label>
-                <select class="disable-toggle" name="timezones" id="timezones" disabled>
-                    ${zoneMappings.map((zone: any) => this.timezone === zone ? html`<option value="${zone}" selected>${zone}</option>` : html`<option value="${zone}">${zone}</option>`)}
-                </select>
+              <label for="timezones">Default Timezone:</label>
+              <select class="disable-toggle top-input" name="timezones" id="timezones" disabled>
+                  ${zoneMappings.map((zone: any) => this.timezone === zone ? html`<option value="${zone}" selected>${zone}</option>` : html`<option value="${zone}">${zone}</option>`)}
+              </select>
+
+              <table>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Member Email</th>
+                  <th>Toggle Admin</th>
+                  <th>Remove User</th>
+                </tr>
+
+                ${this.memberDetails.map((member: any) =>
+                  html`
+                  <tr>
+                    <td>${member.displayName}</td>
+                    <td>${member.mail}</td>
+                    <td>
+                      <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                      </label>
+                    </td>
+                    <td><ion-icon name="close"></ion-icon></td>
+                  </tr>`
+                )}
+              </table>
             `}
         </div>
       </div>
