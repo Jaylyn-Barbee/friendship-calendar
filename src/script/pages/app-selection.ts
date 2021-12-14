@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars, getPhoto } from '../services/calendar-api';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
-import { addUser, checkForUserInDb } from '../services/database';
+import { addUser, checkForUserInDb, getGroupCode, isUserAdmin } from '../services/database';
 import { provider } from '../services/provider';
 
 @customElement('app-selection')
@@ -204,10 +204,13 @@ export class AppSelection extends LitElement {//} implements BeforeEnterObserver
     let userDetails: any = await getCurrentUserDetails();
     let userName = userDetails.displayName
     let email = userDetails.userPrincipalName
-    let photo = await getPhoto();
+    //let photo = await getPhoto();
+    let photo = "placeholder for now";
     let userId = await getCurrentUserId();
+    let groupCode = await getGroupCode();
+    let isAdmin = await isUserAdmin(userId);
     try{
-      await addUser(userName, email, userId, photo, selectedCal_id)
+      await addUser(userName, email, userId, photo, selectedCal_id, groupCode, isAdmin)
       Router.go("/");
     } catch(error: any){
       console.error(error);

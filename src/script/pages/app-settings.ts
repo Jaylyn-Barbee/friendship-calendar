@@ -323,6 +323,14 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     this.showLoader = false;
   }
 
+  getInput(member: any){
+    if(member.isAdmin){
+      return html`<input type="checkbox" checked>`
+    } else {
+      return html`<input type="checkbox">`
+    }
+  }
+
   toggleEdit(){
     if(this.inputState){
       // Get the group name
@@ -384,11 +392,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                 ${this.memberDetails.map((member: any) =>
                   html`
                   <tr>
-                    <td>${member.displayName}</td>
-                    <td>${member.mail}</td>
+                    <td>${member.details.displayName}</td>
+                    <td>${member.details.mail}</td>
                     <td>
                       <label class="switch">
-                        <input type="checkbox" checked>
+                        ${this.getInput(member)}
                         <span class="slider round"></span>
                       </label>
                     </td>

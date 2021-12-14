@@ -27,7 +27,7 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore();
 
-export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, pc_id_in: string) {
+export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, pc_id_in: string, groupCode_in: string, isAdmin_in: Boolean) {
     try {
         const docRef = await addDoc(collection(db, "users"), {
             uid: uid_in,
@@ -36,7 +36,9 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
                 mail: email_in,
                 personImage: photo_in
             },
-            pc_id: pc_id_in
+            pc_id: pc_id_in,
+            groupCode: groupCode_in,
+            isAdmin: isAdmin_in
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -60,7 +62,6 @@ export async function createNewGroup(group_name: string, group_tz: string, group
     }
 }
 
-// Tester Code = R41TGH
 // True if code exists, false if code does not exist.
 export async function checkForCode(code: string){
     const groupsRef = collection(db, "groups");
@@ -205,7 +206,7 @@ export async function getGroupMembersInformation(){
 
         querySnapshot.forEach((docu: any) => {
             // doc.data() is never undefined for query doc snapshots
-            ret.push(docu.data().details);
+            ret.push(docu.data());
         });
     });
 
