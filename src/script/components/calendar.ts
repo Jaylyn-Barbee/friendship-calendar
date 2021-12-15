@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, highlighted_day, setHighlightedDay } from '../services/data';
-import { getGroupMembers, getGroupName } from '../services/database';
+import { getGroupMembers, getGroupMembersInformation, getGroupName } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import "../components/date-switcher";
@@ -179,6 +179,7 @@ export class AppCalendar extends LitElement {
         font-weight: bolder;
         margin: 0;
         width: 100%;
+        text-align: center;
       }
 
       #login {
@@ -448,7 +449,7 @@ export class AppCalendar extends LitElement {
     this.day = current_date.getDate();
     this.date_string = this.stringTheDate();
     this.group_name = await getGroupName();
-    this.members = await getGroupMembers();
+    this.members = await getGroupMembersInformation();
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
@@ -611,7 +612,7 @@ export class AppCalendar extends LitElement {
               <ul id="user-list">
                 ${this.members.map((member: any) =>
                   html`<li class="user-list-item">
-                          <mgt-person user-id="${member}" view="twoLines" person-card="hover">
+                          <mgt-person .personDetails=${member.details} view="twoLines" person-card="hover">
                             <template data-type="loading"><span class="loader-card"></span></template>
                           </mgt-person>
                         </li>`)}

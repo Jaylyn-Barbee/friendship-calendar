@@ -370,7 +370,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
             html`
                 <span id="back" @click=${() => Router.go("/create-or-join")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="group_name">Group Name:</label>
-                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..."/>
+                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..." maxlength="45"/>
 
                 <label for="timezones">Default Timezone:</label>
                 <select name="timezones" id="timezones">

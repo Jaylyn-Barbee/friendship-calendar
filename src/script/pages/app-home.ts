@@ -35,7 +35,6 @@ export class AppHome extends LitElement implements BeforeEnterObserver{
       justify-content: center;
       width: 100%;
       margin: 0 auto;
-      overflow-y: hidden;
     }
 
     `;

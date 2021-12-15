@@ -24,6 +24,11 @@ export class AppIndex extends LitElement {
         animation: 160ms fadeIn linear;
       }
 
+      main {
+        overflow-y: hidden;
+        overflow-x: hidden;
+      }
+
       @keyframes fadeOut {
         from {
           opacity: 1;

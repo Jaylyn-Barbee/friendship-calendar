@@ -2,32 +2,11 @@ import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import '@microsoft/mgt-components';
 import { provider } from '../services/provider';
-import {  Router } from '@vaadin/router'; //RouterLocation, BeforeEnterObserver, PreventAndRedirectCommands } from '@vaadin/router';
-import { checkForUserInDb } from '../services/database';
-import { getCurrentUserId } from '../services/calendar-api';
+import { Router } from '@vaadin/router';
 
 
 @customElement('app-login')
-export class AppLogin extends LitElement { //implements BeforeEnterObserver {
-
-  /*
-  async onBeforeEnter(
-    location: RouterLocation,
-    commands: PreventAndRedirectCommands,
-    router: Router) {
-      if(provider !== undefined && provider.getAllAccounts().length == 0){
-        Router.go("/login")
-      }
-
-      let userId = await getCurrentUserId();
-      let in_db = await checkForUserInDb(userId);
-      if(in_db){
-          Router.go("/");
-      } else {
-        Router.go("/create-or-join")
-      }
-  }
-  */
+export class AppLogin extends LitElement {
 
   @property() provider: any;
 
@@ -118,16 +97,9 @@ export class AppLogin extends LitElement { //implements BeforeEnterObserver {
 
   async firstUpdated(){
     this.provider = provider;
-    if(this.provider !== undefined && this.provider.getAllAccounts().length > 0){
-        let userId = await getCurrentUserId();
-        let in_db = await checkForUserInDb(userId);
-        if(in_db) { // if not in database go to create
-            Router.go("/");
-        } else {
-            Router.go("/create-or-join");
-        }
-      }
-      // when the login returns to this page... why does it not run firstUpdated again?
+    this.shadowRoot!.querySelector('mgt-login')?.addEventListener('loginCompleted', (e: any) => {
+      Router.go("/create-or-join")
+    });
   }
 
   render() {

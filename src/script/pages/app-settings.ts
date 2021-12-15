@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
@@ -18,13 +18,14 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
       }
   }
 
-  @property({type: Boolean}) showLoader: any | null = false;
-  @property({type: Boolean}) userIsAdmin: any | null = false;
-  @property({type: Boolean}) inputState: any | null = false; // if false, the inputs are disabled. if true, inputs are not disabled
-  @property({type: Boolean}) groupName: any | null = "";
-  @property({type: Boolean}) timezone: any | null = "";
-  @property({type: Boolean}) groupCode: any | null = "";
-  @property({type: Boolean}) memberDetails: any | null = [];
+  @state() showLoader: any | null = false;
+  @state() userIsAdmin: any | null = false;
+  @state() inputState: any | null = false; // if false, the inputs are disabled. if true, inputs are not disabled
+  @state() groupName: any | null = "";
+  @state() timezone: any | null = "";
+  @state() groupCode: any | null = "";
+  @state() memberDetails: any | null = [];
+  @state() everythingLoaded: any | null = false;
 
 
   static get styles() {
@@ -175,13 +176,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     border-color: black;
   }
 
-  #s-box input:disabled:hover{
+  .disable-toggle:disabled:hover{
     cursor: not-allowed;
   }
 
-  #s-box select:disabled:hover{
-    cursor: not-allowed;
-  }
+
 
   th {
     text-align: center;
@@ -295,6 +294,10 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     transform: translateX(26px);
   }
 
+  .table-slider:disabled + .slider:hover {
+    cursor: not-allowed;
+  }
+
   /* Rounded sliders */
   .slider.round {
     border-radius: 34px;
@@ -302,6 +305,14 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
 
   .slider.round:before {
     border-radius: 50%;
+  }
+
+  .remover-enabled:hover{
+    cursor: pointer;
+  }
+
+  .remover-disabled:hover{
+    cursor: not-allowed;
   }
 
     `;
@@ -319,15 +330,16 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     this.timezone = await getTimezone();
     this.groupCode = await getGroupCode();
     this.memberDetails = await getGroupMembersInformation();
-    console.log(this.memberDetails);
     this.showLoader = false;
+    this.everythingLoaded = true;
+    this.requestUpdate();
   }
 
   getInput(member: any){
     if(member.isAdmin){
-      return html`<input type="checkbox" checked>`
+      return html`<input @change=${() => this.confirmAdminUpdate(member)} class="disable-toggle table-slider" type="checkbox" checked disabled>`
     } else {
-      return html`<input type="checkbox">`
+      return html`<input @change=${() => this.confirmAdminUpdate()} class="disable-toggle table-slider" type="checkbox" disabled>`
     }
   }
 
@@ -347,6 +359,16 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     let inputs = this.shadowRoot!.querySelectorAll(".disable-toggle");
     inputs.forEach((input: any) => input.disabled = this.inputState);
     this.inputState = !this.inputState;
+  }
+
+  confirmAdminUpdate(member: any){
+    alert("are you sure you want to make " + member.details.displayName + " an admin");
+    // actually handle making them an admin in their group
+  }
+
+  confirmRemoveUser(member: any){
+    alert("are you sure you want to remove " + member.details.displayName + " from the group");
+    // actually handle removing them from the group
   }
 
   render() {
@@ -400,7 +422,12 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                         <span class="slider round"></span>
                       </label>
                     </td>
-                    <td><ion-icon name="close"></ion-icon></td>
+                    <td>
+                      ${this.inputState ?
+                        html`<ion-icon class="remover-enabled" @click=${() => this.confirmRemoveUser(member)} name="close"></ion-icon>` :
+                        html`<ion-icon class="remover-disabled" name="close"></ion-icon>`
+                      }
+                    </td>
                   </tr>`
                 )}
               </table>
