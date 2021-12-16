@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
 import { getCurrentUserId } from "./calendar-api";
 /*
 Your web app's Firebase configuration
@@ -337,4 +337,67 @@ export async function removeAdmin(code: string, uid: string){
         pc_id: uitem.data().pc_id,
         uid: uitem.data().uid
     });
+}
+
+export async function removeUser(code: string, uid: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+    let updated_admins = item.data().admins;
+
+    let indexToRemove = updated_admins.indexOf(uid);
+    if (indexToRemove > -1){
+        updated_admins.splice(indexToRemove, 1);
+    }
+
+    let updated_mems = item.data().admins;
+    indexToRemove = updated_mems.indexOf(uid);
+    if (indexToRemove > -1){
+        updated_mems.splice(indexToRemove, 1);
+    }
+
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: updated_mems,
+        main_cal_id: item.data().main_cal_id,
+        admins: updated_admins,
+        default_tz: item.data().default_tz
+    });
+
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("uid", "==", uid));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    let uitem: any;
+    uquerySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        uitem = docu;
+    });
+
+    await deleteDoc(doc(db, 'users', uitem.id));
+}
+
+export async function getAdmins(code: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+    return item.data().admins;
 }

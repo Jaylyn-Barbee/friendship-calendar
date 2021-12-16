@@ -1,10 +1,9 @@
 import { LitElement, css, html } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
-import { months, days_of_week, current_date, daysInMonth, highlighted_day, setHighlightedDay } from '../services/data';
-import { getGroupMembers, getGroupMembersInformation, getGroupName } from '../services/database';
+import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
+import { getGroupMembersInformation, getGroupName } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
-import "../components/date-switcher";
 import '@microsoft/mgt-components';
 
 @customElement('app-calendar')

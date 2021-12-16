@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
-import { addAdmin, getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin, removeAdmin, updateGroupSettings } from '../services/database';
+import { addAdmin, checkForUserInDb, getAdmins, getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin, removeAdmin, removeUser, updateGroupSettings } from '../services/database';
 import { zoneMappings } from '../services/data';
 import '../components/toast';
 
@@ -16,6 +16,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     router: Router) {
       if(provider !== undefined && provider.getAllAccounts().length == 0){
         Router.go("/login")
+      }
+      let userId = await getCurrentUserId();
+      let in_db = await checkForUserInDb(userId);
+      if(!in_db){
+          Router.go("/create-or-join");
       }
   }
 
@@ -30,8 +35,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @state() showLengthToast: any | null = false;
   @state() showSuccessToast: any | null = false;
   @state() showErrorToast: any | null = false;
+  @state() cannotRemoveAdminToast: any | null = false;
+  @state() notEnoughToast: any | null = false;
   @state() showConfirmAdminModal: any | null = false;
-  @state() makeThisPersonAdmin: any | null = "";
+  @state() showConfirmRemoveModal: any | null = false;
+  @state() personOfInterest: any | null = "";
   @state() addAdmin: any | null;
   @state() activeAdminBox: any | null;
 
@@ -420,7 +428,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
               this.showLengthToast = false;
           }, 3000);
           (this.shadowRoot!.getElementById("group_name") as any)!.value = this.groupName;
-          this.requestUpdate();
           return;
         }
         try{
@@ -443,10 +450,22 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     this.inputState = !this.inputState;
   }
 
-  startAdminProcess(e: any, member: any){
+  async startAdminProcess(e: any, member: any){
     this.activeAdminBox = e.target
+
+    let admins = await getAdmins(this.groupCode);
+    if(admins.length == 1 && member.isAdmin){
+      this.notEnoughToast = true;
+      this.activeAdminBox.checked = !this.activeAdminBox.checked;
+      setTimeout(() => {
+          this.notEnoughToast = false;
+      }, 3000);
+
+      return;
+    }
+
     this.showConfirmAdminModal = true;
-    this.makeThisPersonAdmin = member;
+    this.personOfInterest = member;
     if(this.activeAdminBox.checked){
       this.addAdmin = true;
     } else {
@@ -487,18 +506,48 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
       } catch(error: any) {
         console.log(error);
         this.showErrorToast = true;
-          setTimeout(() => {
-              this.showErrorToast = false;
-          }, 3000);
+        setTimeout(() => {
+            this.showErrorToast = false;
+        }, 3000);
       }
 
       this.showConfirmAdminModal = false;
     }
   }
 
-  confirmRemoveUser(member: any){
-    alert("are you sure you want to remove " + member.details.displayName + " from the group");
-    // actually handle removing them from the group
+  startRemovalProcess(member: any){
+    if(member.isAdmin){
+      this.cannotRemoveAdminToast = true;
+      setTimeout(() => {
+          this.cannotRemoveAdminToast = false;
+      }, 3000);
+    } else {
+      this.showConfirmRemoveModal = true;
+      this.personOfInterest = member;
+    }
+  }
+
+  async handleRemoveResult(no: any,  member: any){
+    if(no){
+      this.showConfirmRemoveModal = false;
+      return;
+    } else {
+      try{
+        await removeUser(this.groupCode, member.uid);
+        this.showSuccessToast = true;
+        setTimeout(() => {
+            this.showSuccessToast = false;
+        }, 3000);
+      } catch(error: any) {
+        console.log(error);
+        this.showErrorToast = true;
+          setTimeout(() => {
+              this.showErrorToast = false;
+          }, 3000);
+      }
+
+      this.showConfirmRemoveModal = false;
+    }
   }
 
   render() {
@@ -554,7 +603,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                     </td>
                     <td>
                       ${this.inputState && this.memberDetails.length > 1 ?
-                        html`<ion-icon class="remover-enabled" @click=${() => this.confirmRemoveUser(member)} name="close"></ion-icon>` :
+                        html`<ion-icon class="remover-enabled" @click=${() => this.startRemovalProcess(member)} name="close"></ion-icon>` :
                         html`<ion-icon class="remover-disabled" name="close"></ion-icon>`
                       }
                     </td>
@@ -566,14 +615,30 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
         ${this.showLengthToast ? html`<app-toast>Your group name must contain atleast 5 characters. Please try again.</app-toast>` : html``}
         ${this.showSuccessToast ? html`<app-toast>Your group settings have been successfully updated!</app-toast>` : html``}
         ${this.showErrorToast ? html`<app-toast>There was an error updating your group settings. Please try again.</app-toast>` : html``}
+        ${this.cannotRemoveAdminToast ? html`<app-toast>You cannot remove an admin from the group.</app-toast>` : html``}
+        ${this.notEnoughToast ? html`<app-toast>There must always be at least one admin in your group.</app-toast>` : html``}
+
         ${this.showConfirmAdminModal ?
           html`
-            <div class="modal-box" id="admin-box">
-              ${this.addAdmin ? html`<p>Are you sure you want to give ${this.makeThisPersonAdmin.details.displayName} admin priviledges?</p>` :
-                                html`<p>Are you sure you want to remove ${this.makeThisPersonAdmin.details.displayName} as an admin of your group?</p>`}
+            <div class="modal-box">
+              ${this.addAdmin ? html`<p>Are you sure you want to give ${this.personOfInterest.details.displayName} admin priviledges?</p>` :
+                                html`<p>Are you sure you want to remove ${this.personOfInterest.details.displayName} as an admin of your group?</p>`}
             <slot>
-              <button @click=${() => this.handleAdminResult(true, this.addAdmin, this.makeThisPersonAdmin)}>No</button>
-              <button @click=${() => this.handleAdminResult(false, this.addAdmin, this.makeThisPersonAdmin)}>Yes</button>
+              <button @click=${() => this.handleAdminResult(true, this.addAdmin, this.personOfInterest)}>No</button>
+              <button @click=${() => this.handleAdminResult(false, this.addAdmin, this.personOfInterest)}>Yes</button>
+            </slot>
+          </div>
+          ` :
+          html``}
+
+        ${this.showConfirmRemoveModal ?
+          html`
+            <div class="modal-box">
+              ${this.addAdmin ? html`<p>Are you sure you want to give ${this.personOfInterest.details.displayName} admin priviledges?</p>` :
+                                html`<p>Are you sure you want to remove ${this.personOfInterest.details.displayName} as an admin of your group?</p>`}
+            <slot>
+              <button @click=${() => this.handleRemoveResult(true, this.personOfInterest)}>No</button>
+              <button @click=${() => this.handleRemoveResult(false, this.personOfInterest)}>Yes</button>
             </slot>
           </div>
           ` :
