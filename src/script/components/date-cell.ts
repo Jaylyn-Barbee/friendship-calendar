@@ -1,19 +1,16 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
-import { event } from "../types/interfaces"
+import { property, customElement, state } from 'lit/decorators.js';
 import { months } from "../services/data"
 // import { areThereEventsToday } from "../services/calendar-api"
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
-  @property() date: any;
-  @property({type: Array}) events!: event[];
-  @property() week_day: any;
+  @state() date: any;
+  @state() week_day: any;
   @property() day: any;
   @property() month: any;
   @property() year: any;
   @property() active: any;
-  @property() event_today: any = false;
 
 
   static get styles() {
@@ -96,18 +93,12 @@ export class AppCell extends LitElement {
         <div id="cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat"></div>
             <span id="day">${this.day}</span>
-            <span id="bottom">
-                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
-            </span>
         </div>`
         :
         html`
         <div id="today-cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat" class="color"></div>
             <span id="day">${this.day}</span>
-            <span id="bottom">
-                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
-            </span>
         </div>`
     }
     `;

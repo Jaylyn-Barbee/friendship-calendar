@@ -9,7 +9,6 @@ export async function getCurrentUserId(){
 
 export async function getCurrentUserDetails(){
     let userDetails = await graphClient.api('me').get();
-    console.log("userDetails = ", userDetails);
     return userDetails;
 }
 

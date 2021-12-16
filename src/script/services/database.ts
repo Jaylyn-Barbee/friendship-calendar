@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc, enableIndexedDbPersistence } from "firebase/firestore";
 import { getCurrentUserId } from "./calendar-api";
 /*
 Your web app's Firebase configuration
@@ -19,13 +19,27 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 */
 
-const firebaseApp = initializeApp({
+initializeApp({
     apiKey: "AIzaSyBtw-fshQIcn_Mg4mp2k5aB7eL-qtK6ZsI",
     authDomain: "friendship-calendar-c0efc.firebaseapp.com",
     projectId: "friendship-calendar-c0efc",
-  });
+});
+
+
 
 const db = getFirestore();
+enableIndexedDbPersistence(db)
+  .catch((err: any) => {
+      if (err.code == 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled
+          // in one tab at a a time.
+          // ...
+      } else if (err.code == 'unimplemented') {
+          // The current browser does not support all of the
+          // features required to enable persistence
+          // ...
+      }
+  });
 
 export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, pc_id_in: string, groupCode_in: string, isAdmin_in: Boolean) {
     try {
@@ -305,7 +319,6 @@ export async function removeAdmin(code: string, uid: string){
     const indexToRemove = updated_admins.indexOf(uid);
     if (indexToRemove > -1){
         updated_admins.splice(indexToRemove, 1);
-        console.log(updated_admins);
     }
 
     await setDoc(ref, {

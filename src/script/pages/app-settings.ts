@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
@@ -48,17 +48,17 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     #page {
       height: 100vh;
       background-color: #F1E4EE;
-  }
+    }
 
   section {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 400px;
-      padding-top: 100px;
-      background: #DDBDD5;
-      width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 400px;
+    padding-top: 100px;
+    background: #DDBDD5;
+    width: 100%;
   }
 
   #top-slot {
@@ -71,11 +71,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   #back, #edit {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      width: fit-content;
-      border-bottom: 1px solid transparent
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    border-bottom: 1px solid transparent;
     }
 
   #back:hover{
@@ -102,52 +102,52 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   .curve {
-      position: absolute;
-      height: 250px;
-      width: 100%;
-      bottom: 0;
-      text-align: center;
+    position: absolute;
+    height: 250px;
+    width: 100%;
+    bottom: 0;
+    text-align: center;
   }
 
   .curve::before {
-      content: '';
-      display: block;
-      position: absolute;
-      border-radius: 100% 50%;
-      width: 55%;
-      height: 100%;
-      transform: translate(85%, 60%);
-      background-color: #F1E4EE;
-      z-index: 1;
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 55%;
+    height: 100%;
+    transform: translate(85%, 60%);
+    background-color: #F1E4EE;
+    z-index: 1;
   }
 
   .curve::after {
-      content: '';
-      display: block;
-      position: absolute;
-      border-radius: 100% 50%;
-      width: 55%;
-      height: 100%;
-      background-color: #DDBDD5;
-      transform: translate(-4%, 40%);
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 55%;
+    height: 100%;
+    background-color: #DDBDD5;
+    transform: translate(-4%, 40%);
   }
 
   #s-box {
-      height: fit-content;
-      width: 50vw;
-      background-color: white;
+    height: fit-content;
+    width: 50vw;
+    background-color: white;
 
-      padding: 55px;
+    padding: 55px;
 
-      position: absolute;
-      z-index: 100;
-      top: 50%;  /* position the top  edge of the element at the middle of the parent */
-      left: 50%; /* position the left edge of the element at the middle of the parent */
+    position: absolute;
+    z-index: 100;
+    top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
 
-      transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 
-      display: flex;
-      flex-direction: column;
+    display: flex;
+    flex-direction: column;
   }
 
   .top-input {
@@ -612,12 +612,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
               </table>
             `}
         </div>
-        ${this.showLengthToast ? html`<app-toast>Your group name must contain atleast 5 characters. Please try again.</app-toast>` : html``}
-        ${this.showSuccessToast ? html`<app-toast>Your group settings have been successfully updated!</app-toast>` : html``}
-        ${this.showErrorToast ? html`<app-toast>There was an error updating your group settings. Please try again.</app-toast>` : html``}
-        ${this.cannotRemoveAdminToast ? html`<app-toast>You cannot remove an admin from the group.</app-toast>` : html``}
-        ${this.notEnoughToast ? html`<app-toast>There must always be at least one admin in your group.</app-toast>` : html``}
-
         ${this.showConfirmAdminModal ?
           html`
             <div class="modal-box">
@@ -644,6 +638,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
           ` :
           html``}
       </div>
+      ${this.showLengthToast ? html`<app-toast>Your group name must contain atleast 5 characters. Please try again.</app-toast>` : html``}
+      ${this.showSuccessToast ? html`<app-toast>Your group settings have been successfully updated!</app-toast>` : html``}
+      ${this.showErrorToast ? html`<app-toast>There was an error updating your group settings. Please try again.</app-toast>` : html``}
+      ${this.cannotRemoveAdminToast ? html`<app-toast>You cannot remove an admin from the group.</app-toast>` : html``}
+      ${this.notEnoughToast ? html`<app-toast>There must always be at least one admin in your group.</app-toast>` : html``}
     `;
   }
 }

@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
@@ -26,10 +26,10 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         }
     }
 
-    @property() code: any;
-    @property({type: Boolean}) showCopyToast: any | null = false;
-    @property({type: Boolean}) showErrorToastName: any | null = false;
-    @property({type: Boolean}) showLoader: any | null = false;
+    @state() code: any;
+    @state() showCopyToast: any | null = false;
+    @state() showErrorToast: any | null = false;
+    @state() showLoader: any | null = false;
 
     static get styles() {
         return css`
@@ -320,9 +320,9 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
     }
 
     errorToast(){
-        this.showErrorToastName = true;
+        this.showErrorToast = true;
         setTimeout(() => {
-            this.showErrorToastName = false;
+            this.showErrorToast = false;
         }, 3000)
     }
 
@@ -335,7 +335,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         let timezone_sel = this.shadowRoot!.getElementById("timezones") as any;
         let timezone = timezone_sel.options[timezone_sel.selectedIndex].text
 
-        if(group_name.length < 1){
+        if(group_name.length < 5){
             this.errorToast();
             return;
         }
@@ -370,7 +370,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
             html`
                 <span id="back" @click=${() => Router.go("/create-or-join")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="group_name">Group Name:</label>
-                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..." minlength="5" maxlength="45"/>
+                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..." maxlength="45"/>
 
                 <label for="timezones">Default Timezone:</label>
                 <select name="timezones" id="timezones">
@@ -388,7 +388,8 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
             </div>
         </div>
         ${this.showCopyToast ? html`<app-toast>Invite Message copied to clip board!</app-toast>` : html``}
-        ${this.showErrorToastName ? html`<app-toast>Please enter a group name!</app-toast>` : html``}
+        ${this.showErrorToast ? html`<app-toast>Please enter a group name with at least 5 characters!</app-toast>` : html``}
+
         `;
     }
 }

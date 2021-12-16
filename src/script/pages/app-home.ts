@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import "../components/date-cell";
 import "../components/calendar";
@@ -36,7 +36,6 @@ export class AppHome extends LitElement implements BeforeEnterObserver{
       width: 100%;
       margin: 0 auto;
     }
-
     `;
   }
 

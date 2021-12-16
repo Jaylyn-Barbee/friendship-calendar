@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { state, property, customElement } from 'lit/decorators.js';
+import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
 import { getGroupMembersInformation, getGroupName } from '../services/database';
 import { provider } from '../services/provider';
@@ -8,18 +8,18 @@ import '@microsoft/mgt-components';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
-    @property() provider: any;
-    @property() monthIndex: any;
-    @property() monthName: any;
+    @state() provider: any;
+    @state() monthIndex: any;
+    @state() monthName: any;
     @state() year: any;
     @state() day: any;
     @state() date_string: any;
-    @property() _calendarTemplate: any = [];
-    @property() _daysTemplate: any = [];
-    @property() members: any = [];
-    @property() last_selected: any;
-    @property() today_cell: any;
-    @property() group_name: any = "";
+    @state() _calendarTemplate: any = [];
+    @state() _daysTemplate: any = [];
+    @state() members: any = [];
+    @state() last_selected: any;
+    @state() today_cell: any;
+    @state() group_name: any = "";
 
 
   static get styles() {
@@ -218,6 +218,8 @@ export class AppCalendar extends LitElement {
 
       #user-list {
         list-style: none;
+        margin: 0;
+        margin-bottom: 20px;
         padding: 0;
         display: flex;
         flex-direction: column;

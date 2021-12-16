@@ -6,11 +6,11 @@ import { addUser, checkForUserInDb, getGroupCode, isUserAdmin } from '../service
 import { provider } from '../services/provider';
 
 @customElement('app-selection')
-export class AppSelection extends LitElement {//} implements BeforeEnterObserver {
+export class AppSelection extends LitElement implements BeforeEnterObserver {
 
   // i do getCurrentUserId a lot.. maybe i should store the current userId in
   // session storage or save it somewhere else so i dont have to keep making that request?
-   /* async onBeforeEnter(
+   async onBeforeEnter(
     location: RouterLocation,
     commands: PreventAndRedirectCommands,
     router: Router) {
@@ -23,7 +23,7 @@ export class AppSelection extends LitElement {//} implements BeforeEnterObserver
       if(in_db){
           Router.go("/");
       }
-  } */
+  }
 
   @property() calendars: any;
   @property({type: Boolean}) showLoader: any | null = false;
