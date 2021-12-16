@@ -3,8 +3,9 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
-import { getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin } from '../services/database';
+import { addAdmin, getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin, removeAdmin, updateGroupSettings } from '../services/database';
 import { zoneMappings } from '../services/data';
+import '../components/toast';
 
 
 @customElement('app-settings')
@@ -26,7 +27,13 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @state() groupCode: any | null = "";
   @state() memberDetails: any | null = [];
   @state() everythingLoaded: any | null = false;
-
+  @state() showLengthToast: any | null = false;
+  @state() showSuccessToast: any | null = false;
+  @state() showErrorToast: any | null = false;
+  @state() showConfirmAdminModal: any | null = false;
+  @state() makeThisPersonAdmin: any | null = "";
+  @state() addAdmin: any | null;
+  @state() activeAdminBox: any | null;
 
   static get styles() {
     return css`
@@ -118,7 +125,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   #s-box {
-      position: absolute;
       height: fit-content;
       width: 50vw;
       background-color: white;
@@ -315,6 +321,57 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     cursor: not-allowed;
   }
 
+  .modal-box {
+    height: fit-content;
+    width: 25vw;
+    background-color: white;
+
+    padding: 55px;
+
+    position: absolute;
+    z-index: 101;
+    top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+  }
+
+  .modal-box slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
+  .modal-box p {
+    text-align: center;
+  }
+
+  .modal-box button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: bolder;
+    padding: 10px 30px;
+    margin-top: 10px;
+
+    border-radius: 30px;
+    background-color: #F1E4EE;
+    border: none;
+
+    width: 45%;
+  }
+
+  .modal-box button:hover {
+    cursor: pointer;
+    background-color: #ddbdd5
+  }
+
     `;
   }
 
@@ -336,24 +393,49 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   }
 
   getInput(member: any){
+    if(this.memberDetails.length == 1){
+      return html`<input @change=${(e: any) => this.startAdminProcess(e, member)} class="table-slider" type="checkbox" checked disabled>`
+    }
     if(member.isAdmin){
-      return html`<input @change=${() => this.confirmAdminUpdate(member)} class="disable-toggle table-slider" type="checkbox" checked disabled>`
+      return html`<input @change=${(e: any) => this.startAdminProcess(e, member)} class="disable-toggle table-slider" type="checkbox" checked disabled>`
     } else {
-      return html`<input @change=${() => this.confirmAdminUpdate()} class="disable-toggle table-slider" type="checkbox" disabled>`
+      return html`<input @change=${(e: any) => this.startAdminProcess(e, member)} class="disable-toggle table-slider" type="checkbox" disabled>`
     }
   }
 
-  toggleEdit(){
+  async toggleEdit(){
     if(this.inputState){
       // Get the group name
-      let group_name = (this.shadowRoot!.getElementById("group_name") as any).value;
+      let group_name = ((this.shadowRoot!.getElementById("group_name") as any).value as string);
 
       // Get the timezone
       let timezone_sel = this.shadowRoot!.getElementById("timezones") as any;
-      let timezone = timezone_sel.options[timezone_sel.selectedIndex].text
+      let timezone = (timezone_sel.options[timezone_sel.selectedIndex].text as string)
 
       if(group_name !== this.groupName || timezone !== this.timezone){
-        console.log("write new settings");
+
+        if(group_name.length < 5){
+          this.showLengthToast = true;
+          setTimeout(() => {
+              this.showLengthToast = false;
+          }, 3000);
+          (this.shadowRoot!.getElementById("group_name") as any)!.value = this.groupName;
+          this.requestUpdate();
+          return;
+        }
+        try{
+          await updateGroupSettings(this.groupCode, group_name, timezone);
+          this.showSuccessToast = true;
+          setTimeout(() => {
+              this.showSuccessToast = false;
+          }, 3000);
+        } catch(error: any){
+          console.error(error)
+          this.showErrorToast = true;
+          setTimeout(() => {
+              this.showErrorToast = false;
+          }, 3000);
+        }
       }
     }
     let inputs = this.shadowRoot!.querySelectorAll(".disable-toggle");
@@ -361,9 +443,57 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     this.inputState = !this.inputState;
   }
 
-  confirmAdminUpdate(member: any){
-    alert("are you sure you want to make " + member.details.displayName + " an admin");
-    // actually handle making them an admin in their group
+  startAdminProcess(e: any, member: any){
+    this.activeAdminBox = e.target
+    this.showConfirmAdminModal = true;
+    this.makeThisPersonAdmin = member;
+    if(this.activeAdminBox.checked){
+      this.addAdmin = true;
+    } else {
+      this.addAdmin = false;
+    }
+  }
+
+  async handleAdminResult(no: any, add: any, member: any){
+    if(no){
+      this.showConfirmAdminModal = false;
+      this.activeAdminBox.checked = !this.activeAdminBox.checked;
+      return;
+    }
+    if(add){
+      try{
+        await addAdmin(this.groupCode, member.uid)
+        this.showSuccessToast = true;
+        setTimeout(() => {
+            this.showSuccessToast = false;
+        }, 3000);
+      } catch(error: any) {
+        console.log(error);
+        this.showErrorToast = true;
+        setTimeout(() => {
+            this.showErrorToast = false;
+        }, 3000);
+      }
+
+      this.showConfirmAdminModal = false;
+
+    } else {
+      try{
+        await removeAdmin(this.groupCode, member.uid);
+        this.showSuccessToast = true;
+        setTimeout(() => {
+            this.showSuccessToast = false;
+        }, 3000);
+      } catch(error: any) {
+        console.log(error);
+        this.showErrorToast = true;
+          setTimeout(() => {
+              this.showErrorToast = false;
+          }, 3000);
+      }
+
+      this.showConfirmAdminModal = false;
+    }
   }
 
   confirmRemoveUser(member: any){
@@ -393,7 +523,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                 }
               </div>
               <label for="group_name">Group Name:</label>
-              <input class="disable-toggle top-input" type="text" id="group_name" name="group_name" value=${this.groupName} disabled />
+              <input class="disable-toggle top-input" type="text" id="group_name" name="group_name" value=${this.groupName} maxlength="45" disabled />
 
               <label for="group_code">Group Code:</label>
               <input class="top-input" type="text" id="group_code" name="group_code" value=${this.groupCode} disabled />
@@ -423,7 +553,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                       </label>
                     </td>
                     <td>
-                      ${this.inputState ?
+                      ${this.inputState && this.memberDetails.length > 1 ?
                         html`<ion-icon class="remover-enabled" @click=${() => this.confirmRemoveUser(member)} name="close"></ion-icon>` :
                         html`<ion-icon class="remover-disabled" name="close"></ion-icon>`
                       }
@@ -433,6 +563,21 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
               </table>
             `}
         </div>
+        ${this.showLengthToast ? html`<app-toast>Your group name must contain atleast 5 characters. Please try again.</app-toast>` : html``}
+        ${this.showSuccessToast ? html`<app-toast>Your group settings have been successfully updated!</app-toast>` : html``}
+        ${this.showErrorToast ? html`<app-toast>There was an error updating your group settings. Please try again.</app-toast>` : html``}
+        ${this.showConfirmAdminModal ?
+          html`
+            <div class="modal-box" id="admin-box">
+              ${this.addAdmin ? html`<p>Are you sure you want to give ${this.makeThisPersonAdmin.details.displayName} admin priviledges?</p>` :
+                                html`<p>Are you sure you want to remove ${this.makeThisPersonAdmin.details.displayName} as an admin of your group?</p>`}
+            <slot>
+              <button @click=${() => this.handleAdminResult(true, this.addAdmin, this.makeThisPersonAdmin)}>No</button>
+              <button @click=${() => this.handleAdminResult(false, this.addAdmin, this.makeThisPersonAdmin)}>Yes</button>
+            </slot>
+          </div>
+          ` :
+          html``}
       </div>
     `;
   }

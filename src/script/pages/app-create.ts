@@ -326,7 +326,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         }, 3000)
     }
 
-    // need to make sure that a user who is already in a group can't create another.
+    // need to make sure the group_name isn't empty.
     async createGroup(){
         // Get the group name
         let group_name = (this.shadowRoot!.getElementById("group_name") as any).value;
@@ -370,7 +370,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
             html`
                 <span id="back" @click=${() => Router.go("/create-or-join")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 <label for="group_name">Group Name:</label>
-                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..." maxlength="45"/>
+                <input type="text" id="group_name" name="group_name" placeholder="Enter your group name..." minlength="5" maxlength="45"/>
 
                 <label for="timezones">Default Timezone:</label>
                 <select name="timezones" id="timezones">

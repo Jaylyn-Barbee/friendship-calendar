@@ -213,3 +213,128 @@ export async function getGroupMembersInformation(){
 
     return ret;
 }
+
+export async function updateGroupSettings(code: string, group_name: string, default_tz: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+
+    await setDoc(ref, {
+        group_name: group_name,
+        join_code: item.data().join_code,
+        members: item.data().members,
+        main_cal_id: item.data().main_cal_id,
+        admins: item.data().admins,
+        default_tz: default_tz
+    });
+}
+
+export async function addAdmin(code: string, uid: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+    let updated_admins = item.data().admins;
+    updated_admins.push(uid);
+
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: item.data().members,
+        main_cal_id: item.data().main_cal_id,
+        admins: updated_admins,
+        default_tz: item.data().default_tz
+    });
+
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("uid", "==", uid));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    let uitem: any;
+    uquerySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        uitem = docu;
+    });
+
+    let uref = doc(db, 'users', uitem.id);
+
+    await setDoc(uref, {
+        details: uitem.data().details,
+        groupCode: uitem.data().groupCode,
+        isAdmin: true,
+        pc_id: uitem.data().pc_id,
+        uid: uitem.data().uid
+    });
+
+
+}
+
+export async function removeAdmin(code: string, uid: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+    let updated_admins = item.data().admins;
+
+    const indexToRemove = updated_admins.indexOf(uid);
+    if (indexToRemove > -1){
+        updated_admins.splice(indexToRemove, 1);
+        console.log(updated_admins);
+    }
+
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: item.data().members,
+        main_cal_id: item.data().main_cal_id,
+        admins: updated_admins,
+        default_tz: item.data().default_tz
+    });
+
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("uid", "==", uid));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    let uitem: any;
+    uquerySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        uitem = docu;
+    });
+
+    let uref = doc(db, 'users', uitem.id);
+
+    await setDoc(uref, {
+        details: uitem.data().details,
+        groupCode: uitem.data().groupCode,
+        isAdmin: false,
+        pc_id: uitem.data().pc_id,
+        uid: uitem.data().uid
+    });
+}
