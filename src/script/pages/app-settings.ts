@@ -70,12 +70,27 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     font-size: 14px;
   }
 
-  #back, #edit {
+  #top-left {
+    display: flex;
+    align-item: center;
+    justify-content: center;
+  }
+
+  #back, #edit, #leave {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: fit-content;
     border-bottom: 1px solid transparent;
+    }
+    #leave {
+      margin-left: 10px;
+      color: red;
+    }
+
+    #leave:hover {
+      cursor: pointer;
+      border-bottom: 1px solid red;
     }
 
   #back:hover{
@@ -193,8 +208,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   .disable-toggle:disabled:hover{
     cursor: not-allowed;
   }
-
-
 
   th {
     text-align: center;
@@ -550,6 +563,10 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
+  handleLeaveGroup(){
+    alert("are you sure you want to delete the whole group.");
+  }
+
   render() {
     return html`
       <div id="page">
@@ -562,12 +579,17 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
               <div id="top-slot">
                 <span id="back" @click=${() => Router.go("/")}><ion-icon name="arrow-back" style="font-size: 14px; margin-right: 5px;"></ion-icon>Back</span>
                 ${this.userIsAdmin ?
-                  html`<span id="edit" @click=${() => this.toggleEdit()}>
-                    ${this.inputState ?
-                      html `<ion-icon name="save" style="font-size: 14px; margin-right: 5px;"></ion-icon>Save Settings` :
-                      html`<ion-icon name="pencil" style="font-size: 14px; margin-right: 5px;" ></ion-icon>Edit Settings`
-                    }
-                    </span>` :
+                  html`
+                  <div id="top-left">
+                    <span id="edit" @click=${() => this.toggleEdit()}>
+                      ${this.inputState ?
+                        html `<ion-icon name="save" style="font-size: 14px; margin-right: 5px;"></ion-icon>Save Settings` :
+                        html`<ion-icon name="pencil" style="font-size: 14px; margin-right: 5px;" ></ion-icon>Edit Settings`
+                      }
+
+                    </span>
+                    <div id="leave" @click=${() => this.handleLeaveGroup()}><ion-icon name="close" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Delete Group</div>
+                  </div>` :
                   html`<p id="edit-message">Contact your group admin to edit settings.</p>`
                 }
               </div>

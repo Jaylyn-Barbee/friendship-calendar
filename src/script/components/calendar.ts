@@ -1,10 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { getGroupMembersInformation, getGroupName } from '../services/database';
+import { getGroupCode, getGroupMembersInformation, getGroupName, removeUser } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
+import { getCurrentUserId } from '../services/calendar-api';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -20,6 +21,8 @@ export class AppCalendar extends LitElement {
     @state() last_selected: any;
     @state() today_cell: any;
     @state() group_name: any = "";
+    @state() showLeaveModal: any = false;
+    @state() showLeaveLoader: any = false;
 
 
   static get styles() {
@@ -432,6 +435,56 @@ export class AppCalendar extends LitElement {
           background-position: 100% 0, 0 0, 120px 0, 120px 40px, 120px 80px, 120px 120px;
         }
       }
+      .modal-box {
+    height: fit-content;
+    width: 25vw;
+    background-color: white;
+
+    padding: 55px;
+
+    position: absolute;
+    z-index: 101;
+    top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+  }
+
+  .modal-box slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
+  .modal-box p {
+    text-align: center;
+  }
+
+  .modal-box button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: bolder;
+    padding: 10px 30px;
+    margin-top: 10px;
+
+    border-radius: 30px;
+    background-color: #F1E4EE;
+    border: none;
+
+    width: 45%;
+  }
+
+  .modal-box button:hover {
+    cursor: pointer;
+    background-color: #ddbdd5
+  }
 
 
         `;
@@ -559,7 +612,20 @@ export class AppCalendar extends LitElement {
 
   handleLeaveGroup(){
     // leave group.
-    alert("are you sure you wanna leave the group?");
+    this.showLeaveModal = true;
+  }
+
+  async handleLeaveResult(action: any){
+    // make sure that if this person is the only admin of the group
+    // they cannot leave before reassigning the role.
+    if(action){
+      let uid = await getCurrentUserId();
+      let code = await getGroupCode();
+      this.showLeaveLoader = true;
+      await removeUser(code, uid).then(() => Router.go("/create-or-join"));
+    } else {
+      this.showLeaveModal = false;
+    }
   }
 
   render() {
@@ -641,8 +707,21 @@ export class AppCalendar extends LitElement {
                 <button id="addButton" @click=${() => Router.go("/new_event")}>Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
               </div>
             </div>
-
           </div>
+          ${this.showLeaveModal ?
+          html`
+            <div class="modal-box">
+              ${this.showLeaveLoader ? html`<span class="loader"></span>` :
+              html`
+                <p>Are you sure you want to leave the group?</p>
+                <slot>
+                  <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                  <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
+                </slot>
+              `}
+          </div>
+          ` :
+          html``}
         </div>
     `;
   }
