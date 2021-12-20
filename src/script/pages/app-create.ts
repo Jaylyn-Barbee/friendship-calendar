@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
-import { createMainCalendar, getCurrentUserId } from '../services/calendar-api';
+import { createMainCalendar, getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
 import { checkForCode, checkForUserInDb, createNewGroup } from '../services/database';
 import { provider } from '../services/provider';
 
@@ -29,6 +29,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
     @state() code: any;
     @state() showCopyToast: any | null = false;
     @state() showErrorToast: any | null = false;
+    @state() showCalNameErrorToast: any | null = false;
     @state() showLoader: any | null = false;
 
     static get styles() {
@@ -326,6 +327,13 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         }, 3000)
     }
 
+    calNameErrorToast(){
+        this.showCalNameErrorToast = true;
+        setTimeout(() => {
+            this.showCalNameErrorToast = false;
+        }, 3000)
+    }
+
     // need to make sure the group_name isn't empty.
     async createGroup(){
         // Get the group name
@@ -337,6 +345,19 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
 
         if(group_name.length < 5){
             this.errorToast();
+            return;
+        }
+
+        let dup = false
+        let usercals = await getCurrentUsersCalendars();
+        usercals.forEach((cal: any) => {
+            if(cal.name === group_name + "'s Calendar"){
+                this.calNameErrorToast();
+                dup = true;
+            }
+        });
+
+        if(dup){
             return;
         }
 
@@ -389,6 +410,7 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         </div>
         ${this.showCopyToast ? html`<app-toast>Invite Message copied to clip board!</app-toast>` : html``}
         ${this.showErrorToast ? html`<app-toast>Please enter a group name with at least 5 characters!</app-toast>` : html``}
+        ${this.showCalNameErrorToast ? html`<app-toast>You already have a calendar called that. Change your group name and try again!</app-toast>` : html``}
 
         `;
     }

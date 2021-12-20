@@ -414,3 +414,28 @@ export async function getAdmins(code: string){
     });
     return item.data().admins;
 }
+
+export async function deleteGroup(code: string){
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("join_code", "==", code));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    await deleteDoc(doc(db, 'groups', item.id));
+
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("groupCode", "==", code));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    uquerySnapshot.forEach(async (docu: any) => {
+        await deleteDoc(doc(db, 'users', docu.id));
+    });
+
+}

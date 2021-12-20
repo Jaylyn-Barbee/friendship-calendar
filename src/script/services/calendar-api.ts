@@ -31,7 +31,7 @@ export async function getPhoto(){
 
 export async function createMainCalendar(group_name: string) {
     const calendar = {
-        name: group_name + "'s Calendar"
+        name: group_name
       };
 
     let resp = await graphClient.api('/me/calendars').post(calendar);

@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { provider } from '../services/provider';
 import { getCurrentUserId } from '../services/calendar-api';
-import { addAdmin, checkForUserInDb, getAdmins, getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin, removeAdmin, removeUser, updateGroupSettings } from '../services/database';
+import { addAdmin, checkForUserInDb, deleteGroup, getAdmins, getGroupCode, getGroupMembersInformation, getGroupName, getTimezone, isUserAdmin, removeAdmin, removeUser, updateGroupSettings } from '../services/database';
 import { zoneMappings } from '../services/data';
 import '../components/toast';
 
@@ -39,9 +39,12 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @state() notEnoughToast: any | null = false;
   @state() showConfirmAdminModal: any | null = false;
   @state() showConfirmRemoveModal: any | null = false;
+  @state() showDeleteModal: any | null = false;
+  @state() showLeaveLoader: any | null = false;
   @state() personOfInterest: any | null = "";
   @state() addAdmin: any | null;
   @state() activeAdminBox: any | null;
+
 
   static get styles() {
     return css`
@@ -540,6 +543,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
+
   async handleRemoveResult(no: any,  member: any){
     if(no){
       this.showConfirmRemoveModal = false;
@@ -563,8 +567,15 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
-  handleLeaveGroup(){
-    alert("are you sure you want to delete the whole group.");
+  startDeletionProcess(){
+    this.showDeleteModal = true;
+  }
+
+  async handleDeleteGroup(){
+    let code = await getGroupCode();
+    this.showLeaveLoader = true;
+    await deleteGroup(code).then(() => Router.go("/create-or-join"));
+
   }
 
   render() {
@@ -588,7 +599,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                       }
 
                     </span>
-                    <div id="leave" @click=${() => this.handleLeaveGroup()}><ion-icon name="close" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Delete Group</div>
+                    <div id="leave" @click=${() => this.startDeletionProcess()}><ion-icon name="close" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Delete Group</div>
                   </div>` :
                   html`<p id="edit-message">Contact your group admin to edit settings.</p>`
                 }
@@ -657,6 +668,21 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
               <button @click=${() => this.handleRemoveResult(false, this.personOfInterest)}>Yes</button>
             </slot>
           </div>
+          ` :
+          html``}
+
+        ${this.showDeleteModal ?
+          html`
+            <div class="modal-box">
+            ${this.showLeaveLoader ? html`<span class="loader"></span>` :
+            html`
+              <p>Are you sure you want to delete this group. Your calendar will remain attached to your account.</p>
+              <slot>
+                <button @click=${() => this.showDeleteModal = false}>No</button>
+                <button @click=${() => this.handleDeleteGroup()}>Yes</button>
+              </slot>
+          </div>
+          `}
           ` :
           html``}
       </div>

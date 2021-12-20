@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { getGroupCode, getGroupMembersInformation, getGroupName, removeUser } from '../services/database';
+import { deleteGroup, getGroupCode, getGroupMembersInformation, getGroupName, removeUser } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
@@ -23,7 +23,6 @@ export class AppCalendar extends LitElement {
     @state() group_name: any = "";
     @state() showLeaveModal: any = false;
     @state() showLeaveLoader: any = false;
-
 
   static get styles() {
     return css`
@@ -628,6 +627,14 @@ export class AppCalendar extends LitElement {
     }
   }
 
+  async handleDeleteGroup(){
+
+    let code = await getGroupCode();
+    this.showLeaveLoader = true;
+    await deleteGroup(code).then(() => Router.go("/create-or-join"));
+
+  }
+
   render() {
     return html`
         <div id="wholeWrapper">
@@ -712,11 +719,19 @@ export class AppCalendar extends LitElement {
           html`
             <div class="modal-box">
               ${this.showLeaveLoader ? html`<span class="loader"></span>` :
+              this.members.length != 1 ?
               html`
                 <p>Are you sure you want to leave the group?</p>
                 <slot>
                   <button @click=${() => this.handleLeaveResult(false)}>No</button>
                   <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
+                </slot>
+              ` :
+              html`
+                <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
+                <slot>
+                  <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                  <button @click=${() => this.handleDeleteGroup()}>Yes</button>
                 </slot>
               `}
           </div>
