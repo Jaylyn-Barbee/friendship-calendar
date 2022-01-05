@@ -52,7 +52,8 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
             },
             pc_id: pc_id_in,
             groupCode: groupCode_in,
-            isAdmin: isAdmin_in
+            isAdmin: isAdmin_in,
+            user_events: []
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -68,7 +69,8 @@ export async function createNewGroup(group_name: string, group_tz: string, group
             members: [user_id],
             main_cal_id: cal_id,
             admins: [user_id],
-            default_tz: group_tz
+            default_tz: group_tz,
+            group_events: []
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -108,7 +110,8 @@ export async function addUserToGroup(code: string, uid: string){
         members: updated_mems,
         main_cal_id: item.data().main_cal_id,
         admins: item.data().admins,
-        default_tz: item.data().default_tz
+        default_tz: item.data().default_tz,
+        group_events: item.data().group_events
     });
 }
 
@@ -248,7 +251,8 @@ export async function updateGroupSettings(code: string, group_name: string, defa
         members: item.data().members,
         main_cal_id: item.data().main_cal_id,
         admins: item.data().admins,
-        default_tz: default_tz
+        default_tz: default_tz,
+        group_events: item.data().group_events
     });
 }
 
@@ -274,7 +278,8 @@ export async function addAdmin(code: string, uid: string){
         members: item.data().members,
         main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
-        default_tz: item.data().default_tz
+        default_tz: item.data().default_tz,
+        group_events: item.data().group_events
     });
 
     const usersRef = collection(db, "users");
@@ -295,7 +300,8 @@ export async function addAdmin(code: string, uid: string){
         groupCode: uitem.data().groupCode,
         isAdmin: true,
         pc_id: uitem.data().pc_id,
-        uid: uitem.data().uid
+        uid: uitem.data().uid,
+        user_events: uitem.data().user_events
     });
 
 
@@ -327,7 +333,8 @@ export async function removeAdmin(code: string, uid: string){
         members: item.data().members,
         main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
-        default_tz: item.data().default_tz
+        default_tz: item.data().default_tz,
+        group_events: item.data().group_events
     });
 
     const usersRef = collection(db, "users");
@@ -348,7 +355,8 @@ export async function removeAdmin(code: string, uid: string){
         groupCode: uitem.data().groupCode,
         isAdmin: false,
         pc_id: uitem.data().pc_id,
-        uid: uitem.data().uid
+        uid: uitem.data().uid,
+        user_events: uitem.data().user_events
     });
 }
 
@@ -384,7 +392,8 @@ export async function removeUser(code: string, uid: string){
         members: updated_mems,
         main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
-        default_tz: item.data().default_tz
+        default_tz: item.data().default_tz,
+        group_events: item.data().group_events
     });
 
     const usersRef = collection(db, "users");
@@ -438,4 +447,59 @@ export async function deleteGroup(code: string){
         await deleteDoc(doc(db, 'users', docu.id));
     });
 
+}
+
+export async function pushEventToGroup(event: any){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        item = docu;
+    });
+
+    let ref = doc(db, 'groups', item.id);
+    let updated_events = item.data().group_events;
+    updated_events.push(event);
+
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: item.data().members,
+        main_cal_id: item.data().main_cal_id,
+        admins: item.data().admins,
+        default_tz: item.data().default_tz,
+        group_events: updated_events
+    });
+}
+
+export async function pushEventToCurrentUser(event: any){
+    let uid = await getCurrentUserId();
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("uid", "==", uid));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    let uitem: any;
+    uquerySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        uitem = docu;
+    });
+
+    let uref = doc(db, 'users', uitem.id);
+    let updated_events = uitem.data().user_events;
+    updated_events.push(event);
+
+    await setDoc(uref, {
+        details: uitem.data().details,
+        groupCode: uitem.data().groupCode,
+        isAdmin: false,
+        pc_id: uitem.data().pc_id,
+        uid: uitem.data().uid,
+        user_events: updated_events
+    });
 }

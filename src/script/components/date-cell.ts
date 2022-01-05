@@ -33,7 +33,7 @@ export class AppCell extends LitElement {
             align-items: baseline;
             grid-column: 2;
             width: 100%;
-            height: 45%;
+            height: 95%;
             font-size: 24px;
             font-weight: bolder;
         }
@@ -73,7 +73,7 @@ export class AppCell extends LitElement {
   handleClick(e: any) {
 
       let stringDate = months[this.month].name + " " + this.day + ", " + this.year;
-      let numDate_in = this.year + "-" + (this.month + 1) + "-" + ("00" + (this.day as number)).slice(-2);
+      let numDate_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2);
       let event = new CustomEvent('day-clicked', {
         detail: {
             selected_day: stringDate,

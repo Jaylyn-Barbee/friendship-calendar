@@ -1,18 +1,21 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
+import { state, customElement } from 'lit/decorators.js';
 import { createAndSubmitEvent } from '../services/calendar-api';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
 import '../components/toast';
 import { highlighted_day } from '../services/data';
+import { getGroupMembersInformation } from '../services/database';
 
 @customElement('app-event')
 export class AppEvent extends LitElement {
-  @property() provider: any;
-  @property({type: Boolean}) showErrorToast: any | null = false;
-  @property({type: Boolean}) showErrorSubmittingToast: any | null = false;
-  @property({type: Boolean}) showLoader: any | null = false;
-  @property({type: Boolean}) showSuccessToast: any | null = false;
+  @state() provider: any;
+  @state() showErrorToast: any | null = false;
+  @state() showErrorSubmittingToast: any | null = false;
+  @state() showLoader: any | null = false;
+  @state() showSuccessToast: any | null = false;
+  @state() groupMembers: any | null = false;
+
   static get styles() {
     return css`
     #page {
@@ -256,8 +259,14 @@ export class AppEvent extends LitElement {
     super();
   }
 
-  firstUpdated(){
-
+  async firstUpdated(){
+    /* let allMembers = await getGroupMembersInformation();
+    this.groupMembers = [];
+    allMembers.forEach((mem: any) => {
+      this.groupMembers.push(mem.details)
+    });
+    console.log(this.groupMembers) */
+    console.log(highlighted_day)
   }
 
   async handleSubmit(){
@@ -290,7 +299,6 @@ export class AppEvent extends LitElement {
               this.showErrorSubmittingToast = false;
           }, 3000)
         }
-
     }
   }
 

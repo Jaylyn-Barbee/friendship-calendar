@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { deleteGroup, getGroupCode, getGroupMembersInformation, getGroupName, removeUser } from '../services/database';
+import { deleteGroup, getAdmins, getGroupCode, getGroupMembersInformation, getGroupName, isUserAdmin, removeUser } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
@@ -23,6 +23,7 @@ export class AppCalendar extends LitElement {
     @state() group_name: any = "";
     @state() showLeaveModal: any = false;
     @state() showLeaveLoader: any = false;
+    @state() notEnoughAdmins: any = false;
 
   static get styles() {
     return css`
@@ -562,6 +563,8 @@ export class AppCalendar extends LitElement {
   }
 
   handleHighlightedDay(cell: any, clear: Boolean){
+    console.log(this.last_selected);
+    console.log("cell", cell);
     if(!this.last_selected){
       this.last_selected = this.shadowRoot?.getElementById("today");
     }
@@ -606,11 +609,22 @@ export class AppCalendar extends LitElement {
     this.monthIndex = current_date.getMonth();
     this.monthName = months[this.monthIndex].name;
     this.year = current_date.getFullYear();
+    this.handleHighlightedDay(null, true);
+    if(this.monthIndex == current_date.getMonth()){
+      this.today_cell = this.shadowRoot!.getElementById("today");
+      this.last_selected = this.today_cell;
+    }
     this.generateCal(this.monthIndex, this.year);
   }
 
-  handleLeaveGroup(){
-    // leave group.
+  async handleLeaveGroup(){
+    let uid = await getCurrentUserId();
+    let code = await getGroupCode();
+    let isAdmin = await isUserAdmin(uid);
+    let adminList = await getAdmins(code)
+    if(isAdmin && adminList.length == 1){
+      this.notEnoughAdmins = true;
+    }
     this.showLeaveModal = true;
   }
 
@@ -720,13 +734,21 @@ export class AppCalendar extends LitElement {
             <div class="modal-box">
               ${this.showLeaveLoader ? html`<span class="loader"></span>` :
               this.members.length != 1 ?
-              html`
-                <p>Are you sure you want to leave the group?</p>
-                <slot>
-                  <button @click=${() => this.handleLeaveResult(false)}>No</button>
-                  <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
-                </slot>
-              ` :
+                this.notEnoughAdmins ?
+                html`
+                  <p>You are the only admin of the group. You must first reassign this role on the settings page in order to proceed.</p>
+                  <slot>
+                    <button @click=${() => this.handleLeaveResult(false)}>Cancel</button>
+                    <button @click=${() => Router.go("/settings")}>Go to Settings</button>
+                  </slot>
+                `:
+                html`
+                  <p>Are you sure you want to leave the group?</p>
+                  <slot>
+                    <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                    <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
+                  </slot>
+                ` :
               html`
                 <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
                 <slot>

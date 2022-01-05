@@ -1,3 +1,4 @@
+import { pushEventToCurrentUser, pushEventToGroup } from "./database";
 import { provider } from "./provider"
 
 const graphClient = provider.graph.client;
@@ -66,10 +67,9 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
         attendees: attendeeList
     };
 
-
     await graphClient.api('/me/calendar/events').post(event);
-    // Add loader for await and on success put a toast saying success and bounce back to calendar
-    // Also, in the future this will be added to the master calendar not the individual personal calendar
+    await pushEventToGroup(event);
+    await pushEventToCurrentUser(event);
 }
 
 export async function getCurrentUsersCalendars(){

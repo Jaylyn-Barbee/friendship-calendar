@@ -21,7 +21,7 @@ export function isLeapYear(year: any) {
 
 export var current_date = new Date();
 
-export let highlighted_day = current_date.getFullYear() + "-" + (current_date.getMonth() + 1) + "-" + ("00" + (current_date.getDate() as number)).slice(-2) + "T12:00";
+export let highlighted_day = current_date.getFullYear() + "-" + ("00" + ((current_date.getMonth() + 1) as number)).slice(-2) + "-" + ("00" + (current_date.getDate() as number)).slice(-2) + "T12:00";
 
 export function setHighlightedDay(date: any) {
     highlighted_day = date + "T12:00";
