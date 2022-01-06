@@ -661,12 +661,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
         ${this.showConfirmRemoveModal ?
           html`
             <div class="modal-box">
-              ${this.addAdmin ? html`<p>Are you sure you want to give ${this.personOfInterest.details.displayName} admin priviledges?</p>` :
-                                html`<p>Are you sure you want to remove ${this.personOfInterest.details.displayName} as an admin of your group?</p>`}
-            <slot>
-              <button @click=${() => this.handleRemoveResult(true, this.personOfInterest)}>No</button>
-              <button @click=${() => this.handleRemoveResult(false, this.personOfInterest)}>Yes</button>
-            </slot>
+              <p>Are you sure you want to remove ${this.personOfInterest.details.displayName} from the group?</p>
+              <slot>
+                <button @click=${() => this.handleRemoveResult(true, this.personOfInterest)}>No</button>
+                <button @click=${() => this.handleRemoveResult(false, this.personOfInterest)}>Yes</button>
+              </slot>
           </div>
           ` :
           html``}

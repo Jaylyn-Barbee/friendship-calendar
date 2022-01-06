@@ -266,7 +266,6 @@ export class AppEvent extends LitElement {
       this.groupMembers.push(mem.details)
     });
     console.log(this.groupMembers) */
-    console.log(highlighted_day)
   }
 
   async handleSubmit(){

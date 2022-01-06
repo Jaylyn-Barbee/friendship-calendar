@@ -1,8 +1,8 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars, getPhoto } from '../services/calendar-api';
+import { customElement, state } from 'lit/decorators.js';
+import { createMainCalendar, getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars, getPhoto } from '../services/calendar-api';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
-import { addUser, checkForUserInDb, getGroupCode, isUserAdmin } from '../services/database';
+import { addUser, checkForUserInDb, getGroupCode, getGroupName, isUserAdmin } from '../services/database';
 import { provider } from '../services/provider';
 
 @customElement('app-selection')
@@ -25,8 +25,9 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
       }
   }
 
-  @property() calendars: any;
-  @property({type: Boolean}) showLoader: any | null = false;
+  @state() calendars: any;
+  @state() showLoader: any | null = false;
+  @state() group_name: any | null = "";
 
   static get styles() {
     return css`
@@ -96,13 +97,8 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
         flex-direction: column;
     }
 
-    #s-box input {
-      margin-rigt: 5px;
-    }
-
-    .radio-input {
-      display: flex;
-      margin-bottom: 10px;
+    #s-box p {
+      text-align: center;
     }
 
     .loader {
@@ -186,20 +182,11 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
 
   async firstUpdated() {
     this.calendars = await getCurrentUsersCalendars();
+    this.group_name = await getGroupName();
   }
 
   async submitUser(){
-    let radios = this.shadowRoot!.querySelectorAll("input");
-    let selectedCal_id = "";
-    radios.forEach((radio: any) => {
-      if(radio.checked){
-        selectedCal_id = radio.value;
-      }
-    });
-
     this.showLoader = true;
-
-
 
     let userDetails: any = await getCurrentUserDetails();
     let userName = userDetails.displayName
@@ -209,14 +196,17 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
     let userId = await getCurrentUserId();
     let groupCode = await getGroupCode();
     let isAdmin = await isUserAdmin(userId);
+
+    let ids = await createMainCalendar(this.group_name);
+    let cal_id = ids[0];
+    let group_id = ids[1];
+
     try{
-      await addUser(userName, email, userId, photo, selectedCal_id, groupCode, isAdmin)
+      await addUser(userName, email, userId, photo, cal_id, group_id, groupCode, isAdmin)
       Router.go("/");
     } catch(error: any){
       console.error(error);
     }
-
-
   }
 
   render() {
@@ -227,9 +217,11 @@ export class AppSelection extends LitElement implements BeforeEnterObserver {
         </section>
         <div id="s-box">
         ${this.showLoader ? html`<span class="loader"></span>` :
-            html`<p>Select a Calendar from the list below that will be used to reference your availibilty when planning events for the group calendar.</p>
-            ${this.calendars && this.calendars.length > 0 ? this.calendars.map((cal: any) => html`<slot class="radio-input"><input type="radio" name="calendar" value=${cal.id}> ${cal.name}</slot>`) : html`<span class="loader"></span>`}
-            <button id="submit-button" @click=${() => this.submitUser()}>Submit Calendar</button>`}
+            html`
+              <p>A Calendar has been created for you called <strong>${this.group_name}'s Calendar</strong>. This calendar will be used to track your groups event. Press continue below to proceed.</p>
+              <button id="submit-button" @click=${() => this.submitUser()}>Continue</button>
+            `
+          }
         </div>
       </div>
     `;

@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { deleteGroup, getAdmins, getGroupCode, getGroupMembersInformation, getGroupName, isUserAdmin, removeUser } from '../services/database';
+import { deleteGroup, getAdmins, getCalendarGroupId, getGroupCode, getGroupMembersInformation, getGroupName, getMainCalendarId, isUserAdmin, removeUser } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
@@ -21,6 +21,9 @@ export class AppCalendar extends LitElement {
     @state() last_selected: any;
     @state() today_cell: any;
     @state() group_name: any = "";
+    @state() calendar_group_id: any = "";
+    @state() calendar_id: any = "";
+    @state() event_query: any = "";
     @state() showLeaveModal: any = false;
     @state() showLeaveLoader: any = false;
     @state() notEnoughAdmins: any = false;
@@ -504,6 +507,10 @@ export class AppCalendar extends LitElement {
     this.date_string = this.stringTheDate();
     this.group_name = await getGroupName();
     this.members = await getGroupMembersInformation();
+    this.calendar_group_id = await getCalendarGroupId();
+    this.calendar_id = await getMainCalendarId();
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events"
+
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
@@ -512,7 +519,9 @@ export class AppCalendar extends LitElement {
     let month = months[this.monthIndex].name;
     let day = this.day;
     let year = this.year;
-    return month + " " + day + ", " + year;
+
+    return year + "-" + ("00" + ((this.monthIndex + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2);
+
   }
 
   setMonthIndex(monthIndex: any) {
@@ -564,7 +573,6 @@ export class AppCalendar extends LitElement {
 
   handleHighlightedDay(cell: any, clear: Boolean){
     console.log(this.last_selected);
-    console.log("cell", cell);
     if(!this.last_selected){
       this.last_selected = this.shadowRoot?.getElementById("today");
     }
@@ -719,7 +727,7 @@ export class AppCalendar extends LitElement {
             <div id="events">
               <h2>Today's Events</h2>
               <div id="agendaHolder">
-                <mgt-agenda days=1 date=${this.date_string} preferred-timezone="Eastern Standard Time">
+                <mgt-agenda days=1 preferred-timezone="Eastern Standard Time" event-query=${this.event_query + "?startDateTime=" + this.date_string}>
                   <template data-type="loading"><span class="loader"></span></template>
                   <template data-type="no-data">No events found for this day!</template>
                 </mgt-agenda>

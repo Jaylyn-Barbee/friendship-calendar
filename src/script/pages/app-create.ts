@@ -365,15 +365,12 @@ export class AppCreate extends LitElement implements BeforeEnterObserver {
         // Get the code
         let code = this.code;
 
-        // Create a calendar (calendar-api)
-        let cal_id = await createMainCalendar(group_name);
-
         // Get the user who created it, push to admin and member
         let userId = await getCurrentUserId();
 
         // push info to db
         try {
-            await createNewGroup(group_name, timezone, code, cal_id, userId);
+            await createNewGroup(group_name, timezone, code, userId);
             Router.go("/pick-calendar");
         } catch(error: any){
             console.error(error);

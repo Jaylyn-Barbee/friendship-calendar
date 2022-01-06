@@ -1,4 +1,4 @@
-import { pushEventToCurrentUser, pushEventToGroup } from "./database";
+import { getGroupName, pushEventToCurrentUser, pushEventToGroup } from "./database";
 import { provider } from "./provider"
 
 const graphClient = provider.graph.client;
@@ -31,13 +31,22 @@ export async function getPhoto(){
 }
 
 export async function createMainCalendar(group_name: string) {
-    const calendar = {
+
+    const calendarGroup = {
         name: group_name
-      };
+    };
 
-    let resp = await graphClient.api('/me/calendars').post(calendar);
+    let gresp = await graphClient.api('/me/calendarGroups').post(calendarGroup);
 
-    return resp.id;
+    let group_id = gresp.id;
+
+    const calendar = {
+        name: group_name + "\'s Calendar"
+    };
+
+    let cal_id = await graphClient.api('/me/calendargroups/' + group_id + '/calendars').post(calendar);
+
+    return [cal_id, group_id];
 }
 
 export async function createAndSubmitEvent(event_name: string, event_body: string, start_time: string, end_time: string,  event_location: string, attendees: any[]){
@@ -67,7 +76,29 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
         attendees: attendeeList
     };
 
-    await graphClient.api('/me/calendar/events').post(event);
+    let group_name = await getGroupName();
+    let gresp = await graphClient.api('/me/calendarGroups').get();
+    let groups = gresp.value
+    let group_id = "";
+    for(let i = 0; i < groups.length; i ++){
+        let group = groups[i];
+        if(group.name === group_name){
+            group_id = group.id
+        }
+    }
+
+    let resp = await graphClient.api('/me/calendars').get();
+    let cals = resp.value
+    let cal_id = "";
+    for(let i = 0; i < cals.length; i ++){
+        let cal = cals[i];
+        let cal_name: string = (cal.name as string)
+        if(cal_name.startsWith(group_name)){
+            cal_id = cal.id
+        }
+    }
+
+    await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     await pushEventToGroup(event);
     await pushEventToCurrentUser(event);
 }

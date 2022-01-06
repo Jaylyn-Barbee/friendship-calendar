@@ -41,7 +41,7 @@ enableIndexedDbPersistence(db)
       }
   });
 
-export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, pc_id_in: string, groupCode_in: string, isAdmin_in: Boolean) {
+export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, cal_id_in: string, group_id_in: string, groupCode_in: string, isAdmin_in: Boolean) {
     try {
         const docRef = await addDoc(collection(db, "users"), {
             uid: uid_in,
@@ -50,7 +50,8 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
                 mail: email_in,
                 personImage: photo_in
             },
-            pc_id: pc_id_in,
+            cal_id: cal_id_in,
+            group_id: group_id_in,
             groupCode: groupCode_in,
             isAdmin: isAdmin_in,
             user_events: []
@@ -61,13 +62,12 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
     }
 }
 
-export async function createNewGroup(group_name: string, group_tz: string, group_code: string, cal_id: string, user_id: string) {
+export async function createNewGroup(group_name: string, group_tz: string, group_code: string, user_id: string) {
     try {
         const docRef = await addDoc(collection(db, "groups"), {
             group_name: group_name,
             join_code: group_code,
             members: [user_id],
-            main_cal_id: cal_id,
             admins: [user_id],
             default_tz: group_tz,
             group_events: []
@@ -108,7 +108,6 @@ export async function addUserToGroup(code: string, uid: string){
         group_name: item.data().group_name,
         join_code: item.data().join_code,
         members: updated_mems,
-        main_cal_id: item.data().main_cal_id,
         admins: item.data().admins,
         default_tz: item.data().default_tz,
         group_events: item.data().group_events
@@ -125,7 +124,35 @@ export async function checkForUserInDb(uid: string){
 }
 
 export async function getMainCalendarId(){
+    let uid = await getCurrentUserId();
+    const groupsRef = collection(db, "users");
+    const q = query(groupsRef, where("uid", "==", uid));
 
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().cal_id;
+    });
+
+    return ret;
+}
+
+export async function getCalendarGroupId(){
+    let uid = await getCurrentUserId();
+    const groupsRef = collection(db, "users");
+    const q = query(groupsRef, where("uid", "==", uid));
+
+    const querySnapshot = await getDocs(q);
+
+    let ret = "";
+    querySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        ret = docu.data().group_id;
+    });
+
+    return ret;
 }
 
 export async function getGroupName(){
@@ -249,7 +276,6 @@ export async function updateGroupSettings(code: string, group_name: string, defa
         group_name: group_name,
         join_code: item.data().join_code,
         members: item.data().members,
-        main_cal_id: item.data().main_cal_id,
         admins: item.data().admins,
         default_tz: default_tz,
         group_events: item.data().group_events
@@ -276,7 +302,6 @@ export async function addAdmin(code: string, uid: string){
         group_name: item.data().group_name,
         join_code: item.data().join_code,
         members: item.data().members,
-        main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
         default_tz: item.data().default_tz,
         group_events: item.data().group_events
@@ -299,7 +324,8 @@ export async function addAdmin(code: string, uid: string){
         details: uitem.data().details,
         groupCode: uitem.data().groupCode,
         isAdmin: true,
-        pc_id: uitem.data().pc_id,
+        cal_id: uitem.data().cal_id,
+        group_id: uitem.data().group_id,
         uid: uitem.data().uid,
         user_events: uitem.data().user_events
     });
@@ -331,7 +357,6 @@ export async function removeAdmin(code: string, uid: string){
         group_name: item.data().group_name,
         join_code: item.data().join_code,
         members: item.data().members,
-        main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
         default_tz: item.data().default_tz,
         group_events: item.data().group_events
@@ -354,7 +379,8 @@ export async function removeAdmin(code: string, uid: string){
         details: uitem.data().details,
         groupCode: uitem.data().groupCode,
         isAdmin: false,
-        pc_id: uitem.data().pc_id,
+        cal_id: uitem.data().cal_id,
+        group_id: uitem.data().group_id,
         uid: uitem.data().uid,
         user_events: uitem.data().user_events
     });
@@ -390,7 +416,6 @@ export async function removeUser(code: string, uid: string){
         group_name: item.data().group_name,
         join_code: item.data().join_code,
         members: updated_mems,
-        main_cal_id: item.data().main_cal_id,
         admins: updated_admins,
         default_tz: item.data().default_tz,
         group_events: item.data().group_events
@@ -470,7 +495,6 @@ export async function pushEventToGroup(event: any){
         group_name: item.data().group_name,
         join_code: item.data().join_code,
         members: item.data().members,
-        main_cal_id: item.data().main_cal_id,
         admins: item.data().admins,
         default_tz: item.data().default_tz,
         group_events: updated_events
@@ -498,7 +522,8 @@ export async function pushEventToCurrentUser(event: any){
         details: uitem.data().details,
         groupCode: uitem.data().groupCode,
         isAdmin: false,
-        pc_id: uitem.data().pc_id,
+        cal_id: uitem.data().cal_id,
+        group_id: uitem.data().group_id,
         uid: uitem.data().uid,
         user_events: updated_events
     });
