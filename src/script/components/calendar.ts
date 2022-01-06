@@ -511,8 +511,7 @@ export class AppCalendar extends LitElement {
     this.members = await getGroupMembersInformation();
     this.calendar_group_id = await getCalendarGroupId();
     this.calendar_id = await getMainCalendarId();
-    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit +"\'";
-
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'"
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
   }
@@ -575,7 +574,7 @@ export class AppCalendar extends LitElement {
     // updating day for the purpose of showing events
     this.date_string = day;
     this.day_limit = limit;
-    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit +"\'";
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'";
     setHighlightedDay(day);
     // updating style on highlighted day
     this.handleHighlightedDay(cell, false)
