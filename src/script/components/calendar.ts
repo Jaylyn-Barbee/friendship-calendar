@@ -24,6 +24,7 @@ export class AppCalendar extends LitElement {
     @state() calendar_group_id: any = "";
     @state() calendar_id: any = "";
     @state() event_query: any = "";
+    @state() day_limit: any = "";
     @state() showLeaveModal: any = false;
     @state() showLeaveLoader: any = false;
     @state() notEnoughAdmins: any = false;
@@ -505,11 +506,12 @@ export class AppCalendar extends LitElement {
     this.year = current_date.getFullYear();
     this.day = current_date.getDate();
     this.date_string = this.stringTheDate();
+    this.day_limit = this.stringTheDatePlusOne();
     this.group_name = await getGroupName();
     this.members = await getGroupMembersInformation();
     this.calendar_group_id = await getCalendarGroupId();
     this.calendar_id = await getMainCalendarId();
-    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events"
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit +"\'";
 
     this.generateCal(this.monthIndex, this.year);
     this.requestUpdate();
@@ -520,7 +522,15 @@ export class AppCalendar extends LitElement {
     let day = this.day;
     let year = this.year;
 
-    return year + "-" + ("00" + ((this.monthIndex + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2);
+    return year + "-" + ("00" + ((this.monthIndex + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2) + "T00:00";
+
+  }
+  stringTheDatePlusOne() {
+    let month = months[this.monthIndex].name;
+    let day = this.day;
+    let year = this.year;
+
+    return year + "-" + ("00" + ((this.monthIndex + 1) as number)).slice(-2) + "-" + ("00" + ((day + 1) as number)).slice(-2) + "T00:00";
 
   }
 
@@ -549,9 +559,9 @@ export class AppCalendar extends LitElement {
           break;
         } else {
           if (date === current_date.getDate() && month === current_date.getMonth() && year === current_date.getFullYear()) {
-            this._calendarTemplate.push(html`<app-cell id="today" class="selected" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell, e.detail.numDate) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell id="today" class="selected" @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell, e.detail.day_limit) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"true"}></app-cell>`)
           } else {
-            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell, e.detail.numDate) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
+            this._calendarTemplate.push(html`<app-cell @day-clicked="${(e: any) => { this.updateSelectedDay(e.detail.selected_day, e.detail.selected_cell, e.detail.day_limit) }}" .day=${date.toString()} .month=${month} .year=${year} .active=${"false"}></app-cell>`)
           }
           date += 1;
         }
@@ -560,11 +570,13 @@ export class AppCalendar extends LitElement {
 
   }
 
-  updateSelectedDay(day: string, cell: HTMLElement, numDate: string){
+  updateSelectedDay(day: string, cell: HTMLElement, limit: string){
 
     // updating day for the purpose of showing events
     this.date_string = day;
-    setHighlightedDay(numDate);
+    this.day_limit = limit;
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit +"\'";
+    setHighlightedDay(day);
     // updating style on highlighted day
     this.handleHighlightedDay(cell, false)
 
@@ -572,7 +584,6 @@ export class AppCalendar extends LitElement {
   }
 
   handleHighlightedDay(cell: any, clear: Boolean){
-    console.log(this.last_selected);
     if(!this.last_selected){
       this.last_selected = this.shadowRoot?.getElementById("today");
     }
@@ -727,7 +738,7 @@ export class AppCalendar extends LitElement {
             <div id="events">
               <h2>Today's Events</h2>
               <div id="agendaHolder">
-                <mgt-agenda days=1 preferred-timezone="Eastern Standard Time" event-query=${this.event_query + "?startDateTime=" + this.date_string}>
+                <mgt-agenda days=1 preferred-timezone="Eastern Standard Time" event-query=${this.event_query}>
                   <template data-type="loading"><span class="loader"></span></template>
                   <template data-type="no-data">No events found for this day!</template>
                 </mgt-agenda>

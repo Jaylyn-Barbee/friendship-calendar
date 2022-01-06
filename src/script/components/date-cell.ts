@@ -72,13 +72,13 @@ export class AppCell extends LitElement {
 
   handleClick(e: any) {
 
-      let stringDate = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2);
-      let numDate_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2);
+      let stringDate = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2) + "T00:00";
+      let limit_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + ((parseInt(this.day) + 1) as number)).slice(-2) + "T00:00";
       let event = new CustomEvent('day-clicked', {
         detail: {
             selected_day: stringDate,
+            day_limit: limit_in,
             selected_cell: (e.path[1] as HTMLBodyElement),
-            numDate: numDate_in
         }
       });
       this.dispatchEvent(event);
