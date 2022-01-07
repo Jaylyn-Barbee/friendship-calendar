@@ -1,11 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { deleteGroup, getAdmins, getCalendarGroupId, getGroupCode, getGroupMembersInformation, getGroupName, getMainCalendarId, isUserAdmin, removeUser } from '../services/database';
+import { deleteGroup, getAdmins, getCalendarGroupId, getGroupCode, getGroupEvents, getGroupMembersInformation, getGroupName, getMainCalendarId, getUserEvents, isUserAdmin, removeUser, updatedUserEvents } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
-import { getCurrentUserId } from '../services/calendar-api';
+import { createNewEvents, getCurrentUserId } from '../services/calendar-api';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -505,6 +505,7 @@ export class AppCalendar extends LitElement {
     this.monthName = months[this.monthIndex].name;
     this.year = current_date.getFullYear();
     this.day = current_date.getDate();
+    this.generateCal(this.monthIndex, this.year);
     this.date_string = this.stringTheDate();
     this.day_limit = this.stringTheDatePlusOne();
     this.group_name = await getGroupName();
@@ -512,12 +513,44 @@ export class AppCalendar extends LitElement {
     this.calendar_group_id = await getCalendarGroupId();
     this.calendar_id = await getMainCalendarId();
     this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'"
-    this.generateCal(this.monthIndex, this.year);
+    await this.syncEvents();
     this.requestUpdate();
   }
 
+  async syncEvents(){
+    const savedValue = sessionStorage.getItem('EventsSyncd');
+
+    if (JSON.parse(savedValue as string) !== true) {
+      console.log("key not found")
+      sessionStorage.setItem('EventsSyncd', JSON.stringify(true));
+
+      let group_events = await getGroupEvents();
+      let user_events = await getUserEvents();
+
+      //so eventually i want to check if the current users are invited to the event then to add them, but for now
+      // I am going to add every event despite if they are invited or not.
+      if(group_events.length > user_events.length){
+        console.log("list is behind");
+          await updatedUserEvents(group_events);
+          if(user_events.length == 0){
+            await createNewEvents(group_events);
+          } else {
+            let diff = group_events.length - user_events.length;
+            console.log("diff", diff);
+            let new_events = group_events.slice(diff + 1, group_events.length);
+            console.log("new_events", new_events);
+            console.log("creating new events called");
+            await createNewEvents(new_events);
+            console.log("nice");
+          }
+      }
+
+    } else {
+      return;
+    }
+  }
+
   stringTheDate() {
-    let month = months[this.monthIndex].name;
     let day = this.day;
     let year = this.year;
 
@@ -525,7 +558,6 @@ export class AppCalendar extends LitElement {
 
   }
   stringTheDatePlusOne() {
-    let month = months[this.monthIndex].name;
     let day = this.day;
     let year = this.year;
 
@@ -610,6 +642,9 @@ export class AppCalendar extends LitElement {
       this.today_cell = this.shadowRoot!.getElementById("today");
       this.last_selected = this.today_cell;
     }
+    this.date_string = this.stringTheDate();
+    this.day_limit = this.stringTheDatePlusOne();
+    this.updateSelectedDay(this.date_string, this.last_selected, this.day_limit);
 
   }
 
@@ -624,15 +659,7 @@ export class AppCalendar extends LitElement {
   }
 
   jumpToToday(){
-    this.monthIndex = current_date.getMonth();
-    this.monthName = months[this.monthIndex].name;
-    this.year = current_date.getFullYear();
-    this.handleHighlightedDay(null, true);
-    if(this.monthIndex == current_date.getMonth()){
-      this.today_cell = this.shadowRoot!.getElementById("today");
-      this.last_selected = this.today_cell;
-    }
-    this.generateCal(this.monthIndex, this.year);
+    this.changeDate(current_date.getMonth(), current_date.getFullYear());
   }
 
   async handleLeaveGroup(){

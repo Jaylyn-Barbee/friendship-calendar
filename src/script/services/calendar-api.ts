@@ -44,8 +44,8 @@ export async function createMainCalendar(group_name: string) {
         name: group_name + "\'s Calendar"
     };
 
-    let cal_id = await graphClient.api('/me/calendargroups/' + group_id + '/calendars').post(calendar);
-
+    let cal_resp = await graphClient.api('/me/calendargroups/' + group_id + '/calendars').post(calendar);
+    let cal_id = cal_resp.id;
     return [cal_id, group_id];
 }
 
@@ -101,6 +101,39 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
     await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     await pushEventToGroup(event);
     await pushEventToCurrentUser(event);
+}
+
+export async function createNewEvents(new_events: any){
+    console.log("creating new events landed");
+    console.log("new events in cal api", new_events);
+    let group_name = await getGroupName();
+    let gresp = await graphClient.api('/me/calendarGroups').get();
+    let groups = gresp.value
+    let group_id = "";
+    for(let i = 0; i < groups.length; i ++){
+        let group = groups[i];
+        if(group.name === group_name){
+            group_id = group.id
+        }
+    }
+
+    let resp = await graphClient.api('/me/calendars').get();
+    let cals = resp.value
+    let cal_id = "";
+    for(let i = 0; i < cals.length; i ++){
+        let cal = cals[i];
+        let cal_name: string = (cal.name as string)
+        if(cal_name.startsWith(group_name)){
+            cal_id = cal.id
+        }
+    }
+
+    console.log("at loop");
+    for(let i = 0; i < new_events.length; i++){
+        console.log("creating new event");
+        let event = new_events[i];
+        await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
+    }
 }
 
 export async function getCurrentUsersCalendars(){
