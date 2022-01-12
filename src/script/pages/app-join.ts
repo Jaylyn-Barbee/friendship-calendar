@@ -225,7 +225,6 @@ export class AppJoin extends LitElement implements BeforeEnterObserver {
   async firstUpdated() {
   }
 
-  // when a user joins a group, the groups main calendar needs to be shared to them.
   async joinGroup(){
     // Get Code
     let group_code = (this.shadowRoot!.getElementById("code_field") as any).value.toUpperCase();

@@ -252,10 +252,8 @@ export class AppJoinerror extends LitElement implements BeforeEnterObserver {
 
       }
     } else {
-
+      Router.go("/join-group/error");
     }
-
-    // Route to selection
   }
 
   render() {

@@ -577,7 +577,7 @@ export async function pushEventToCurrentUser(event: any){
     await setDoc(uref, {
         details: uitem.data().details,
         groupCode: uitem.data().groupCode,
-        isAdmin: false,
+        isAdmin: uitem.data().isAdmin,
         cal_id: uitem.data().cal_id,
         group_id: uitem.data().group_id,
         uid: uitem.data().uid,

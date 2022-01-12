@@ -191,6 +191,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   #edit-message {
     font-size: 12px;
     margin: 0;
+    font-weight: bold;
   }
 
   #s-box select {

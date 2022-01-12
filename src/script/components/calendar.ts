@@ -191,8 +191,8 @@ export class AppCalendar extends LitElement {
       #login {
         display: flex;
         align-items: center;
-        justify-content: right;
-        margin-right: 10px;
+        justify-content: center;
+        margin-left: 10px;
       }
 
       #calHolder {
@@ -490,7 +490,105 @@ export class AppCalendar extends LitElement {
     background-color: #ddbdd5
   }
 
+  #m-wholeWrapper {
+    display: none;
+  }
 
+  @media(max-width: 1100px){
+    #users {
+      display: none;
+    }
+    #calHolder{
+      grid-template-columns: 7fr 2fr;
+    }
+    #calGrid{
+      width: 100%;
+    }
+    #events {
+      width: 100%;
+    }
+  }
+
+  @media(max-width: 900px){
+
+    #calHeader {
+      padding: 10px;
+      width: 98vw;
+    }
+
+    #days_headers {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(50px, 150px));
+      grid-template-rows: repeat(1, minmax(25px, 50px));
+      border-bottom: 1px solid black;
+    }
+
+    #calGrid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(50px, 150px));
+      grid-template-rows:  repeat(5, auto-fill);
+      height: 100%;
+    }
+
+
+  }
+
+
+  @media(max-width: 450px){
+    #events {
+      display: none;
+    }
+
+    #login {
+      display: none;
+    }
+
+    #groupName {
+      font-size: 14px;
+    }
+
+    #calHeader {
+      padding: 0;
+      width: 100vw;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    #current-date{
+      font-size: 18px;
+    }
+
+    .icon-label {
+      font-size: 12px;
+    }
+
+
+    #days_headers {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(10px, 60px));
+      grid-template-rows: repeat(1, minmax(25px, 50px));
+      border-bottom: 1px solid black;
+    }
+
+    .day_header {
+      font-size: 10px;
+    }
+
+    #calHolder {
+      display: flex;
+      width: 100%;
+    }
+
+    #calendar {
+      width: 100%;
+    }
+
+    #calGrid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(10px, 60px));
+      grid-template-rows:  repeat(5, auto-fill);
+      height: 100%;
+    }
+  }
         `;
 
   }
@@ -696,115 +794,119 @@ export class AppCalendar extends LitElement {
 
   render() {
     return html`
-        <div id="wholeWrapper">
-          <div id="calHeader">
-            <div id="left-sec">
-              ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
-            </div>
-            <div id="middle-sec">
-              <h1 id="current-date">${this.monthName} ${this.year}</h1>
-              <div id="calIcons">
-                <span id="jump" @click=${() => this.jumpToToday()}>
-                  <ion-icon name="today-outline" style="font-size: 24px;"></ion-icon>
-                  <p class="icon-label">Jump to Today</p>
-                </span>
+      <div id="wholeWrapper">
+        <div id="calHeader">
+          <div id="login">
+            <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
+            <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+            <mgt-login></mgt-login>
+          </div>
 
-                <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
-                  <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
-                  <p class="icon-label">Change Date</p>
-                  <div id="switcher-box">
-                    <div id="year-sec">
-                      <span id="year">${this.year}</span>
-                      <span id="arrows">
-                        <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
-                        <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
-                      </span>
-                    </div>
-                    <div id="months-sec">
-                      ${months.map(
-                        (month: any, index: any) =>
-                          html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
-                        )}
-                    </div>
+          <div id="middle-sec">
+            <h1 id="current-date">${this.monthName} ${this.year}</h1>
+            <div id="calIcons">
+              <span id="jump" @click=${() => this.jumpToToday()}>
+                <ion-icon name="today-outline" style="font-size: 24px;"></ion-icon>
+                <p class="icon-label">Jump to Today</p>
+              </span>
+
+              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
+                <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
+                <p class="icon-label">Change Date</p>
+                <div id="switcher-box">
+                  <div id="year-sec">
+                    <span id="year">${this.year}</span>
+                    <span id="arrows">
+                      <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
+                      <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
+                    </span>
+                  </div>
+                  <div id="months-sec">
+                    ${months.map(
+                      (month: any, index: any) =>
+                        html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
+                      )}
                   </div>
                 </div>
               </div>
             </div>
-            <div id="login">
-              <mgt-login></mgt-login>
-              <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
-              <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+          </div>
+
+          <div id="left-sec">
+            ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
+          </div>
+        </div> <!-- closes id = calHeader-->
+
+        <div id="calHolder">
+          <div id="users">
+            <div id="users-header">
+              <h2>Users</h2>
+            </div>
+            <ul id="user-list">
+              ${this.members.map((member: any) =>
+                html`<li class="user-list-item">
+                        <mgt-person .personDetails=${member.details} view="twoLines" person-card="hover">
+                          <template data-type="loading"><span class="loader-card"></span></template>
+                        </mgt-person>
+                      </li>`)}
+            </ul>
+          </div>
+
+          <div id="calendar">
+            <div id="days_headers">
+                ${this._daysTemplate}
+            </div>
+            <div id="calGrid">
+              ${this._calendarTemplate.map((cell: any) => html`${cell}`)}
             </div>
           </div>
 
-          <div id="calHolder">
-            <div id="users">
-              <div id="users-header">
-                <h2>Users</h2>
-              </div>
-              <ul id="user-list">
-                ${this.members.map((member: any) =>
-                  html`<li class="user-list-item">
-                          <mgt-person .personDetails=${member.details} view="twoLines" person-card="hover">
-                            <template data-type="loading"><span class="loader-card"></span></template>
-                          </mgt-person>
-                        </li>`)}
-              </ul>
+          <div id="events">
+            <h2>Today's Events</h2>
+            <div id="agendaHolder">
+              <mgt-agenda days=1 preferred-timezone="Eastern Standard Time" event-query=${this.event_query}>
+                <template data-type="loading"><span class="loader"></span></template>
+                <template data-type="no-data">No events found for this day!</template>
+              </mgt-agenda>
             </div>
+            <div id="addEvent">
+              <button id="addButton" @click=${() => Router.go("/new_event")}>Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
+            </div>
+        </div>
 
-            <div id="calendar">
-              <div id="days_headers">
-                  ${this._daysTemplate}
-              </div>
-              <div id="calGrid">
-                ${this._calendarTemplate.map((cell: any) => html`${cell}`)}
-              </div>
-            </div>
+      </div> <!-- closes wholeWrapper -->
 
-            <div id="events">
-              <h2>Today's Events</h2>
-              <div id="agendaHolder">
-                <mgt-agenda days=1 preferred-timezone="Eastern Standard Time" event-query=${this.event_query}>
-                  <template data-type="loading"><span class="loader"></span></template>
-                  <template data-type="no-data">No events found for this day!</template>
-                </mgt-agenda>
-              </div>
-              <div id="addEvent">
-                <button id="addButton" @click=${() => Router.go("/new_event")}>Add New Event <ion-icon name="add-circle-outline" style="margin-left: 5px;"></ion-icon></button>
-              </div>
-            </div>
-          </div>
-          ${this.showLeaveModal ?
-          html`
-            <div class="modal-box">
-              ${this.showLeaveLoader ? html`<span class="loader"></span>` :
-              this.members.length != 1 ?
-                this.notEnoughAdmins ?
-                html`
-                  <p>You are the only admin of the group. You must first reassign this role on the settings page in order to proceed.</p>
-                  <slot>
-                    <button @click=${() => this.handleLeaveResult(false)}>Cancel</button>
-                    <button @click=${() => Router.go("/settings")}>Go to Settings</button>
-                  </slot>
-                `:
-                html`
-                  <p>Are you sure you want to leave the group?</p>
-                  <slot>
-                    <button @click=${() => this.handleLeaveResult(false)}>No</button>
-                    <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
-                  </slot>
-                ` :
+        ${this.showLeaveModal ?
+        html`
+          <div class="modal-box">
+            ${this.showLeaveLoader ? html`<span class="loader"></span>` :
+            this.members.length != 1 ?
+              this.notEnoughAdmins ?
               html`
-                <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
+                <p>You are the only admin of the group. You must first reassign this role on the settings page in order to proceed.</p>
+                <slot>
+                  <button @click=${() => this.handleLeaveResult(false)}>Cancel</button>
+                  <button @click=${() => Router.go("/settings")}>Go to Settings</button>
+                </slot>
+              `:
+              html`
+                <p>Are you sure you want to leave the group?</p>
                 <slot>
                   <button @click=${() => this.handleLeaveResult(false)}>No</button>
-                  <button @click=${() => this.handleDeleteGroup()}>Yes</button>
+                  <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
                 </slot>
-              `}
-          </div>
-          ` :
-          html``}
+              ` :
+            html`
+              <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
+              <slot>
+                <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                <button @click=${() => this.handleDeleteGroup()}>Yes</button>
+              </slot>
+            `}
         </div>
+        ` :
+        html``}
+
     `;
   }
 }
