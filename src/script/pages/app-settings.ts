@@ -397,6 +397,12 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     background-color: #ddbdd5
   }
 
+  @media(max-width: 1100px){
+    .modal-box {
+      width: 50vw;
+    }
+  }
+
     `;
   }
 

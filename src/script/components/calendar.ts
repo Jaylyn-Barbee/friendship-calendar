@@ -28,6 +28,7 @@ export class AppCalendar extends LitElement {
     @state() showLeaveModal: any = false;
     @state() showLeaveLoader: any = false;
     @state() notEnoughAdmins: any = false;
+    @state() flyoutMenu: any;
 
   static get styles() {
     return css`
@@ -490,22 +491,104 @@ export class AppCalendar extends LitElement {
     background-color: #ddbdd5
   }
 
-  #m-wholeWrapper {
+  #hamburger-header {
     display: none;
+    background: #DDBDD5;
+    justify-content: space;
+    align-items: center;
+    width: 98vw;
+    height: 75px;
+    padding: 10px;
   }
 
+  #hamburger:hover {
+    cursor: pointer;
+  }
+
+  #flyoutMenu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate3d(100vw, 0, 0);
+    transition: transform 1s cubic-bezier(0, .52, 0, 1);
+
+    width: 35vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    background: rgb(248, 248, 248);
+    z-index: 1;
+
+  }
+
+  #flyoutMenu.show {
+    transform: translate3d(65vw, 0, 0);
+    box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+  }
+
+  #menu-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  #flyout-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 24px;
+  }
+
+  #flyout-login p {
+    margin: 0;
+    margin-bottom: 10px;
+  }
+
+  .menu-item {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .menu-item p {
+    margin-left: 5px;
+    font-size: 24px;
+    margin: 10px 0;
+  }
+
+  #menu-calendar-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+
   @media(max-width: 1100px){
+    #calHeader {
+      display: none;
+    }
+
+    #hamburger-header {
+      display: flex;
+    }
+
     #users {
       display: none;
     }
     #calHolder{
       grid-template-columns: 7fr 2fr;
+      padding-left: 3px;
     }
-    #calGrid{
-      width: 100%;
-    }
-    #events {
-      width: 100%;
+    .modal-box {
+      width: 50vw;
     }
   }
 
@@ -792,6 +875,17 @@ export class AppCalendar extends LitElement {
 
   }
 
+  showMenu() {
+    console.log("called");
+    this.flyoutMenu = this.shadowRoot?.getElementById("flyoutMenu");
+    this.flyoutMenu.classList.add("show");
+  }
+
+  closeOut(e: any){
+    e.stopPropagation();
+    this.shadowRoot!.getElementById("flyoutMenu")!.classList.remove("show");
+  }
+
   render() {
     return html`
       <div id="wholeWrapper">
@@ -836,6 +930,68 @@ export class AppCalendar extends LitElement {
             ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
           </div>
         </div> <!-- closes id = calHeader-->
+
+        <div id="hamburger-header">
+          <div id="spacer"></div>
+          <div id="middle-sec">
+            <h1 id="current-date">${this.monthName} ${this.year}</h1>
+            <div id="calIcons">
+              <span id="jump" @click=${() => this.jumpToToday()}>
+                <ion-icon name="today-outline" style="font-size: 24px;"></ion-icon>
+                <p class="icon-label">Jump to Today</p>
+              </span>
+
+              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
+                <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
+                <p class="icon-label">Change Date</p>
+                <div id="switcher-box">
+                  <div id="year-sec">
+                    <span id="year">${this.year}</span>
+                    <span id="arrows">
+                      <ion-icon name="arrow-up-outline"  @click=${() => this.changeDate(this.monthIndex, (this.year + 1))}></ion-icon>
+                      <ion-icon name="arrow-down-outline" @click=${() => this.changeDate(this.monthIndex, (this.year - 1))}></ion-icon>
+                    </span>
+                  </div>
+                  <div id="months-sec">
+                    ${months.map(
+                      (month: any, index: any) =>
+                        html`<p class="short-month" @click=${() => this.changeDate(index, this.year)}>${(month.name as string).substring(0, 3)}</p>`
+                      )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="hamburger" @click=${() => this.showMenu()}>
+            <ion-icon name="menu" style="font-size: 32px"></ion-icon>
+          </div>
+        </div>
+
+        <div id="flyoutMenu">
+          <div id="menu-top">
+            <ion-icon name="close-outline" @click=${(e: any) => this.closeOut(e)}></ion-icon>
+          </div>
+          <div id="menu-bottom">
+            <div>
+              <div id="menu-calendar-title">
+                ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
+              </div>
+              <div class="menu-item">
+                <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
+                <p>Settings</p>
+              </div>
+              <div class="menu-item" @click=${() => this.handleLeaveGroup()}>
+                <ion-icon name="exit-outline" style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+                <p>Leave Group</p>
+              </div>
+            </div>
+            <div id="flyout-login">
+              <p>Click below to sign out:</p>
+              <mgt-login></mgt-login>
+            </div>
+          </div>
+        </div>
 
         <div id="calHolder">
           <div id="users">
