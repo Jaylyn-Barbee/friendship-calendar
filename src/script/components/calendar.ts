@@ -1,11 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import { months, days_of_week, current_date, daysInMonth, setHighlightedDay } from '../services/data';
-import { deleteGroup, getAdmins, getCalendarGroupId, getGroupCode, getGroupEvents, getGroupMembersInformation, getGroupName, getMainCalendarId, getUserEvents, isUserAdmin, removeUser, updatedUserEvents } from '../services/database';
+import { deleteEventsFromDB, deleteGroup, getAdmins, getCalendarGroupId, getGroupCode, getGroupEvents, getGroupMembersInformation, getGroupName, getMainCalendarId, getUserEvents, isUserAdmin, removeUser, updatedUserEvents } from '../services/database';
 import { provider } from '../services/provider';
 import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
-import { createNewEvents, getCurrentUserId } from '../services/calendar-api';
+import { createNewEvents, deleteEvent, getCurrentUserId } from '../services/calendar-api';
 
 @customElement('app-calendar')
 export class AppCalendar extends LitElement {
@@ -26,6 +26,10 @@ export class AppCalendar extends LitElement {
     @state() event_query: any = "";
     @state() day_limit: any = "";
     @state() showLeaveModal: any = false;
+    @state() showDeleteEventModal: any = false;
+    @state() showDeleteEventLoader: any = false;
+    @state() id_tobe_deleted: any = "";
+    @state() eventObjectToBeDeleted: any = "";
     @state() showLeaveLoader: any = false;
     @state() notEnoughAdmins: any = false;
     @state() flyoutMenu: any;
@@ -282,6 +286,10 @@ export class AppCalendar extends LitElement {
       }
 
       app-cell:hover {
+        cursor: pointer;
+      }
+
+      mgt-agenda:hover{
         cursor: pointer;
       }
 
@@ -695,7 +703,32 @@ export class AppCalendar extends LitElement {
     this.calendar_id = await getMainCalendarId();
     this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'"
     await this.syncEvents();
+
+    this.shadowRoot!.querySelector('mgt-agenda')!.addEventListener('eventClick', (e: any) => {
+      this.handleDeleteEvent(e.detail.event);
+    });
+
     this.requestUpdate();
+  }
+
+  handleDeleteEvent(event: any){
+    this.id_tobe_deleted = event.id;
+    this.showDeleteEventModal = true;
+
+    this.eventObjectToBeDeleted = {
+      subject: event.subject,
+      body: event.body,
+      start: event.start,
+      end: event.end,
+      location: event.location,
+      attendees: event.attendees
+    };
+
+  }
+
+  async handleDeleteEventAction(){
+    //await deleteEvent(this.id_tobe_deleted);
+    await deleteEventsFromDB(this.eventObjectToBeDeleted);
   }
 
   async syncEvents(){
@@ -1062,6 +1095,21 @@ export class AppCalendar extends LitElement {
         </div>
         ` :
         html``}
+
+      ${this.showDeleteEventModal ?
+          html`
+            <div class="modal-box">
+            ${this.showDeleteEventLoader ? html`<span class="loader"></span>` :
+            html`
+              <p>Are you sure you want to delete this event?</p>
+              <slot>
+                <button @click=${() => this.showDeleteEventModal = false}>No</button>
+                <button @click=${() => this.handleDeleteEventAction()}>Yes</button>
+              </slot>
+          `}
+          </div>
+          ` :
+          html``}
 
     `;
   }

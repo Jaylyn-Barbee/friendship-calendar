@@ -584,3 +584,37 @@ export async function pushEventToCurrentUser(event: any){
         user_events: updated_events
     });
 }
+
+export async function deleteEventsFromDB(event: any){
+    let uid = await getCurrentUserId();
+    const usersRef = collection(db, "users");
+    const uq = query(usersRef, where("uid", "==", uid));
+
+    const uquerySnapshot = await getDocs(uq);
+
+    let uitem: any;
+    uquerySnapshot.forEach((docu: any) => {
+        // doc.data() is never undefined for query doc snapshots
+        uitem = docu;
+    });
+
+    let uref = doc(db, 'users', uitem.id);
+    let updated_events: any = uitem.data().user_events;
+    updated_events.push(event);
+
+    console.log("e", event);
+
+    console.log("before:", updated_events)
+    updated_events.filter( (e: any) => e !== event);
+    console.log("after:", updated_events)
+
+    /* await setDoc(uref, {
+        details: uitem.data().details,
+        groupCode: uitem.data().groupCode,
+        isAdmin: uitem.data().isAdmin,
+        cal_id: uitem.data().cal_id,
+        group_id: uitem.data().group_id,
+        uid: uitem.data().uid,
+        user_events: updated_events
+    }); */
+}

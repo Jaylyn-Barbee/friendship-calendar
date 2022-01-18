@@ -140,3 +140,7 @@ export async function getCurrentUsersCalendars(){
     let calDetails = await graphClient.api('me/calendars').get();
     return calDetails.value;
 }
+
+export async function deleteEvent(id: any){
+    await graphClient.api('/me/events/' + id).delete();
+}
