@@ -98,9 +98,10 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
         }
     }
 
-    await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
-    await pushEventToGroup(event);
-    await pushEventToCurrentUser(event);
+    let event_resp = await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
+    let event_id = event_resp.id;
+    await pushEventToGroup(event_id);
+    await pushEventToCurrentUser(event_id);
 }
 
 export async function createNewEvents(new_events: any){

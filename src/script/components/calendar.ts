@@ -28,8 +28,8 @@ export class AppCalendar extends LitElement {
     @state() showLeaveModal: any = false;
     @state() showDeleteEventModal: any = false;
     @state() showDeleteEventLoader: any = false;
+    @state() showDeleteEventError: any = false;
     @state() id_tobe_deleted: any = "";
-    @state() eventObjectToBeDeleted: any = "";
     @state() showLeaveLoader: any = false;
     @state() notEnoughAdmins: any = false;
     @state() flyoutMenu: any;
@@ -714,28 +714,26 @@ export class AppCalendar extends LitElement {
   handleDeleteEvent(event: any){
     this.id_tobe_deleted = event.id;
     this.showDeleteEventModal = true;
-
-    this.eventObjectToBeDeleted = {
-      subject: event.subject,
-      body: event.body,
-      start: event.start,
-      end: event.end,
-      location: event.location,
-      attendees: event.attendees
-    };
-
   }
 
   async handleDeleteEventAction(){
-    //await deleteEvent(this.id_tobe_deleted);
-    await deleteEventsFromDB(this.eventObjectToBeDeleted);
+    this.showDeleteEventLoader = true;
+    try{
+      await deleteEvent(this.id_tobe_deleted);
+      await deleteEventsFromDB(this.id_tobe_deleted);
+      this.showDeleteEventLoader = false;
+      this.showDeleteEventModal = false;
+    } catch(error: any){
+      this.showDeleteEventLoader = false;
+      this.showDeleteEventError = true;
+    }
+
   }
 
   async syncEvents(){
     const savedValue = sessionStorage.getItem('EventsSyncd');
 
     if (JSON.parse(savedValue as string) !== true) {
-      console.log("key not found")
       sessionStorage.setItem('EventsSyncd', JSON.stringify(true));
 
       let group_events = await getGroupEvents();
@@ -1099,17 +1097,18 @@ export class AppCalendar extends LitElement {
       ${this.showDeleteEventModal ?
           html`
             <div class="modal-box">
-            ${this.showDeleteEventLoader ? html`<span class="loader"></span>` :
-            html`
-              <p>Are you sure you want to delete this event?</p>
-              <slot>
-                <button @click=${() => this.showDeleteEventModal = false}>No</button>
-                <button @click=${() => this.handleDeleteEventAction()}>Yes</button>
-              </slot>
-          `}
-          </div>
-          ` :
-          html``}
+            ${this.showDeleteEventLoader ?
+              html`<span class="loader"></span>` :
+              html`
+                <p>Are you sure you want to delete this event?</p>
+                ${this.showDeleteEventError ? html`<p style="color: red; font-weight: bold;">The was an error deleting this event. Check your network connection and try again.</p>` : html``}
+                <slot>
+                  <button @click=${() => this.showDeleteEventModal = false}>No</button>
+                  <button @click=${() => this.handleDeleteEventAction()}>Yes</button>
+                </slot>`
+            }
+            </div>` :
+          html`` }
 
     `;
   }

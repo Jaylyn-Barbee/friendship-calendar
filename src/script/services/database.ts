@@ -530,7 +530,7 @@ export async function deleteGroup(code: string){
 
 }
 
-export async function pushEventToGroup(event: any){
+export async function pushEventToGroup(event_id: any){
     let userId = await getCurrentUserId();
     const groupsRef = collection(db, "groups");
     const q = query(groupsRef, where("members", "array-contains", userId));
@@ -545,7 +545,7 @@ export async function pushEventToGroup(event: any){
 
     let ref = doc(db, 'groups', item.id);
     let updated_events = item.data().group_events;
-    updated_events.push(event);
+    updated_events.push(event_id);
 
     await setDoc(ref, {
         group_name: item.data().group_name,
@@ -557,7 +557,7 @@ export async function pushEventToGroup(event: any){
     });
 }
 
-export async function pushEventToCurrentUser(event: any){
+export async function pushEventToCurrentUser(event_id: any){
     let uid = await getCurrentUserId();
     const usersRef = collection(db, "users");
     const uq = query(usersRef, where("uid", "==", uid));
@@ -572,7 +572,7 @@ export async function pushEventToCurrentUser(event: any){
 
     let uref = doc(db, 'users', uitem.id);
     let updated_events = uitem.data().user_events;
-    updated_events.push(event);
+    updated_events.push(event_id);
 
     await setDoc(uref, {
         details: uitem.data().details,
@@ -585,36 +585,59 @@ export async function pushEventToCurrentUser(event: any){
     });
 }
 
-export async function deleteEventsFromDB(event: any){
-    let uid = await getCurrentUserId();
-    const usersRef = collection(db, "users");
-    const uq = query(usersRef, where("uid", "==", uid));
+export async function deleteEventsFromDB(event_id: any){
+    let userId = await getCurrentUserId();
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("members", "array-contains", userId));
 
-    const uquerySnapshot = await getDocs(uq);
+    const querySnapshot = await getDocs(q);
 
-    let uitem: any;
-    uquerySnapshot.forEach((docu: any) => {
+    let item: any;
+    querySnapshot.forEach((docu: any) => {
         // doc.data() is never undefined for query doc snapshots
-        uitem = docu;
+        item = docu;
     });
 
-    let uref = doc(db, 'users', uitem.id);
-    let updated_events: any = uitem.data().user_events;
-    updated_events.push(event);
+    let ref = doc(db, 'groups', item.id);
+    let updated_events: any = item.data().group_events;
+    let filtered_events = updated_events.filter( (eid: any) => eid !== event_id);
 
-    console.log("e", event);
+    await setDoc(ref, {
+        group_name: item.data().group_name,
+        join_code: item.data().join_code,
+        members: item.data().members,
+        admins: item.data().admins,
+        default_tz: item.data().default_tz,
+        group_events: filtered_events
+    });
 
-    console.log("before:", updated_events)
-    updated_events.filter( (e: any) => e !== event);
-    console.log("after:", updated_events)
+    let mem_arr = item.data().members;
+    for(let i = 0; i < mem_arr.length; i++){
+        let uid = mem_arr[i];
+        const usersRef = collection(db, "users");
+        const uq = query(usersRef, where("uid", "==", uid));
 
-    /* await setDoc(uref, {
-        details: uitem.data().details,
-        groupCode: uitem.data().groupCode,
-        isAdmin: uitem.data().isAdmin,
-        cal_id: uitem.data().cal_id,
-        group_id: uitem.data().group_id,
-        uid: uitem.data().uid,
-        user_events: updated_events
-    }); */
+        const uquerySnapshot = await getDocs(uq);
+
+        let uitem: any;
+        uquerySnapshot.forEach((docu: any) => {
+            // doc.data() is never undefined for query doc snapshots
+            uitem = docu;
+        });
+
+        let uref = doc(db, 'users', uitem.id);
+        let updated_events = uitem.data().user_events;
+        let ufiltered_events = updated_events.filter( (eid: any) => eid !== event_id);
+
+        await setDoc(uref, {
+            details: uitem.data().details,
+            groupCode: uitem.data().groupCode,
+            isAdmin: uitem.data().isAdmin,
+            cal_id: uitem.data().cal_id,
+            group_id: uitem.data().group_id,
+            uid: uitem.data().uid,
+            user_events: ufiltered_events
+        });
+    }
+
 }
