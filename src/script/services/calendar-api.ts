@@ -100,8 +100,14 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
 
     let event_resp = await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     let event_id = event_resp.id;
-    await pushEventToGroup(event_id);
-    await pushEventToCurrentUser(event_id);
+
+    let db_event_obj = {
+        id: event_id,
+        event: event
+    }
+
+    await pushEventToGroup(db_event_obj);
+    await pushEventToCurrentUser(db_event_obj);
 }
 
 export async function createNewEvents(new_events: any){

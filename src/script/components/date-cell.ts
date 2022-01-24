@@ -1,12 +1,14 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
 import { months } from "../services/data"
+import { getGroupEvents } from '../services/database';
 // import { areThereEventsToday } from "../services/calendar-api"
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
   @state() date: any;
   @state() week_day: any;
+  @state() event_today: any;
   @property() day: any;
   @property() month: any;
   @property() year: any;
@@ -33,7 +35,7 @@ export class AppCell extends LitElement {
             align-items: baseline;
             grid-column: 2;
             width: 100%;
-            height: 95%;
+            height: 50%;
             font-size: 24px;
             font-weight: bolder;
         }
@@ -42,7 +44,6 @@ export class AppCell extends LitElement {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 50%;
         }
         #today-cell {
             height: 100%;
@@ -53,6 +54,19 @@ export class AppCell extends LitElement {
         }
         .inactive {
             background: white;
+        }
+
+        @media(max-width: 450px){
+
+            #day {
+                font-size: 12px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #bottom {
+                font-size: 12px;
+            }
         }
 
 
@@ -67,9 +81,20 @@ export class AppCell extends LitElement {
 
   async firstUpdated(){
 
-    //this.event_today = await areThereEventsToday(this.day, this.month, this.year);
+    await this.areThereEventsToday(this.day, this.month, this.year);
 
-      this.requestUpdate;
+    this.requestUpdate;
+  }
+
+  async areThereEventsToday(day: any, month: any, year: any){
+
+    let today = year + "-" + ("00" + ((month + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2);
+    let event_list = await getGroupEvents();
+    event_list = event_list.map((e: any) => e.event.start.dateTime.split("T")[0]);
+
+    let hit_list = event_list.filter( (date: any) => date === today);
+
+    this.event_today = hit_list.length > 0;
   }
 
   handleClick(e: any) {
@@ -95,12 +120,18 @@ export class AppCell extends LitElement {
         <div id="cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat"></div>
             <span id="day">${this.day}</span>
+            <span id="bottom">
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+            </span>
         </div>`
         :
         html`
         <div id="today-cell" @click=${(e: any) => this.handleClick(e)}>
             <div id="hat" class="color"></div>
             <span id="day">${this.day}</span>
+            <span id="bottom">
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+            </span>
         </div>`
     }
     `;

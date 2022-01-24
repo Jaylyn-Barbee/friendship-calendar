@@ -600,7 +600,7 @@ export async function deleteEventsFromDB(event_id: any){
 
     let ref = doc(db, 'groups', item.id);
     let updated_events: any = item.data().group_events;
-    let filtered_events = updated_events.filter( (eid: any) => eid !== event_id);
+    let filtered_events = updated_events.filter( (event: any) => event.id !== event_id);
 
     await setDoc(ref, {
         group_name: item.data().group_name,
@@ -627,7 +627,7 @@ export async function deleteEventsFromDB(event_id: any){
 
         let uref = doc(db, 'users', uitem.id);
         let updated_events = uitem.data().user_events;
-        let ufiltered_events = updated_events.filter( (eid: any) => eid !== event_id);
+        let ufiltered_events = updated_events.filter( (event: any) => event.id !== event_id);
 
         await setDoc(uref, {
             details: uitem.data().details,

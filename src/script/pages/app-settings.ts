@@ -213,6 +213,11 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     cursor: not-allowed;
   }
 
+  #table-holder {
+    width: 100%;
+    overflow-x: scroll;
+  }
+
   th {
     text-align: center;
   }
@@ -400,6 +405,21 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @media(max-width: 1100px){
     .modal-box {
       width: 50vw;
+    }
+  }
+
+  @media(max-width: 450px){
+    #s-box {
+      padding: 20px;
+      width: 75vw;
+    }
+
+    th {
+      font-size: 12px;
+    }
+
+    td {
+      font-size: 10px;
     }
   }
 
@@ -622,34 +642,36 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                   ${zoneMappings.map((zone: any) => this.timezone === zone ? html`<option value="${zone}" selected>${zone}</option>` : html`<option value="${zone}">${zone}</option>`)}
               </select>
 
-              <table>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Member Email</th>
-                  <th>Toggle Admin</th>
-                  <th>Remove User</th>
-                </tr>
-
-                ${this.memberDetails.map((member: any) =>
-                  html`
+              <div id="table-holder">
+                <table>
                   <tr>
-                    <td>${member.details.displayName}</td>
-                    <td>${member.details.mail}</td>
-                    <td>
-                      <label class="switch">
-                        ${this.getInput(member)}
-                        <span class="slider round"></span>
-                      </label>
-                    </td>
-                    <td>
-                      ${this.inputState && this.memberDetails.length > 1 ?
-                        html`<ion-icon class="remover-enabled" @click=${() => this.startRemovalProcess(member)} name="close"></ion-icon>` :
-                        html`<ion-icon class="remover-disabled" name="close"></ion-icon>`
-                      }
-                    </td>
-                  </tr>`
-                )}
-              </table>
+                    <th>Member Name</th>
+                    <th>Member Email</th>
+                    <th>Toggle Admin</th>
+                    <th>Remove User</th>
+                  </tr>
+
+                  ${this.memberDetails.map((member: any) =>
+                    html`
+                    <tr>
+                      <td>${member.details.displayName}</td>
+                      <td>${member.details.mail}</td>
+                      <td>
+                        <label class="switch">
+                          ${this.getInput(member)}
+                          <span class="slider round"></span>
+                        </label>
+                      </td>
+                      <td>
+                        ${this.inputState && this.memberDetails.length > 1 ?
+                          html`<ion-icon class="remover-enabled" @click=${() => this.startRemovalProcess(member)} name="close"></ion-icon>` :
+                          html`<ion-icon class="remover-disabled" name="close"></ion-icon>`
+                        }
+                      </td>
+                    </tr>`
+                  )}
+                </table>
+              </div>
             `}
         </div>
         ${this.showConfirmAdminModal ?

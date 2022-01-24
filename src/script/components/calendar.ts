@@ -112,11 +112,25 @@ export class AppCalendar extends LitElement {
         position: absolute;
         top: 25px;
         left: 0%;
-
+        z-index: 1;
         box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+
       }
 
-      #switcher-box {
+      #h-switcher-box {
+        display: none;
+        width: 180px;
+        height: 180px;
+        background-color: #F1E4EE;
+        padding: 10px;
+        position: absolute;
+        top: 25px;
+        left: 0%;
+        z-index: 1;
+        box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
@@ -564,6 +578,10 @@ export class AppCalendar extends LitElement {
     justify-content: flex-start;
   }
 
+  .menu-item:hover {
+    cursor: pointer;
+  }
+
   .menu-item p {
     margin-left: 5px;
     font-size: 24px;
@@ -626,8 +644,30 @@ export class AppCalendar extends LitElement {
 
 
   @media(max-width: 450px){
+
     #events {
-      display: none;
+      height: 40%;
+    }
+
+    #events h2 {
+      margin-top: 10px;
+    }
+
+    #agendaHolder {
+      height: 70%
+    }
+
+    #addEvent {
+      height: 20%
+    }
+
+    #calHolder{
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #calendar {
+      height: 60%;
     }
 
     #login {
@@ -649,6 +689,19 @@ export class AppCalendar extends LitElement {
     }
 
     .icon-label {
+      font-size: 12px;
+    }
+
+    #hamburger-header {
+      width: 95vw;
+      padding-bottom: 0;
+    }
+
+    .menu-item p{
+      font-size: 16px;
+    }
+
+    #flyout-login p {
       font-size: 12px;
     }
 
@@ -701,7 +754,7 @@ export class AppCalendar extends LitElement {
     this.members = await getGroupMembersInformation();
     this.calendar_group_id = await getCalendarGroupId();
     this.calendar_id = await getMainCalendarId();
-    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'"
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'&$orderby=start/dateTime "
     await this.syncEvents();
 
     this.shadowRoot!.querySelector('mgt-agenda')!.addEventListener('eventClick', (e: any) => {
@@ -818,7 +871,7 @@ export class AppCalendar extends LitElement {
     // updating day for the purpose of showing events
     this.date_string = day;
     this.day_limit = limit;
-    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'";
+    this.event_query = "me/calendarGroups/" + this.calendar_group_id + "/calendars/" + this.calendar_id + "/events?$filter=start/dateTime ge \'" + this.date_string + "\' and start/dateTime lt \'" + this.day_limit + "\'or end/dateTime ge \'" + this.date_string + "\' and end/dateTime lt \'" + this.day_limit +"\'&$orderby=start/dateTime";
     setHighlightedDay(day);
     // updating style on highlighted day
     this.handleHighlightedDay(cell, false)
@@ -860,8 +913,14 @@ export class AppCalendar extends LitElement {
 
   }
 
-  toggleSwitcher() {
-    let switcher = this.shadowRoot!.getElementById("switcher-box");
+  toggleSwitcher(diff: any) {
+    let switcher;
+    if(diff.length > 0){
+      switcher = this.shadowRoot!.getElementById(diff + "switcher-box");
+
+    } else {
+      switcher = this.shadowRoot!.getElementById("switcher-box");
+    }
 
     if(switcher!.style.display === ""){
       switcher!.style.display = "flex";
@@ -935,7 +994,7 @@ export class AppCalendar extends LitElement {
                 <p class="icon-label">Jump to Today</p>
               </span>
 
-              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
+              <div id="switcher-icon" @click=${() => this.toggleSwitcher("")}>
                 <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
                 <p class="icon-label">Change Date</p>
                 <div id="switcher-box">
@@ -972,10 +1031,10 @@ export class AppCalendar extends LitElement {
                 <p class="icon-label">Jump to Today</p>
               </span>
 
-              <div id="switcher-icon" @click=${() => this.toggleSwitcher()}>
+              <div id="switcher-icon" @click=${() => this.toggleSwitcher("h-")}>
                 <ion-icon  name="calendar-outline" style="font-size: 24px;"></ion-icon>
                 <p class="icon-label">Change Date</p>
-                <div id="switcher-box">
+                <div id="h-switcher-box">
                   <div id="year-sec">
                     <span id="year">${this.year}</span>
                     <span id="arrows">
@@ -1008,12 +1067,12 @@ export class AppCalendar extends LitElement {
               <div id="menu-calendar-title">
                 ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
               </div>
-              <div class="menu-item">
-                <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
+              <div class="menu-item"  @click=${() => Router.go("/settings")}>
+                <ion-icon name="settings" style="font-size: 24px; margin: 0 10px;"></ion-icon>
                 <p>Settings</p>
               </div>
               <div class="menu-item" @click=${() => this.handleLeaveGroup()}>
-                <ion-icon name="exit-outline" style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+                <ion-icon name="exit-outline" style="font-size: 24px; margin: 0 10px; color: red; font-weight: bold;"></ion-icon>
                 <p>Leave Group</p>
               </div>
             </div>
@@ -1061,7 +1120,7 @@ export class AppCalendar extends LitElement {
             </div>
         </div>
 
-      </div> <!-- closes wholeWrapper -->
+      </div> <!-- closes wholeWrapper DIV -->
 
         ${this.showLeaveModal ?
         html`
