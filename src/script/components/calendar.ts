@@ -639,29 +639,8 @@ export class AppCalendar extends LitElement {
       height: 100%;
     }
 
-
-  }
-
-
-  @media(max-width: 450px){
-
-    #events {
-      height: 40%;
-    }
-
-    #events h2 {
-      margin-top: 10px;
-    }
-
-    #agendaHolder {
-      height: 70%
-    }
-
-    #addEvent {
-      height: 20%
-    }
-
-    #calHolder{
+    #calHolder {
+      display: flex;
       flex-direction: column;
       height: 100%;
     }
@@ -669,6 +648,27 @@ export class AppCalendar extends LitElement {
     #calendar {
       height: 60%;
     }
+
+    #events{
+      height: 40%;
+    }
+
+    #events h2 {
+      margin-top: 10px;
+    }
+
+    #addEvent {
+      height: 20%
+    }
+
+    #agendaHolder {
+      height: 70%
+    }
+
+  }
+
+
+  @media(max-width: 450px){
 
     #login {
       display: none;
@@ -705,7 +705,6 @@ export class AppCalendar extends LitElement {
       font-size: 12px;
     }
 
-
     #days_headers {
       display: grid;
       grid-template-columns: repeat(7, minmax(10px, 60px));
@@ -715,15 +714,6 @@ export class AppCalendar extends LitElement {
 
     .day_header {
       font-size: 10px;
-    }
-
-    #calHolder {
-      display: flex;
-      width: 100%;
-    }
-
-    #calendar {
-      width: 100%;
     }
 
     #calGrid {

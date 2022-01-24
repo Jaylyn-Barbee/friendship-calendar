@@ -408,6 +408,16 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
+  @media(max-width: 900px){
+    th {
+      font-size: 16px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+  }
+
   @media(max-width: 450px){
     #s-box {
       padding: 20px;
