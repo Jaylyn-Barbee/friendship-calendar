@@ -1,11 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc, enableIndexedDbPersistence } from "firebase/firestore";
+import { env } from "../utils/environment";
 import { getCurrentUserId } from "./calendar-api";
 
 initializeApp({
-    apiKey: "AIzaSyBtw-fshQIcn_Mg4mp2k5aB7eL-qtK6ZsI",
-    authDomain: "friendship-calendar-c0efc.firebaseapp.com",
-    projectId: "friendship-calendar-c0efc",
+    apiKey: env.apiKey,
+    authDomain: env.authDomain,
+    projectId: env.projectId,
 });
 
 const db = getFirestore();

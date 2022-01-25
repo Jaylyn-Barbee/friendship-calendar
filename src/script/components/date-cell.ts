@@ -100,8 +100,6 @@ export class AppCell extends LitElement {
 
   handleClick(e: any) {
 
-    console.log("click event", e);
-
       let stringDate = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2) + "T00:00";
       let limit_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + ((parseInt(this.day) + 1) as number)).slice(-2) + "T00:00";
       let event = new CustomEvent('day-clicked', {

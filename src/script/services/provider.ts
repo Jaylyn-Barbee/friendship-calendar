@@ -1,6 +1,7 @@
 import { Providers, Msal2Provider } from "@microsoft/mgt";
+import { env } from "../utils/environment";
 
-const clientId = 'a9d85621-5a2a-4211-9862-e0375021df83';
+const clientId = env.clientID;
 
 const scopes = [
   'user.read',

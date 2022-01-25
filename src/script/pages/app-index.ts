@@ -6,6 +6,7 @@ import './app-home';
 import { Router } from '@vaadin/router';
 
 import '../components/header';
+import { env } from '../utils/environment';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -60,6 +61,8 @@ export class AppIndex extends LitElement {
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
 
     // For more info on using the @vaadin/router check here https://vaadin.com/router
+    console.log("We are in " + (env.isProduction ? "production" : "development") + " mode.");
+
     const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
     router.setRoutes([
       // temporarily cast to any because of a Type bug with the router

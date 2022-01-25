@@ -18,9 +18,8 @@ export default {
     }),
     replace({
       "preventAssignment": true,
-      "process.env.NODE_ENV": JSON.stringify(
-        process.env.NODE_ENV || "production"
-      ),
+      "window.ENV": JSON.stringify(process.env.NODE_ENV || "production"),
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "production")
     }),
     html(),
     typescript({
