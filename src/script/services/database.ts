@@ -1,31 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc, enableIndexedDbPersistence } from "firebase/firestore";
 import { getCurrentUserId } from "./calendar-api";
-/*
-Your web app's Firebase configuration
-For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBtw-fshQIcn_Mg4mp2k5aB7eL-qtK6ZsI",
-  authDomain: "friendship-calendar-c0efc.firebaseapp.com",
-  projectId: "friendship-calendar-c0efc",
-  storageBucket: "friendship-calendar-c0efc.appspot.com",
-  messagingSenderId: "890395032689",
-  appId: "1:890395032689:web:e1bf4ff6e0882351c6afd0",
-  measurementId: "G-68FCYH7CN8"
-};
-
-Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-*/
 
 initializeApp({
     apiKey: "AIzaSyBtw-fshQIcn_Mg4mp2k5aB7eL-qtK6ZsI",
     authDomain: "friendship-calendar-c0efc.firebaseapp.com",
     projectId: "friendship-calendar-c0efc",
 });
-
-
 
 const db = getFirestore();
 enableIndexedDbPersistence(db)

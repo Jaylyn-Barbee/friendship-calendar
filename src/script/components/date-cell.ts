@@ -35,7 +35,7 @@ export class AppCell extends LitElement {
             align-items: baseline;
             grid-column: 2;
             width: 100%;
-            height: 50%;
+            height: 47.5%;
             font-size: 24px;
             font-weight: bolder;
         }
@@ -44,6 +44,7 @@ export class AppCell extends LitElement {
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 47.5%;
         }
         #today-cell {
             height: 100%;
@@ -98,6 +99,8 @@ export class AppCell extends LitElement {
   }
 
   handleClick(e: any) {
+
+    console.log("click event", e);
 
       let stringDate = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2) + "T00:00";
       let limit_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + ((parseInt(this.day) + 1) as number)).slice(-2) + "T00:00";
