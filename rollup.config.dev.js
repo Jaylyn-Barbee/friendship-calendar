@@ -19,8 +19,11 @@ export default {
       tsconfig: "tsconfig.dev.json",
     }),
     replace({
-      "window.ENV": JSON.stringify(process.env.NODE_ENV || "development"),
-      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development"),
+      __apiKey__ : process.env.apiKey,
+      __authDomain__ : process.env.authDomain,
+      __projectId__: process.env.projectId,
+      __clientID__ : process.env.clientID,
+      __PRODUCTION__ : "__DEVELOPMENT__"
     }),
     copy({
       targets: [
