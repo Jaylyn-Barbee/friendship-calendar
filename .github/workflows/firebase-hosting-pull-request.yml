@@ -8,6 +8,15 @@ jobs:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
     steps:
+      - uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["**/*.ts"]'
+        env:
+          apiKey: ${{ secrets.apiKey }}
+          authDomain: ${{ secrets.authDomain }}
+          clientID: ${{ secrets.clientID }}
+          projectId: ${{ secrets.projectId }}
+          
       - uses: actions/checkout@v2
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
