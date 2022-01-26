@@ -3,9 +3,9 @@ import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, d
 import { getCurrentUserId } from "./calendar-api";
 
 initializeApp({
-    apiKey: "#{apiKey}#",
-    authDomain: "#{authDomain}#",
-    projectId: "#{projectId}#"
+    apiKey: "__apiKey__",
+    authDomain: "__authDomain__",
+    projectId: "__projectId__"
 });
 
 const db = getFirestore();
