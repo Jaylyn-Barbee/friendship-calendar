@@ -1,21 +1,24 @@
 import { Providers, Msal2Provider } from "@microsoft/mgt";
+import { env } from "../utils/environment";
 
-const clientId = '7675d309-afb2-4679-b801-6f9dbf50c4fd';
+const clientId = env.clientID;
 
 const scopes = [
   'user.read',
   'people.read',
-  'user.readbasic.all',
+  'User.ReadBasic.All',
   'contacts.read',
   'calendars.read',
   'Presence.Read.All',
-  'Presence.Read'
+  'Presence.Read',
+  'Calendars.ReadWrite',
+  'Group.ReadWrite.All'
 ]
 
 Providers.globalProvider = new Msal2Provider({
     clientId,
     scopes,
     redirectUri: window.location.origin
-  });
+});
 
 export var provider = Providers.globalProvider;

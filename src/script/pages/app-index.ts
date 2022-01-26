@@ -6,14 +6,12 @@ import './app-home';
 import { Router } from '@vaadin/router';
 
 import '../components/header';
+import { env } from '../utils/environment';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
   static get styles() {
     return css`
-      main {
-        padding: 16px;
-      }
 
       #routerOutlet > * {
         width: 100% !important;
@@ -25,6 +23,11 @@ export class AppIndex extends LitElement {
 
       #routerOutlet > .entering {
         animation: 160ms fadeIn linear;
+      }
+
+      main {
+        overflow-y: hidden;
+        overflow-x: hidden;
       }
 
       @keyframes fadeOut {
@@ -58,6 +61,8 @@ export class AppIndex extends LitElement {
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
 
     // For more info on using the @vaadin/router check here https://vaadin.com/router
+    console.log("We are in " + (env.isProduction ? "production" : "development") + " mode.");
+
     const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
     router.setRoutes([
       // temporarily cast to any because of a Type bug with the router
@@ -67,12 +72,61 @@ export class AppIndex extends LitElement {
         children: [
           { path: '/', component: 'app-home' },
           {
-            path: '/about',
-            component: 'app-about',
+            path: '/new_event',
+            component: 'app-event',
             action: async () => {
-              await import('./app-about.js');
+              await import('./app-event.js');
             },
           },
+          {
+            path: '/login',
+            component: 'app-login',
+            action: async () => {
+              await import('./app-login.js');
+            },
+          },
+          {
+            path: '/create-or-join',
+            component: 'app-cj',
+            action: async () => {
+              await import('./app-cj.js');
+            },
+          },
+          {
+            path: '/create-group',
+            component: 'app-create',
+            action: async () => {
+              await import('./app-create.js');
+            },
+          },
+          {
+            path: '/join-group',
+            component: 'app-join',
+            action: async () => {
+              await import('./app-join.js');
+            },
+          },
+          {
+            path: '/join-group/error',
+            component: 'app-joinerror',
+            action: async () => {
+              await import('./app-joinerror.js');
+            },
+          },
+          {
+            path: '/pick-calendar',
+            component: 'app-selection',
+            action: async () => {
+              await import('./app-selection.js');
+            },
+          },
+          {
+            path: '/settings',
+            component: 'app-settings',
+            action: async () => {
+              await import('./app-settings.js');
+            },
+          }
         ],
       } as any,
     ]);
@@ -81,8 +135,6 @@ export class AppIndex extends LitElement {
   render() {
     return html`
       <div>
-        <app-header></app-header>
-
         <main>
           <div id="routerOutlet"></div>
         </main>

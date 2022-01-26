@@ -1,12 +1,12 @@
 {
-  "name": "PWA Starter",
+  "name": "Sync'd",
   "display": "standalone",
   "start_url": "/",
-  "short_name": "starter",
+  "short_name": "sync'd",
   "theme_color": "#E1477E",
-  "description": "This is a PWA Starter app",
+  "description": "An easy to use event calendar for busy groups to plan time with one another!",
   "orientation": "any",
-  "background_color": "#E1477E",
+  "background_color": "#DDBDD5",
   "related_applications": [],
   "prefer_related_applications": false,
   "icons": [
@@ -41,9 +41,12 @@
   "features": [
     "Cross Platform",
     "fast",
-    "simple"
+    "simple",
+    "multi-user"
   ],
   "categories": [
-    "utility"
+    "utility",
+    "productivity",
+    "social"
   ]
 }

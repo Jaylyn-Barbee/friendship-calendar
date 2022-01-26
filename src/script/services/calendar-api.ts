@@ -1,167 +1,153 @@
-import {provider} from "./provider"
-
-const zoneMappings: any = {
-    "Dateline Standard Time": "Etc/GMT+12",
-    "UTC-11": "Etc/GMT+11",
-    "Aleutian Standard Time": "America/Adak",
-    "Hawaiian Standard Time": "Pacific/Honolulu",
-    "Marquesas Standard Time": "Pacific/Marquesas",
-    "Alaskan Standard Time": "America/Anchorage",
-    "UTC-09": "Etc/GMT+9",
-    "Pacific Standard Time (Mexico)": "America/Tijuana",
-    "UTC-08": "Etc/GMT+8",
-    "Pacific Standard Time": "America/Los_Angeles",
-    "US Mountain Standard Time": "America/Phoenix",
-    "Mountain Standard Time (Mexico)": "America/Chihuahua",
-    "Mountain Standard Time": "America/Denver",
-    "Central America Standard Time": "America/Guatemala",
-    "Central Standard Time": "America/Chicago",
-    "Easter Island Standard Time": "Pacific/Easter",
-    "Central Standard Time (Mexico)": "America/Mexico_City",
-    "Canada Central Standard Time": "America/Regina",
-    "SA Pacific Standard Time": "America/Bogota",
-    "Eastern Standard Time (Mexico)": "America/Cancun",
-    "Eastern Standard Time": "America/New_York",
-    "Haiti Standard Time": "America/Port-au-Prince",
-    "Cuba Standard Time": "America/Havana",
-    "US Eastern Standard Time": "America/Indianapolis",
-    "Turks And Caicos Standard Time": "America/Grand_Turk",
-    "Paraguay Standard Time": "America/Asuncion",
-    "Atlantic Standard Time": "America/Halifax",
-    "Venezuela Standard Time": "America/Caracas",
-    "Central Brazilian Standard Time": "America/Cuiaba",
-    "SA Western Standard Time": "America/La_Paz",
-    "Pacific SA Standard Time": "America/Santiago",
-    "Newfoundland Standard Time": "America/St_Johns",
-    "Tocantins Standard Time": "America/Araguaina",
-    "E. South America Standard Time": "America/Sao_Paulo",
-    "SA Eastern Standard Time": "America/Cayenne",
-    "Argentina Standard Time": "America/Buenos_Aires",
-    "Greenland Standard Time": "America/Godthab",
-    "Montevideo Standard Time": "America/Montevideo",
-    "Magallanes Standard Time": "America/Punta_Arenas",
-    "Saint Pierre Standard Time": "America/Miquelon",
-    "Bahia Standard Time": "America/Bahia",
-    "UTC-02": "Etc/GMT+2",
-    "Azores Standard Time": "Atlantic/Azores",
-    "Cape Verde Standard Time": "Atlantic/Cape_Verde",
-    "UTC": "Etc/GMT",
-    "GMT Standard Time": "Europe/London",
-    "Greenwich Standard Time": "Atlantic/Reykjavik",
-    "Sao Tome Standard Time": "Africa/Sao_Tome",
-    "Morocco Standard Time": "Africa/Casablanca",
-    "W. Europe Standard Time": "Europe/Berlin",
-    "Central Europe Standard Time": "Europe/Budapest",
-    "Romance Standard Time": "Europe/Paris",
-    "Central European Standard Time": "Europe/Warsaw",
-    "W. Central Africa Standard Time": "Africa/Lagos",
-    "Jordan Standard Time": "Asia/Amman",
-    "GTB Standard Time": "Europe/Bucharest",
-    "Middle East Standard Time": "Asia/Beirut",
-    "Egypt Standard Time": "Africa/Cairo",
-    "E. Europe Standard Time": "Europe/Chisinau",
-    "Syria Standard Time": "Asia/Damascus",
-    "West Bank Standard Time": "Asia/Hebron",
-    "South Africa Standard Time": "Africa/Johannesburg",
-    "FLE Standard Time": "Europe/Kiev",
-    "Israel Standard Time": "Asia/Jerusalem",
-    "Kaliningrad Standard Time": "Europe/Kaliningrad",
-    "Sudan Standard Time": "Africa/Khartoum",
-    "Libya Standard Time": "Africa/Tripoli",
-    "Namibia Standard Time": "Africa/Windhoek",
-    "Arabic Standard Time": "Asia/Baghdad",
-    "Turkey Standard Time": "Europe/Istanbul",
-    "Arab Standard Time": "Asia/Riyadh",
-    "Belarus Standard Time": "Europe/Minsk",
-    "Russian Standard Time": "Europe/Moscow",
-    "E. Africa Standard Time": "Africa/Nairobi",
-    "Iran Standard Time": "Asia/Tehran",
-    "Arabian Standard Time": "Asia/Dubai",
-    "Astrakhan Standard Time": "Europe/Astrakhan",
-    "Azerbaijan Standard Time": "Asia/Baku",
-    "Russia Time Zone 3": "Europe/Samara",
-    "Mauritius Standard Time": "Indian/Mauritius",
-    "Saratov Standard Time": "Europe/Saratov",
-    "Georgian Standard Time": "Asia/Tbilisi",
-    "Volgograd Standard Time": "Europe/Volgograd",
-    "Caucasus Standard Time": "Asia/Yerevan",
-    "Afghanistan Standard Time": "Asia/Kabul",
-    "West Asia Standard Time": "Asia/Tashkent",
-    "Ekaterinburg Standard Time": "Asia/Yekaterinburg",
-    "Pakistan Standard Time": "Asia/Karachi",
-    "Qyzylorda Standard Time": "Asia/Qyzylorda",
-    "India Standard Time": "Asia/Calcutta",
-    "Sri Lanka Standard Time": "Asia/Colombo",
-    "Nepal Standard Time": "Asia/Katmandu",
-    "Central Asia Standard Time": "Asia/Almaty",
-    "Bangladesh Standard Time": "Asia/Dhaka",
-    "Omsk Standard Time": "Asia/Omsk",
-    "Myanmar Standard Time": "Asia/Rangoon",
-    "SE Asia Standard Time": "Asia/Bangkok",
-    "Altai Standard Time": "Asia/Barnaul",
-    "W. Mongolia Standard Time": "Asia/Hovd",
-    "North Asia Standard Time": "Asia/Krasnoyarsk",
-    "N. Central Asia Standard Time": "Asia/Novosibirsk",
-    "Tomsk Standard Time": "Asia/Tomsk",
-    "China Standard Time": "Asia/Shanghai",
-    "North Asia East Standard Time": "Asia/Irkutsk",
-    "Singapore Standard Time": "Asia/Singapore",
-    "W. Australia Standard Time": "Australia/Perth",
-    "Taipei Standard Time": "Asia/Taipei",
-    "Ulaanbaatar Standard Time": "Asia/Ulaanbaatar",
-    "Aus Central W. Standard Time": "Australia/Eucla",
-    "Transbaikal Standard Time": "Asia/Chita",
-    "Tokyo Standard Time": "Asia/Tokyo",
-    "North Korea Standard Time": "Asia/Pyongyang",
-    "Korea Standard Time": "Asia/Seoul",
-    "Yakutsk Standard Time": "Asia/Yakutsk",
-    "Cen. Australia Standard Time": "Australia/Adelaide",
-    "AUS Central Standard Time": "Australia/Darwin",
-    "E. Australia Standard Time": "Australia/Brisbane",
-    "AUS Eastern Standard Time": "Australia/Sydney",
-    "West Pacific Standard Time": "Pacific/Port_Moresby",
-    "Tasmania Standard Time": "Australia/Hobart",
-    "Vladivostok Standard Time": "Asia/Vladivostok",
-    "Lord Howe Standard Time": "Australia/Lord_Howe",
-    "Bougainville Standard Time": "Pacific/Bougainville",
-    "Russia Time Zone 10": "Asia/Srednekolymsk",
-    "Magadan Standard Time": "Asia/Magadan",
-    "Norfolk Standard Time": "Pacific/Norfolk",
-    "Sakhalin Standard Time": "Asia/Sakhalin",
-    "Central Pacific Standard Time": "Pacific/Guadalcanal",
-    "Russia Time Zone 11": "Asia/Kamchatka",
-    "New Zealand Standard Time": "Pacific/Auckland",
-    "UTC+12": "Etc/GMT-12",
-    "Fiji Standard Time": "Pacific/Fiji",
-    "Chatham Islands Standard Time": "Pacific/Chatham",
-    "UTC+13": "Etc/GMT-13",
-    "Tonga Standard Time": "Pacific/Tongatapu",
-    "Samoa Standard Time": "Pacific/Apia",
-    "Line Islands Standard Time": "Pacific/Kiritimati"
-  };
+import { getGroupName, pushEventToCurrentUser, pushEventToGroup } from "./database";
+import { provider } from "./provider"
 
 const graphClient = provider.graph.client;
 
-  function getIanaFromWindows(windowsZoneName: string) {
-    return zoneMappings[windowsZoneName] || "Etc/GMT";
-  }
+export async function getCurrentUserId(){
+    let userDetails = await graphClient.api('me').get();
+    return userDetails.id;
+}
 
-  async function getEvents() {
+export async function getCurrentUserDetails(){
+    let userDetails = await graphClient.api('me').get();
+    return userDetails;
+}
 
+export async function getPhoto(){
+    /* let photoBlob = await graphClient.api('me/photo/$value').get();
+    //const photo = window.URL.createObjectURL(photoBlob.data);
+    console.log("photo", photoBlob.toString('base64')); */
 
-  }
-
-export async function test(){
-    if (provider) {
-
-        let userDetails = await graphClient.api('me').get();
-        console.log("userDetails = ", userDetails);
-
-        let calDetails = await graphClient.api('me/calendars').get();
-        console.log("calDetails = ", calDetails);
+    try{
+        let photoBlob = await graphClient.api('me/photo/$value').get();
+        //const photo = URL.createObjectURL(photoBlob.data);
+        //console.log(photo);
+        return photoBlob;
+    } catch(error: any) {
+        console.error("No Photo Available");
+        // try to get the initials. figure this out later..
+        return "assets/images/placeholder.png";
     }
 }
 
-export function got() {
-    console.log("hit got");
+export async function createMainCalendar(group_name: string) {
+
+    const calendarGroup = {
+        name: group_name
+    };
+
+    let gresp = await graphClient.api('/me/calendarGroups').post(calendarGroup);
+
+    let group_id = gresp.id;
+
+    const calendar = {
+        name: group_name + "\'s Calendar"
+    };
+
+    let cal_resp = await graphClient.api('/me/calendargroups/' + group_id + '/calendars').post(calendar);
+    let cal_id = cal_resp.id;
+    return [cal_id, group_id];
+}
+
+export async function createAndSubmitEvent(event_name: string, event_body: string, start_time: string, end_time: string,  event_location: string, attendees: any[]){
+
+    let attendeeList: any[] = []
+    attendees.forEach(person => {
+        attendeeList.push({emailAddress: { address: person.scoredEmailAddresses[0].address, name: person.displayName}})
+    });
+
+    const event = {
+        subject: event_name,
+        body: {
+          contentType: 'HTML',
+          content: event_body
+        },
+        start: {
+            dateTime: start_time,
+            timeZone: 'Eastern Standard Time' // will be replaced with groups perferred TZ
+        },
+        end: {
+            dateTime: end_time,
+            timeZone: 'Eastern Standard Time' // will be replaced with groups perferred TZ
+        },
+        location: {
+            displayName: event_location
+        },
+        attendees: attendeeList
+    };
+
+    let group_name = await getGroupName();
+    let gresp = await graphClient.api('/me/calendarGroups').get();
+    let groups = gresp.value
+    let group_id = "";
+    for(let i = 0; i < groups.length; i ++){
+        let group = groups[i];
+        if(group.name === group_name){
+            group_id = group.id
+        }
+    }
+
+    let resp = await graphClient.api('/me/calendars').get();
+    let cals = resp.value
+    let cal_id = "";
+    for(let i = 0; i < cals.length; i ++){
+        let cal = cals[i];
+        let cal_name: string = (cal.name as string)
+        if(cal_name.startsWith(group_name)){
+            cal_id = cal.id
+        }
+    }
+
+    let event_resp = await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
+    let event_id = event_resp.id;
+
+    let db_event_obj = {
+        id: event_id,
+        event: event
+    }
+
+    await pushEventToGroup(db_event_obj);
+    await pushEventToCurrentUser(db_event_obj);
+}
+
+export async function createNewEvents(new_events: any){
+    console.log("creating new events landed");
+    console.log("new events in cal api", new_events);
+    let group_name = await getGroupName();
+    let gresp = await graphClient.api('/me/calendarGroups').get();
+    let groups = gresp.value
+    let group_id = "";
+    for(let i = 0; i < groups.length; i ++){
+        let group = groups[i];
+        if(group.name === group_name){
+            group_id = group.id
+        }
+    }
+
+    let resp = await graphClient.api('/me/calendars').get();
+    let cals = resp.value
+    let cal_id = "";
+    for(let i = 0; i < cals.length; i ++){
+        let cal = cals[i];
+        let cal_name: string = (cal.name as string)
+        if(cal_name.startsWith(group_name)){
+            cal_id = cal.id
+        }
+    }
+
+    console.log("at loop");
+    for(let i = 0; i < new_events.length; i++){
+        console.log("creating new event");
+        let event = new_events[i];
+        await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
+    }
+}
+
+export async function getCurrentUsersCalendars(){
+    let calDetails = await graphClient.api('me/calendars').get();
+    return calDetails.value;
+}
+
+export async function deleteEvent(id: any){
+    await graphClient.api('/me/events/' + id).delete();
 }

@@ -1,16 +1,19 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
-import { event } from "../types/interfaces"
-import { current_date } from '../services/data';
+import { property, customElement, state } from 'lit/decorators.js';
+import { months } from "../services/data"
+import { getGroupEvents } from '../services/database';
+// import { areThereEventsToday } from "../services/calendar-api"
 
 @customElement('app-cell')
 export class AppCell extends LitElement {
-  @property() date: any;
-  @property({type: Array}) events!: event[];
-  @property() week_day: any;
+  @state() date: any;
+  @state() week_day: any;
+  @state() event_today: any;
   @property() day: any;
   @property() month: any;
   @property() year: any;
+  @property() active: any;
+
 
   static get styles() {
     return css`
@@ -18,27 +21,57 @@ export class AppCell extends LitElement {
         #cell {
             height: 100%;
             width: 100%;
-            background: lightblue;
-            border-top: 1px solid black;
+        }
+        #hat {
+            height: 5%;
+            width: 100%;
+        }
+        .color {
+            background: #6C375F;
         }
         #day {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-start;
+            align-items: baseline;
             grid-column: 2;
             width: 100%;
-            height: 50%;
+            height: 47.5%;
             font-size: 24px;
             font-weight: bolder;
-
         }
 
         #bottom{
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 50%;
+            height: 47.5%;
         }
+        #today-cell {
+            height: 100%;
+            width: 100%;
+        }
+        .selected {
+            background: #F1E4EE;
+        }
+        .inactive {
+            background: white;
+        }
+
+        @media(max-width: 450px){
+
+            #day {
+                font-size: 12px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #bottom {
+                font-size: 12px;
+            }
+        }
+
+
+
         `;
 
   }
@@ -47,23 +80,61 @@ export class AppCell extends LitElement {
     super();
   }
 
-  firstUpdated(){
-      this.date = new Date();
-      var test_event1: event = {name: "Test Name", location: "Test Location", attendees: ["Test User 1", "Test User 2"], date: this.date}
-      var test_event2: event = {name: "Test Name 2", location: "Test Location 2", attendees: ["Test User 1", "Test User 2", "Test User 3"], date: this.date}
-      this.events = [test_event1, test_event2];
+  async firstUpdated(){
 
-      this.requestUpdate;
+    await this.areThereEventsToday(this.day, this.month, this.year);
+
+    this.requestUpdate;
+  }
+
+  async areThereEventsToday(day: any, month: any, year: any){
+
+    let today = year + "-" + ("00" + ((month + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2);
+    let event_list = await getGroupEvents();
+    event_list = event_list.map((e: any) => e.event.start.dateTime.split("T")[0]);
+
+    let hit_list = event_list.filter( (date: any) => date === today);
+
+    this.event_today = hit_list.length > 0;
+  }
+
+  handleClick(e: any) {
+
+      let stringDate = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + (this.day as number)).slice(-2) + "T00:00";
+      let limit_in = this.year + "-" + ("00" + ((this.month + 1) as number)).slice(-2) + "-" + ("00" + ((parseInt(this.day) + 1) as number)).slice(-2) + "T00:00";
+      let event = new CustomEvent('day-clicked', {
+        detail: {
+            selected_day: stringDate,
+            day_limit: limit_in,
+            selected_cell: (e.path[1] as HTMLBodyElement),
+        }
+      });
+      this.dispatchEvent(event);
   }
 
   render() {
     return html`
-        <div id="cell">
+
+        ${ this.active == "false" ?
+
+        html`
+        <div id="cell" @click=${(e: any) => this.handleClick(e)}>
+            <div id="hat"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
-                ${this.events && this.events.length > 0 ? html`<ion-icon name="medical"></ion-icon>` : null}
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
             </span>
-        </div>
+        </div>`
+        :
+        html`
+        <div id="today-cell" @click=${(e: any) => this.handleClick(e)}>
+            <div id="hat" class="color"></div>
+            <span id="day">${this.day}</span>
+            <span id="bottom">
+                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+            </span>
+        </div>`
+    }
     `;
   }
 }
