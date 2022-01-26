@@ -97,7 +97,7 @@ export class AppLogin extends LitElement {
 
   async firstUpdated(){
     this.provider = provider;
-    this.shadowRoot!.querySelector('mgt-login')?.addEventListener('loginCompleted', (e: any) => {
+    this.shadowRoot!.querySelector('mgt-login')?.addEventListener('loginCompleted', () => {
       Router.go("/create-or-join")
     });
   }

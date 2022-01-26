@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { createMainCalendar, getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars, getPhoto } from '../services/calendar-api';
+import { createMainCalendar, getCurrentUserDetails, getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { addUser, checkForUserInDb, getGroupCode, getGroupName, isUserAdmin } from '../services/database';
 import { provider } from '../services/provider';
