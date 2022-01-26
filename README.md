@@ -14,7 +14,7 @@ The PWABuilder pwa-starter is our opinionated, best practices, production tested
 You can find more details about it [here](https://blog.pwabuilder.com/posts/building-pwas-with-web-components!/).
 
 **[Live Demo](https://pwa-starter-demo.glitch.me/)**
-
+ 
 ## Getting Started
 First, you will need to install Git and a NodeJS environment on your device. Luckily, Windows makes it very easy to install and setup these tools [Set up NodeJS on native Windows | Microsoft Docs](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
 
