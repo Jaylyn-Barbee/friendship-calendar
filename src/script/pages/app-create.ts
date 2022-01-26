@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { zoneMappings } from "../services/data"
 import '../components/toast';
-import { createMainCalendar, getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
+import { getCurrentUserId, getCurrentUsersCalendars } from '../services/calendar-api';
 import { checkForCode, checkForUserInDb, createNewGroup } from '../services/database';
 import { provider } from '../services/provider';
 

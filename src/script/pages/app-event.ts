@@ -5,7 +5,6 @@ import { Router } from '@vaadin/router';
 import '@microsoft/mgt-components';
 import '../components/toast';
 import { highlighted_day } from '../services/data';
-import { getGroupMembersInformation } from '../services/database';
 
 @customElement('app-event')
 export class AppEvent extends LitElement {

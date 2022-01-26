@@ -1,12 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, deleteDoc, enableIndexedDbPersistence } from "firebase/firestore";
-import { env } from "../utils/environment";
 import { getCurrentUserId } from "./calendar-api";
 
 initializeApp({
-    apiKey: env.apiKey,
-    authDomain: env.authDomain,
-    projectId: env.projectId,
+    apiKey: "#{apiKey}#",
+    authDomain: "#{authDomain}#",
+    projectId: "#{projectId}#"
 });
 
 const db = getFirestore();
