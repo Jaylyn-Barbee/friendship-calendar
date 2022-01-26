@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: cschleiden/replace-tokens@v1
         with:
+          tokenPrefix: '__'
+          tokenSuffix: '__'
           files: '["**/*.ts"]'
         env:
           apiKey: ${{ secrets.apiKey }}
