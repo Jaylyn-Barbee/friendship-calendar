@@ -14,10 +14,10 @@ jobs:
           tokenSuffix: '__'
           files: '["**/*.ts"]'
         env:
-          apiKey: ${{ secrets.apiKey }}
-          authDomain: ${{ secrets.authDomain }}
-          clientID: ${{ secrets.clientID }}
-          projectId: ${{ secrets.projectId }}
+          apiKey: ${{ secrets.APIKEY }}
+          authDomain: ${{ secrets.AUTHDOMAIN }}
+          clientID: ${{ secrets.CLIENTID }}
+          projectId: ${{ secrets.PROJECTID }}
           
       - uses: actions/checkout@v2
       - run: npm ci && npm run build
