@@ -8,6 +8,7 @@ jobs:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: cschleiden/replace-tokens@v1
         with:
           tokenPrefix: '__'
@@ -19,7 +20,6 @@ jobs:
           clientID: '${{ secrets.CLIENTID }}'
           projectId: '${{ secrets.PROJECTID }}'
           
-      - uses: actions/checkout@v2
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
