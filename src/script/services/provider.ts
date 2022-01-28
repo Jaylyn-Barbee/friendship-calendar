@@ -16,7 +16,8 @@ const scopes = [
 
 Providers.globalProvider = new Msal2Provider({
     clientId,
-    scopes
+    scopes,
+    redirectUri: window.location.origin
 });
 
 export var provider = Providers.globalProvider;
