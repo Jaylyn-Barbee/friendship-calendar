@@ -57,7 +57,6 @@ export class AppIndex extends LitElement {
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
 
     // For more info on using the @vaadin/router check here https://vaadin.com/router
-    console.log("We are in " + "__PRODUCTION__" + " mode.");
 
     const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
     router.setRoutes([
