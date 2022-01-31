@@ -41,6 +41,8 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   @state() showConfirmRemoveModal: any | null = false;
   @state() showDeleteModal: any | null = false;
   @state() showLeaveLoader: any | null = false;
+  @state() notEnoughAdmins: any = false;
+  @state() showLeaveModal: any = false;
   @state() personOfInterest: any | null = "";
   @state() addAdmin: any | null;
   @state() activeAdminBox: any | null;
@@ -79,7 +81,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     justify-content: center;
   }
 
-  #back, #edit, #leave {
+  #back, #edit, #leave, #close {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -88,10 +90,20 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
     #leave {
       margin-left: 10px;
-      color: red;
+      color: orange;
     }
 
     #leave:hover {
+      cursor: pointer;
+      border-bottom: 1px solid orange;
+    }
+
+    #close {
+      margin-left: 10px;
+      color: red;
+    }
+
+    #close:hover {
       cursor: pointer;
       border-bottom: 1px solid red;
     }
@@ -119,6 +131,13 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     border-bottom: 1px solid black;
   }
 
+
+  #non-admin-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
   .curve {
     position: absolute;
     height: 250px;
@@ -126,6 +145,8 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     bottom: 0;
     text-align: center;
   }
+
+
 
   .curve::before {
     content: '';
@@ -191,6 +212,7 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
   #edit-message {
     font-size: 12px;
     margin: 0;
+    margin-top: 5px;
     font-weight: bold;
   }
 
@@ -619,6 +641,30 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
 
   }
 
+  async handleLeaveGroup(){
+    let uid = await getCurrentUserId();
+    let code = await getGroupCode();
+    let isAdmin = await isUserAdmin(uid);
+    let adminList = await getAdmins(code)
+    if(isAdmin && adminList.length == 1){
+      this.notEnoughAdmins = true;
+    }
+    this.showLeaveModal = true;
+  }
+
+  async handleLeaveResult(action: any){
+    // make sure that if this person is the only admin of the group
+    // they cannot leave before reassigning the role.
+    if(action){
+      let uid = await getCurrentUserId();
+      let code = await getGroupCode();
+      this.showLeaveLoader = true;
+      await removeUser(code, uid).then(() => Router.go("/create-or-join"));
+    } else {
+      this.showLeaveModal = false;
+    }
+  }
+
   render() {
     return html`
       <div id="page">
@@ -640,9 +686,14 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
                       }
 
                     </span>
-                    <div id="leave" @click=${() => this.startDeletionProcess()}><ion-icon name="close" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Delete Group</div>
+                    <div id="leave" @click=${() => this.handleLeaveGroup()}><ion-icon name="exit-outline" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Leave Group</div>
+                    <div id="close" @click=${() => this.startDeletionProcess()}><ion-icon name="close" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Delete Group</div>
                   </div>` :
-                  html`<p id="edit-message">Contact your group admin to edit settings.</p>`
+                  html`
+                  <div id="non-admin-top">
+                    <div id="leave" @click=${() => this.handleLeaveGroup()}><ion-icon name="exit" style="font-size: 14px; margin-right: 5px; color: red;" ></ion-icon>Leave Group</div>
+                    <p id="edit-message">Contact your group admin to edit settings.</p>
+                  </div>`
                 }
               </div>
               <label for="group_name">Group Name:</label>
@@ -727,7 +778,39 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
           `}
           ` :
           html``}
+
+        ${this.showLeaveModal ?
+        html`
+          <div class="modal-box">
+            ${this.showLeaveLoader ? html`<span class="loader"></span>` :
+            this.memberDetails.length != 1 ?
+              this.notEnoughAdmins ?
+              html`
+                <p>You are the only admin of the group. You must first reassign this role on the settings page in order to proceed.</p>
+                <slot>
+                  <button @click=${() => this.handleLeaveResult(false)}>Okay</button>
+                </slot>
+              `:
+              html`
+                <p>Are you sure you want to leave the group?</p>
+                <slot>
+                  <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                  <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
+                </slot>
+              ` :
+            html`
+              <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
+              <slot>
+                <button @click=${() => this.handleLeaveResult(false)}>No</button>
+                <button @click=${() => this.handleDeleteGroup()}>Yes</button>
+              </slot>
+            `}
+        </div>
+        ` :
+        html``}
       </div>
+
+
       ${this.showLengthToast ? html`<app-toast>Your group name must contain atleast 5 characters. Please try again.</app-toast>` : html``}
       ${this.showSuccessToast ? html`<app-toast>Your group settings have been successfully updated!</app-toast>` : html``}
       ${this.showErrorToast ? html`<app-toast>There was an error updating your group settings. Please try again.</app-toast>` : html``}
