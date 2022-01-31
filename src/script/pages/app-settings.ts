@@ -218,6 +218,10 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     overflow-x: scroll;
   }
 
+  table {
+    width: 100%;
+  }
+
   th {
     text-align: center;
   }
