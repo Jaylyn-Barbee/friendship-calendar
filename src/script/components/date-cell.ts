@@ -141,6 +141,12 @@ export class AppCell extends LitElement {
             #bottom {
                 font-size: 12px;
             }
+
+            .loader {
+              width: 24px;
+              height: 24px;
+            }
+
         }
 
 

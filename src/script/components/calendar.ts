@@ -257,10 +257,10 @@ export class AppCalendar extends LitElement {
       .user-list-item {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         margin-bottom: 10px;
-        width: 100%;
+        width: 50%;
       }
 
       ion-icon:hover {
