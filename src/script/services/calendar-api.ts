@@ -129,7 +129,7 @@ export async function createNewEvents(new_events: any){
     }
 
     for(let i = 0; i < new_events.length; i++){
-        let event = new_events[i];
+        let event = new_events[i].event;
         await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     }
 }
