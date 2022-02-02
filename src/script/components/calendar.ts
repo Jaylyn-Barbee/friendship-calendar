@@ -811,14 +811,8 @@ export class AppCalendar extends LitElement {
           if(user_events.length == 0){
             await createNewEvents(group_events);
           } else {
-<<<<<<< HEAD
             let diff = group_events.length - user_events.length;
             let new_events = group_events.slice(diff + 1, group_events.length);
-=======
-            let new_events = group_events.slice(user_events.length, group_events.length);
-            console.log("new_events", new_events);
-            console.log("creating new events called");
->>>>>>> 2b4c28651e17a76b649a6a98307637e4a6c46563
             await createNewEvents(new_events);
           }
         this.generateCal(this.monthIndex, this.year);
