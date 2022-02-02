@@ -11,6 +11,7 @@ export class AppCell extends LitElement {
   @property() month: any;
   @property() year: any;
   @property() active: any;
+  @state() showLoader: any | null = false;
 
 
   static get styles() {
@@ -55,6 +56,26 @@ export class AppCell extends LitElement {
             background: white;
         }
 
+        .loader {
+          width: 48px;
+          height: 48px;
+          border: 5px solid #F1E4EE;
+          border-bottom-color: transparent;
+          border-radius: 50%;
+          display: inline-block;
+          box-sizing: border-box;
+          animation: rotation 1s linear infinite;
+          }
+
+          @keyframes rotation {
+          0% {
+              transform: rotate(0deg);
+          }
+          100% {
+              transform: rotate(360deg);
+          }
+        }
+
         @media(max-width: 450px){
 
             #day {
@@ -66,6 +87,12 @@ export class AppCell extends LitElement {
             #bottom {
                 font-size: 12px;
             }
+
+            .loader {
+              width: 24px;
+              height: 24px;
+            }
+
         }
 
 
@@ -87,6 +114,8 @@ export class AppCell extends LitElement {
 
   async areThereEventsToday(day: any, month: any, year: any){
 
+    this.showLoader = true
+
     let today = year + "-" + ("00" + ((month + 1) as number)).slice(-2) + "-" + ("00" + (day as number)).slice(-2);
     let event_list = await getGroupEvents();
     event_list = event_list.map((e: any) => e.event.start.dateTime.split("T")[0]);
@@ -94,6 +123,7 @@ export class AppCell extends LitElement {
     let hit_list = event_list.filter( (date: any) => date === today);
 
     this.event_today = hit_list.length > 0;
+    this.showLoader = false;
   }
 
   handleClick(e: any) {
@@ -120,7 +150,10 @@ export class AppCell extends LitElement {
             <div id="hat"></div>
             <span id="day">${this.day}</span>
             <span id="bottom">
-                ${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}
+                ${this.showLoader ?
+                    html`<span class="loader"></span>` :
+                    html`${this.event_today ? html`<ion-icon name="medical"></ion-icon>` : null}`
+                }
             </span>
         </div>`
         :

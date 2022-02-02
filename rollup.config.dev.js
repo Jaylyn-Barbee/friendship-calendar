@@ -22,8 +22,7 @@ export default {
       __apiKey__ : process.env.apiKey,
       __authDomain__ : process.env.authDomain,
       __projectId__: process.env.projectId,
-      __clientID__ : process.env.clientID,
-      __PRODUCTION__ : "__DEVELOPMENT__"
+      __clientID__ : process.env.clientID
     }),
     copy({
       targets: [

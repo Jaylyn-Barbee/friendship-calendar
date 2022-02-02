@@ -25,13 +25,10 @@ export class AppCalendar extends LitElement {
     @state() calendar_id: any = "";
     @state() event_query: any = "";
     @state() day_limit: any = "";
-    @state() showLeaveModal: any = false;
     @state() showDeleteEventModal: any = false;
     @state() showDeleteEventLoader: any = false;
     @state() showDeleteEventError: any = false;
     @state() id_tobe_deleted: any = "";
-    @state() showLeaveLoader: any = false;
-    @state() notEnoughAdmins: any = false;
     @state() flyoutMenu: any;
 
   static get styles() {
@@ -50,14 +47,39 @@ export class AppCalendar extends LitElement {
         grid-template-columns: 2fr 5fr 2fr;
         height: 75px;
         padding: 10px 0;
+        place-items: center;
       }
 
+      #leave-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        font-size: 12px;
+        font-weight: bolder;
+        padding: 10px;
+
+        border-radius: 5px;
+        background-color: #F1E4EE;
+        border: none;
+
+        margin-right: 10px;
+      }
+
+      #leave-group p {
+        margin: 0;
+        margin-right: 5px;
+      }
+
+      #leave-group:hover {
+        cursor: pointer;
+      }
 
       #left-sec {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
+        width: 80%;
       }
 
       #middle-sec {
@@ -257,10 +279,10 @@ export class AppCalendar extends LitElement {
       .user-list-item {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         margin-bottom: 10px;
-        width: 100%;
+        width: 50%;
       }
 
       ion-icon:hover {
@@ -923,30 +945,6 @@ export class AppCalendar extends LitElement {
     this.changeDate(current_date.getMonth(), current_date.getFullYear());
   }
 
-  async handleLeaveGroup(){
-    let uid = await getCurrentUserId();
-    let code = await getGroupCode();
-    let isAdmin = await isUserAdmin(uid);
-    let adminList = await getAdmins(code)
-    if(isAdmin && adminList.length == 1){
-      this.notEnoughAdmins = true;
-    }
-    this.showLeaveModal = true;
-  }
-
-  async handleLeaveResult(action: any){
-    // make sure that if this person is the only admin of the group
-    // they cannot leave before reassigning the role.
-    if(action){
-      let uid = await getCurrentUserId();
-      let code = await getGroupCode();
-      this.showLeaveLoader = true;
-      await removeUser(code, uid).then(() => Router.go("/create-or-join"));
-    } else {
-      this.showLeaveModal = false;
-    }
-  }
-
   async handleDeleteGroup(){
 
     let code = await getGroupCode();
@@ -971,9 +969,9 @@ export class AppCalendar extends LitElement {
       <div id="wholeWrapper">
         <div id="calHeader">
           <div id="login">
-            <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px; margin: 0 10px;"></ion-icon>
-            <ion-icon name="exit-outline" @click=${() => this.handleLeaveGroup()} style="font-size: 24px; margin-left: 10px; color: red; font-weight: bold;"></ion-icon>
+
             <mgt-login></mgt-login>
+
           </div>
 
           <div id="middle-sec">
@@ -1007,6 +1005,7 @@ export class AppCalendar extends LitElement {
           </div>
 
           <div id="left-sec">
+            <ion-icon name="settings" @click=${() => Router.go("/settings")} style="font-size: 24px;"></ion-icon>
             ${this.group_name.length > 0? html`<h2 id="groupName" style="display: flex; align-items: center; justify-content: center;">Calendar: ${this.group_name}</h2>` : html`<span class="loader_top"></span>`}
           </div>
         </div> <!-- closes id = calHeader-->
@@ -1044,7 +1043,7 @@ export class AppCalendar extends LitElement {
           </div>
 
           <div id="hamburger" @click=${() => this.showMenu()}>
-            <ion-icon name="menu" style="font-size: 32px"></ion-icon>
+            <ion-icon name="settings" style="font-size: 32px"></ion-icon>
           </div>
         </div>
 
@@ -1060,10 +1059,6 @@ export class AppCalendar extends LitElement {
               <div class="menu-item"  @click=${() => Router.go("/settings")}>
                 <ion-icon name="settings" style="font-size: 24px; margin: 0 10px;"></ion-icon>
                 <p>Settings</p>
-              </div>
-              <div class="menu-item" @click=${() => this.handleLeaveGroup()}>
-                <ion-icon name="exit-outline" style="font-size: 24px; margin: 0 10px; color: red; font-weight: bold;"></ion-icon>
-                <p>Leave Group</p>
               </div>
             </div>
             <div id="flyout-login">
@@ -1111,37 +1106,6 @@ export class AppCalendar extends LitElement {
         </div>
 
       </div> <!-- closes wholeWrapper DIV -->
-
-        ${this.showLeaveModal ?
-        html`
-          <div class="modal-box">
-            ${this.showLeaveLoader ? html`<span class="loader"></span>` :
-            this.members.length != 1 ?
-              this.notEnoughAdmins ?
-              html`
-                <p>You are the only admin of the group. You must first reassign this role on the settings page in order to proceed.</p>
-                <slot>
-                  <button @click=${() => this.handleLeaveResult(false)}>Cancel</button>
-                  <button @click=${() => Router.go("/settings")}>Go to Settings</button>
-                </slot>
-              `:
-              html`
-                <p>Are you sure you want to leave the group?</p>
-                <slot>
-                  <button @click=${() => this.handleLeaveResult(false)}>No</button>
-                  <button @click=${() => this.handleLeaveResult(true)}>Yes</button>
-                </slot>
-              ` :
-            html`
-              <p>You are the only member of the group. Leaving will result in deletion of the group. Are you sure you want to proceed?</p>
-              <slot>
-                <button @click=${() => this.handleLeaveResult(false)}>No</button>
-                <button @click=${() => this.handleDeleteGroup()}>Yes</button>
-              </slot>
-            `}
-        </div>
-        ` :
-        html``}
 
       ${this.showDeleteEventModal ?
           html`
