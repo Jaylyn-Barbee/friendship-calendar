@@ -14,14 +14,9 @@ export async function getCurrentUserDetails(){
 }
 
 export async function getPhoto(){
-    /* let photoBlob = await graphClient.api('me/photo/$value').get();
-    //const photo = window.URL.createObjectURL(photoBlob.data);
-    console.log("photo", photoBlob.toString('base64')); */
 
     try{
         let photoBlob = await graphClient.api('me/photo/$value').get();
-        //const photo = URL.createObjectURL(photoBlob.data);
-        //console.log(photo);
         return photoBlob;
     } catch(error: any) {
         console.error("No Photo Available");
@@ -111,8 +106,6 @@ export async function createAndSubmitEvent(event_name: string, event_body: strin
 }
 
 export async function createNewEvents(new_events: any){
-    console.log("creating new events landed");
-    console.log("new events in cal api", new_events);
     let group_name = await getGroupName();
     let gresp = await graphClient.api('/me/calendarGroups').get();
     let groups = gresp.value
@@ -135,9 +128,7 @@ export async function createNewEvents(new_events: any){
         }
     }
 
-    console.log("at loop");
     for(let i = 0; i < new_events.length; i++){
-        console.log("creating new event");
         let event = new_events[i];
         await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     }

@@ -259,12 +259,6 @@ export class AppEvent extends LitElement {
   }
 
   async firstUpdated(){
-    /* let allMembers = await getGroupMembersInformation();
-    this.groupMembers = [];
-    allMembers.forEach((mem: any) => {
-      this.groupMembers.push(mem.details)
-    });
-    console.log(this.groupMembers) */
   }
 
   async handleSubmit(){

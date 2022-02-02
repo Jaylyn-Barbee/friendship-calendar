@@ -807,18 +807,13 @@ export class AppCalendar extends LitElement {
       //so eventually i want to check if the current users are invited to the event then to add them, but for now
       // I am going to add every event despite if they are invited or not.
       if(group_events.length > user_events.length){
-        console.log("list is behind");
           await updatedUserEvents(group_events);
           if(user_events.length == 0){
             await createNewEvents(group_events);
           } else {
             let diff = group_events.length - user_events.length;
-            console.log("diff", diff);
             let new_events = group_events.slice(diff + 1, group_events.length);
-            console.log("new_events", new_events);
-            console.log("creating new events called");
             await createNewEvents(new_events);
-            console.log("nice");
           }
       }
 
@@ -945,16 +940,7 @@ export class AppCalendar extends LitElement {
     this.changeDate(current_date.getMonth(), current_date.getFullYear());
   }
 
-  async handleDeleteGroup(){
-
-    let code = await getGroupCode();
-    this.showLeaveLoader = true;
-    await deleteGroup(code).then(() => Router.go("/create-or-join"));
-
-  }
-
   showMenu() {
-    console.log("called");
     this.flyoutMenu = this.shadowRoot?.getElementById("flyoutMenu");
     this.flyoutMenu.classList.add("show");
   }

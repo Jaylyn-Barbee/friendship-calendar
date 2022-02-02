@@ -24,7 +24,7 @@ enableIndexedDbPersistence(db)
 
 export async function addUser(userName_in: string, email_in: string, uid_in: string, photo_in: any, cal_id_in: string, group_id_in: string, groupCode_in: string, isAdmin_in: Boolean) {
     try {
-        const docRef = await addDoc(collection(db, "users"), {
+        await addDoc(collection(db, "users"), {
             uid: uid_in,
             details: {
                 displayName: userName_in,
@@ -37,7 +37,6 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
             isAdmin: isAdmin_in,
             user_events: []
         });
-        console.log("Document written with ID: ", docRef.id);
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -45,7 +44,7 @@ export async function addUser(userName_in: string, email_in: string, uid_in: str
 
 export async function createNewGroup(group_name: string, group_tz: string, group_code: string, user_id: string) {
     try {
-        const docRef = await addDoc(collection(db, "groups"), {
+        await addDoc(collection(db, "groups"), {
             group_name: group_name,
             join_code: group_code,
             members: [user_id],
@@ -53,7 +52,7 @@ export async function createNewGroup(group_name: string, group_tz: string, group
             default_tz: group_tz,
             group_events: []
         });
-        console.log("Document written with ID: ", docRef.id);
+
     } catch (e) {
         console.error("Error adding document: ", e);
     }
