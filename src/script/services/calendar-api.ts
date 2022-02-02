@@ -138,7 +138,7 @@ export async function createNewEvents(new_events: any){
     console.log("at loop");
     for(let i = 0; i < new_events.length; i++){
         console.log("creating new event");
-        let event = new_events[i];
+        let event = new_events[i].event;
         await graphClient.api('/me/calendarGroups/'+ group_id +'/calendars/'+ cal_id +'/events').post(event);
     }
 }
