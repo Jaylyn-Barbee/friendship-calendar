@@ -9,6 +9,7 @@
   "background_color": "#DDBDD5",
   "related_applications": [],
   "prefer_related_applications": false,
+  "display_override" : "windows-controls-overlay",
   "icons": [
     {
       "src": "assets/icons/icon_512.png",
