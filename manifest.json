@@ -12,10 +12,39 @@
   "display_override" : ["windows-controls-overlay"],
   "icons": [
     {
-      "src": "assets/icons/logo.png"
+      "src": "assets/icons/logo_64.png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "assets/icons/logo_128.png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "assets/icons/logo_512.png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "assets/icons/logo_1024.png",
+      "sizes": "1024xs1024"
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/login_screenshot.png"
+    },
+    {
+      "src": "assets/screenshots/calendar_screenshot.png"
+    },
+    {
+      "src": "assets/screenshots/addevent_screenshot.png"
+    },
+    {
+      "src": "assets/screenshots/mobile_screenshot.png"
+    },
+    {
+      "src": "assets/screenshots/tablet_screenshot.png"
+    }
+  ],
   "features": [
     "Cross Platform",
     "fast",
