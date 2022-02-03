@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "app.web.friendship_calendar_c0efc.twa",
+                     "sha256_cert_fingerprints": ["60:06:AB:80:00:E4:C4:FE:1C:D2:87:F6:B2:08:EF:1C:65:70:2E:61:79:CB:AF:91:E3:9A:28:FD:C8:7C:63:16"] }
+      }
+]
