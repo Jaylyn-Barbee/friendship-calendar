@@ -606,7 +606,6 @@ export class AppSettings extends LitElement implements BeforeEnterObserver {
     }
   }
 
-
   async handleRemoveResult(no: any,  member: any){
     if(no){
       this.showConfirmRemoveModal = false;
