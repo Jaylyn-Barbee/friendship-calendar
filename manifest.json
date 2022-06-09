@@ -30,10 +30,6 @@
       "src": "assets/icons/logo_1024.png",
       "sizes": "1024x1024",
       "type":"image/png"
-    },
-    {
-      "src": "assets/icons/favicon.ico",
-      "type":"image/x-icon"
     }
   ],
   "screenshots": [
