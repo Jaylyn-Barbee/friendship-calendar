@@ -22,8 +22,15 @@
       "type":"image/png"
     },
     {
+      "src": "assets/icons/logo_512.png",
+      "sizes": "512x512",
+      "type":"image/png",
+      "purpose": "any"
+    },
+    {
       "src": "assets/icons/logo_1024.png",
-      "sizes": "16x16 1024x1024"
+      "sizes": "1024x1024",
+      "type":"image/png"
     }
   ],
   "screenshots": [
