@@ -20,6 +20,10 @@
       "src": "assets/icons/logo_128.png",
       "sizes": "128x128",
       "type":"image/png"
+    },
+    {
+      "src": "assets/icons/logo_1024.png",
+      "sizes": "16x16 1024x1024"
     }
   ],
   "screenshots": [
