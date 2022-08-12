@@ -7,7 +7,13 @@
   "description": "An easy to use event calendar for busy groups to plan time with one another!",
   "orientation": "any",
   "background_color": "#DDBDD5",
-  "related_applications": [],
+  "related_applications": [
+    {
+    "platform": "windows",
+    "url": "https://play.google.com/store/apps/details?id=works.jubilee.timetree",
+    "id": "works.jubilee.timetree"
+  }
+],
   "prefer_related_applications": false,
   "display_override" : ["window-controls-overlay"],
   "icons": [
@@ -57,5 +63,14 @@
   ],
   "dir": "ltr",
   "lang": "en-US",
-  "iarc_rating_id": "465b8cee-af02-4012-8d4b-bcd3ebec0f3b"
+  "iarc_rating_id": "465b8cee-af02-4012-8d4b-bcd3ebec0f3b",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "login",
+      "url": "/login",
+      "description": "Login to Sync'd"
+    }
+  ],
+  "share_target": {}
 }
