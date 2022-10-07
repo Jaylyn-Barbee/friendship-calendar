@@ -1,0 +1,12 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "friendship-calendar": {
+      "appLocation": ".",
+      "outputLocation": ".",
+      "appBuildCommand": "npm run build --if-present",
+      "run": "npm start",
+      "appDevserverUrl": "http://localhost:8081"
+    }
+  }
+}
