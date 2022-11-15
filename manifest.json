@@ -1,5 +1,4 @@
 {
-  "name": "Sync'd - a Social Calendar App",
   "display": "standalone",
   "start_url": "/",
   "short_name": "sync'd",
