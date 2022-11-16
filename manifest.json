@@ -6,7 +6,7 @@
   "theme_color": "#E1477E",
   "description": "An easy to use event calendar for busy groups to plan time with one another!",
   "orientation": "any",
-  "background_color": "white",
+  "background_color": "#DDBDD5",
   "related_applications": [
     {
     "platform": "windows",
