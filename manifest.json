@@ -72,5 +72,6 @@
       "description": "Login to Sync'd"
     }
   ],
-  "share_target": {}
+  "share_target": {},
+  "widgets": {}
 }
