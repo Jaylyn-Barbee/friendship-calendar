@@ -86,12 +86,6 @@
           "accept": [
             "image/*",
             "video/*",
-            "application/pdf",
-            "application/*",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.ms-powerpoint",
-            "application/zip",
             ".jpg",
             ".png",
             ".jpeg",
