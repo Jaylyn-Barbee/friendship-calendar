@@ -72,6 +72,41 @@
       "description": "Login to Sync'd"
     }
   ],
-  "share_target": {},
+  "share_target": {
+    "action": "/share-file",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "link",
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "image/*",
+            "video/*",
+            "application/pdf",
+            "application/*",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-powerpoint",
+            "application/zip",
+            ".jpg",
+            ".png",
+            ".jpeg",
+            ".gif",
+            ".svg",
+            ".pdf",
+            ".mov",
+            ".3gp",
+            ".avi",
+            ".mp4",
+            ".zip"
+          ]
+        }
+      ]
+    }
+  },
   "widgets": {}
 }
