@@ -121,6 +121,13 @@ export class AppIndex extends LitElement {
             action: async () => {
               await import('./app-settings.js');
             },
+          },
+          {
+            path: '/open-pdf',
+            component: 'app-pdf',
+            action: async () => {
+              await import('./app-pdf.js');
+            },
           }
         ],
       } as any,
