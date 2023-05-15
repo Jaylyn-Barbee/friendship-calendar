@@ -72,7 +72,7 @@
   ],
   "share_target": {
     "action": "/share-file",
-    "method": "POST",
+    "method": "PST",
     "enctype": "multipart/form-data",
     "params": {
       "title": "name",
