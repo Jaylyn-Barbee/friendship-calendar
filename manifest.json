@@ -15,7 +15,7 @@
   }
 ],
   "prefer_related_applications": false,
-  "display_override" : ["window-controls-overlay"],
+  "display_override" : ["window-controls-overlay"],/*
   "icons": [
     {
       "src": "assets/icons/logo_64.png",
@@ -38,7 +38,7 @@
       "sizes": "1024x1024",
       "type":"image/png"
     }
-  ],
+  ], */
   "screenshots": [
     {
       "src": "assets/screenshots/login_screenshot.png"
