@@ -15,30 +15,7 @@
   }
 ],
   "prefer_related_applications": false,
-  "display_override" : ["window-controls-overlay"],/*
-  "icons": [
-    {
-      "src": "assets/icons/logo_64.png",
-      "sizes": "64x64",
-      "type":"image/png"
-    },
-    {
-      "src": "assets/icons/logo_128.png",
-      "sizes": "128x128",
-      "type":"image/png"
-    },
-    {
-      "src": "assets/icons/logo_512.png",
-      "sizes": "512x512",
-      "type":"image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icons/logo_1024.png",
-      "sizes": "1024x1024",
-      "type":"image/png"
-    }
-  ], */
+  "display_override" : ["window-controls-overlay"],
   "screenshots": [
     {
       "src": "assets/screenshots/login_screenshot.png"
