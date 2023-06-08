@@ -1,4 +1,5 @@
 {
+  "id": "?homescreen=1",
   "name": "Sync'd - a Social Calendar App",
   "display": "standalone",
   "start_url": "/",
@@ -119,5 +120,6 @@
   ],
   "edge_side_panel": {
     "preferred_width": 600
-  }
+  },
+  "launch_handler": "auto"
 }
