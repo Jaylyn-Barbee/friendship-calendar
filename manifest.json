@@ -117,5 +117,11 @@
       ],
       "launch_type": "single-client"
     }
-  ]
+  ],
+  "edge_side_panel": {
+    "preferred_width": 600
+  },
+  "launch_handler": {
+    "client_mode": "auto"
+  }
 }
