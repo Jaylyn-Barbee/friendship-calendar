@@ -14,7 +14,7 @@
   "prefer_related_applications": false,
   "icons":[
     {
-      "src": "https://vikeo.ru/d/vikeo_web.png",
+      "src": "https://webboard.app/icons/manifest-icon-192.maskable.png",
       "sizes": "48x48 72x72 96x96 128x128 196x196 256x256 512x512",
       "type": "image/png",
       "purpose": "any"
