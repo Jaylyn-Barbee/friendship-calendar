@@ -111,7 +111,7 @@
       "icons": [
         {
           "src": "images/pdf-icon.jpg",
-          "sizes": "256x256",
+          "sizes": "256x256 512x512",
           "type": "image/png"
         }
       ],
