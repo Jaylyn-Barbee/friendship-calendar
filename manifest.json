@@ -1,111 +1,24 @@
 {
-  "id": "?homescreen=1",
-  "name": "Sync'd - a Social Calendar App",
+  "dir": "ltr",
+  "lang": "ru",
+  "name": "Vikeo: Интернет-магазин",
   "display": "standalone",
-  "start_url": "/",
-  "short_name": "sync'd",
-  "theme_color": "#E1477E",
-  "description": "An easy to use event calendar for busy groups to plan time with one another!",
-  "orientation": "any",
-  "background_color": "#DDBDD5",
-  "related_applications": [
-    {
-    "platform": "windows",
-    "url": "https://play.google.com/store/apps/details?id=works.jubilee.timetree",
-    "id": "works.jubilee.timetree"
-  }
-],
+  "start_url": "/offline",
+  "id": "/offline",
+  "short_name": "Vikeo",
+  "description": "Интернет-магазин Vikeo",
+  "orientation": "natural",
+  "background_color": "#fff",
+  "theme_color": "#FFF",
+  "gcm_sender_id": "531346308866",
   "prefer_related_applications": false,
-  "display_override" : ["window-controls-overlay"],
   "icons": [
     {
-      "src": "assets/icons/logo_128.png",
-      "sizes": "64x64 128x128 512x512",
-      "type":"image/png"
+      "src": "https://vikeo.ru/d/vikeo_web.png",
+      "sizes": "48x48 72x72 96x96 128x128 196x196 256x256 512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "assets/screenshots/login_screenshot.png"
-    },
-    {
-      "src": "assets/screenshots/calendar_screenshot.png"
-    },
-    {
-      "src": "assets/screenshots/addevent_screenshot.png"
-    },
-    {
-      "src": "assets/screenshots/mobile_screenshot.png"
-    },
-    {
-      "src": "assets/screenshots/tablet_screenshot.png"
-    }
-  ],
-  "categories": [
-    "chicken nuggets"
-  ],
-  "dir": "ltr",
-  "lang": "en-US",
-  "iarc_rating_id": "465b8cee-af02-4012-8d4b-bcd3ebec0f3b",
-  "scope": "/",
-  "shortcuts": [
-    {
-      "name": "login",
-      "url": "/login",
-      "description": "Login to Sync'd"
-    }
-  ],
-  "share_target": {
-    "action": "/share-file",
-    "method": "PST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "name",
-      "text": "description",
-      "url": "link",
-      "files": [
-        {
-          "name": "file",
-          "accept": [
-            "video/*",
-            ".gif",
-            ".mov",
-            ".mp4"
-          ]
-        },
-        {
-          "name": "pics",
-          "accept": [
-            "image/*",
-            ".jpg",
-            ".png",
-            ".jpeg"
-          ]
-        }
-      ]
-    }
-  },
-  "widgets": {},
-  "file_handlers": [
-    {
-      "action": "/open-pdf",
-      "accept": {
-        "application/pdf": [".pdf"]
-      },
-      "icons": [
-        {
-          "src": "images/pdf-icon.jpg",
-          "sizes": "256x256",
-          "type": "image/png"
-        }
-      ],
-      "launch_type": "single-client"
-    }
-  ],
-  "edge_side_panel": {
-    "preferred_width": 600
-  },
-  "launch_handler": {
-    "client_mode": "auto"
-  }
+  "screenshots": []
 }
