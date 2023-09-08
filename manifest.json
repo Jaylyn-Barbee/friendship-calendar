@@ -9,10 +9,10 @@
   "description": "Vikeo",
   "orientation": "natural",
   "background_color": "#ffffff",
-  "theme_color": "#FFFFFF",
+  "theme_color": "#ffffff",
   "gcm_sender_id": "531346308866",
   "prefer_related_applications": false,
-  "icons": [
+  "icons":[
     {
       "src": "https://vikeo.ru/d/vikeo_web.png",
       "sizes": "48x48 72x72 96x96 128x128 196x196 256x256 512x512",
