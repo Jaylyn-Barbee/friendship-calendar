@@ -8,8 +8,8 @@
   "short_name": "Vikeo",
   "description": "Vikeo",
   "orientation": "natural",
-  "background_color": "#fff",
-  "theme_color": "#FFF",
+  "background_color": "#ffffff",
+  "theme_color": "#FFFFFF",
   "gcm_sender_id": "531346308866",
   "prefer_related_applications": false,
   "icons": [
