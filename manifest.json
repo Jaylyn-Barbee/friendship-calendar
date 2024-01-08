@@ -19,6 +19,11 @@
   "display_override" : ["window-controls-overlay"],
   "icons": [
     {
+      "src": "assets/icons/Play.svg",
+      "sizes": "64x64",
+      "type":"image/svg"
+    },
+    {
       "src": "assets/icons/logo_64.png",
       "sizes": "64x64",
       "type":"image/png"
